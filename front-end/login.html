@@ -12,13 +12,11 @@
 
     <title>Medical Camps Login</title>
 
-
     <style>
 
         * {
             box-sizing: border-box;
         }
-
 
         html,
         body {
@@ -26,13 +24,10 @@
             padding: 0;
         }
 
-
         body {
-
             min-height: 100vh;
 
             display: flex;
-
             justify-content: center;
             align-items: center;
 
@@ -44,17 +39,13 @@
                 Arial,
                 Helvetica,
                 sans-serif;
-
         }
-
 
         .login-wrapper {
             width: 100%;
         }
 
-
         .login-card {
-
             width: 100%;
             max-width: 430px;
 
@@ -62,44 +53,16 @@
 
             padding: 32px;
 
-            background: #ffffff;
+            background: white;
 
             border-radius: 16px;
 
             box-shadow:
                 0 12px 35px
-                rgba(15, 23, 42, 0.10);
-
+                rgba(15, 23, 42, 0.1);
         }
-
-
-        .logo-wrapper {
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-            margin-bottom: 8px;
-
-        }
-
-
-        .logo-wrapper img {
-
-            width: 100%;
-            max-width: 300px;
-
-            height: auto;
-
-            display: block;
-
-        }
-
 
         h1 {
-
             margin:
                 0
                 0
@@ -110,12 +73,9 @@
             font-size: 28px;
 
             color: #0f172a;
-
         }
 
-
         .subtitle {
-
             margin:
                 0
                 0
@@ -126,12 +86,9 @@
             color: #64748b;
 
             font-size: 14px;
-
         }
 
-
         label {
-
             display: block;
 
             margin-bottom: 8px;
@@ -139,14 +96,10 @@
             color: #334155;
 
             font-size: 14px;
-
             font-weight: 600;
-
         }
 
-
         input {
-
             width: 100%;
 
             margin-bottom: 16px;
@@ -164,27 +117,13 @@
             outline: none;
 
             font-size: 15px;
-
-            transition:
-                border-color 0.2s,
-                box-shadow 0.2s;
-
         }
-
 
         input:focus {
-
             border-color: #2563eb;
-
-            box-shadow:
-                0 0 0 3px
-                rgba(37, 99, 235, 0.10);
-
         }
 
-
         button {
-
             width: 100%;
 
             padding: 13px;
@@ -195,76 +134,45 @@
 
             background: #2563eb;
 
-            color: #ffffff;
+            color: white;
 
             font-size: 14px;
 
             font-weight: 600;
 
             cursor: pointer;
-
-            transition:
-                background 0.2s,
-                opacity 0.2s;
-
         }
 
-
-        button:hover:not(:disabled) {
+        button:hover {
             background: #1d4ed8;
         }
 
-
         button:disabled {
-
             opacity: 0.6;
-
             cursor: not-allowed;
-
         }
 
-
         .secondary-btn {
-
             margin-top: 10px;
 
             background: #e2e8f0;
 
             color: #0f172a;
-
         }
-
-
-        .secondary-btn:hover:not(:disabled) {
-            background: #cbd5e1;
-        }
-
 
         .text-btn {
-
             margin-top: 8px;
 
             background: transparent;
 
             color: #2563eb;
-
         }
-
-
-        .text-btn:hover:not(:disabled) {
-
-            background: #eff6ff;
-
-        }
-
 
         .hidden {
             display: none;
         }
 
-
         .message {
-
             min-height: 20px;
 
             margin-top: 16px;
@@ -272,66 +180,33 @@
             text-align: center;
 
             font-size: 13px;
-
-            line-height: 1.45;
-
         }
-
 
         .message.success {
             color: #15803d;
         }
 
-
         .message.error {
             color: #dc2626;
         }
 
-
-        .message.info {
-            color: #475569;
-        }
-
-
         .otp-info {
-
-            margin:
-                0
-                0
-                18px;
+            margin-bottom: 18px;
 
             color: #64748b;
 
             text-align: center;
 
             font-size: 13px;
-
-            line-height: 1.5;
-
         }
-
-
-        .otp-info strong {
-
-            color: #0f172a;
-
-            word-break: break-word;
-
-        }
-
 
         #otp {
-
             text-align: center;
 
             letter-spacing: 6px;
 
             font-size: 20px;
-
-            font-weight: 600;
-
         }
-
 
         @media screen and (max-width: 480px) {
 
@@ -339,23 +214,14 @@
                 padding: 14px;
             }
 
-
             .login-card {
-
                 padding:
                     24px
                     18px;
-
             }
-
 
             h1 {
                 font-size: 24px;
-            }
-
-
-            .logo-wrapper img {
-                max-width: 260px;
             }
 
         }
@@ -374,22 +240,16 @@
     <div class="login-card">
 
 
-        <!-- ==========================================
-             LOGO
-        =========================================== -->
-
-        <div class="logo-wrapper">
-
+        <center>
             <img
-                src="https://avisvascularcentre.com/assets/logo-1.png"
-                alt="Avis Vascular Centre"
+                src="	https://avisvascularcentre.com/assets/logo-1.png"
+                alt="Medical Camps Logo"
+                width="370" height="180"
             >
-
-        </div>
 
 
         <h1>
-            Medical Camps
+            Medical Camps  
         </h1>
 
 
@@ -399,9 +259,8 @@
 
 
 
-        <!-- ==========================================
-             EMAIL STEP
-        =========================================== -->
+
+        <!-- EMAIL -->
 
         <div id="emailStep">
 
@@ -416,7 +275,6 @@
                 id="email"
                 placeholder="Enter your email address"
                 autocomplete="email"
-                spellcheck="false"
             >
 
 
@@ -431,10 +289,7 @@
         </div>
 
 
-
-        <!-- ==========================================
-             OTP STEP
-        =========================================== -->
+        <!-- OTP -->
 
         <div
             id="otpStep"
@@ -445,8 +300,6 @@
             <p class="otp-info">
 
                 OTP sent to
-
-                <br>
 
                 <strong id="displayEmail"></strong>
 
@@ -497,15 +350,9 @@
         </div>
 
 
-
-        <!-- ==========================================
-             MESSAGE
-        =========================================== -->
-
         <div
             id="message"
             class="message"
-            aria-live="polite"
         ></div>
 
 
@@ -515,31 +362,15 @@
 </div>
 
 
-
 <script>
 
 
 /* ==========================================
-   BACKEND API
+   BACKEND
 ========================================== */
 
 const API_BASE_URL =
     "https://medical-camps-production.up.railway.app";
-
-
-/* ==========================================
-   API ENDPOINTS
-========================================== */
-
-const API_ENDPOINTS = {
-
-    sendOtp:
-        `${API_BASE_URL}/api/auth/send-otp`,
-
-    verifyOtp:
-        `${API_BASE_URL}/api/auth/verify-otp`
-
-};
 
 
 /* ==========================================
@@ -607,19 +438,7 @@ const message =
 
 
 /* ==========================================
-   APPLICATION STATE
-========================================== */
-
-let isSendingOtp =
-    false;
-
-
-let isVerifyingOtp =
-    false;
-
-
-/* ==========================================
-   PAGE LOAD
+   IF ALREADY LOGGED IN
 ========================================== */
 
 document.addEventListener(
@@ -627,10 +446,76 @@ document.addEventListener(
     function () {
 
 
-        checkExistingLogin();
+        const loggedIn =
+            sessionStorage.getItem(
+                "medical_logged_in"
+            );
 
 
-        emailInput.focus();
+        const role =
+            sessionStorage.getItem(
+                "medical_user_role"
+            );
+
+
+        if (
+            loggedIn === "true"
+        ) {
+
+
+            /* CAMPAIGNER */
+
+            if (
+                role === "campaigner"
+            ) {
+
+                window.location.replace(
+                    "./dashboard.html"
+                );
+
+                return;
+
+            }
+
+
+            /* COUNSELLOR */
+
+            if (
+                role === "counsellor"
+            ) {
+
+                window.location.replace(
+                    "./counsellor.html"
+                );
+
+                return;
+
+            }
+
+
+            /* ADMIN */
+
+            if (
+                role === "admin"
+            ) {
+
+                window.location.replace(
+                    "./admin-dashboard.html"
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Invalid saved role
+             */
+
+            clearLogin();
+
+
+        }
 
 
     }
@@ -638,86 +523,22 @@ document.addEventListener(
 
 
 /* ==========================================
-   CHECK EXISTING LOGIN
-========================================== */
-
-function checkExistingLogin() {
-
-
-    const loggedIn =
-        sessionStorage.getItem(
-            "medical_logged_in"
-        );
-
-
-    const role =
-        sessionStorage.getItem(
-            "medical_user_role"
-        );
-
-
-    if (
-        loggedIn !== "true"
-    ) {
-
-        return;
-
-    }
-
-
-    redirectByRole(
-        role
-    );
-
-}
-
-
-/* ==========================================
-   SEND OTP BUTTON
+   SEND OTP
 ========================================== */
 
 sendOtpBtn.addEventListener(
     "click",
-    function () {
-
-        sendOtp(
-            false
-        );
-
-    }
+    sendOtp
 );
 
-
-/* ==========================================
-   RESEND OTP BUTTON
-========================================== */
 
 resendOtpBtn.addEventListener(
     "click",
-    function () {
-
-        sendOtp(
-            true
-        );
-
-    }
+    sendOtp
 );
 
 
-/* ==========================================
-   SEND / RESEND OTP
-========================================== */
-
-async function sendOtp(
-    isResend = false
-) {
-
-
-    if (isSendingOtp) {
-
-        return;
-
-    }
+async function sendOtp() {
 
 
     const email =
@@ -725,10 +546,6 @@ async function sendOtp(
             .trim()
             .toLowerCase();
 
-
-    /* =====================================
-       EMAIL REQUIRED
-    ===================================== */
 
     if (!email) {
 
@@ -746,10 +563,6 @@ async function sendOtp(
 
     }
 
-
-    /* =====================================
-       EMAIL FORMAT
-    ===================================== */
 
     if (
         !validateEmail(
@@ -772,14 +585,6 @@ async function sendOtp(
     }
 
 
-    /* =====================================
-       START LOADING
-    ===================================== */
-
-    isSendingOtp =
-        true;
-
-
     sendOtpBtn.disabled =
         true;
 
@@ -788,49 +593,23 @@ async function sendOtp(
         true;
 
 
-    changeEmailBtn.disabled =
-        true;
+    sendOtpBtn.textContent =
+        "Sending...";
 
 
-    if (isResend) {
-
-
-        resendOtpBtn.textContent =
-            "Resending...";
-
-
-        showMessage(
-            "Resending OTP...",
-            "info"
-        );
-
-
-    } else {
-
-
-        sendOtpBtn.textContent =
-            "Sending...";
-
-
-        showMessage(
-            "Sending OTP...",
-            "info"
-        );
-
-    }
+    showMessage(
+        "Sending OTP...",
+        ""
+    );
 
 
     try {
 
 
-        /* =====================================
-           CALL BACKEND
-        ===================================== */
-
         const response =
-            await fetchWithTimeout(
+            await fetch(
 
-                API_ENDPOINTS.sendOtp,
+                `${API_BASE_URL}/api/auth/send-otp`,
 
                 {
 
@@ -840,9 +619,6 @@ async function sendOtp(
                     headers: {
 
                         "Content-Type":
-                            "application/json",
-
-                        "Accept":
                             "application/json"
 
                     },
@@ -855,38 +631,33 @@ async function sendOtp(
 
                         })
 
-                },
-
-                20000
+                }
 
             );
 
 
-        /* =====================================
-           READ RESPONSE
-        ===================================== */
+        let result;
 
-        const result =
-            await parseJsonResponse(
-                response
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch (jsonError) {
+
+            throw new Error(
+                "Invalid response received from the server."
             );
 
-
-        console.log(
-            "SEND OTP STATUS:",
-            response.status
-        );
+        }
 
 
         console.log(
-            "SEND OTP RESPONSE:",
+            "SEND OTP:",
             result
         );
 
-
-        /* =====================================
-           BACKEND ERROR
-        ===================================== */
 
         if (
             !response.ok ||
@@ -897,18 +668,12 @@ async function sendOtp(
             throw new Error(
 
                 result.message ||
-                getHttpErrorMessage(
-                    response.status
-                )
+                "Unable to send OTP"
 
             );
 
         }
 
-
-        /* =====================================
-           SUCCESS
-        ===================================== */
 
         displayEmail.textContent =
             email;
@@ -935,25 +700,10 @@ async function sendOtp(
         otpInput.focus();
 
 
-        if (isResend) {
-
-
-            showMessage(
-                "A new OTP has been sent successfully.",
-                "success"
-            );
-
-
-        } else {
-
-
-            showMessage(
-                result.message ||
-                "OTP sent successfully.",
-                "success"
-            );
-
-        }
+        showMessage(
+            "OTP sent successfully.",
+            "success"
+        );
 
 
     } catch (error) {
@@ -965,52 +715,14 @@ async function sendOtp(
         );
 
 
-        let errorMessage =
-            error.message ||
-            "Unable to send OTP.";
-
-
-        if (
-            error.name ===
-            "AbortError"
-        ) {
-
-
-            errorMessage =
-                "The server took too long to respond. Please try again.";
-
-        }
-
-
-        if (
-            error instanceof TypeError &&
-            error.message.includes(
-                "fetch"
-            )
-        ) {
-
-
-            errorMessage =
-                "Unable to connect to the server. Please check your internet connection.";
-
-        }
-
-
         showMessage(
-            errorMessage,
+            error.message ||
+            "Unable to send OTP.",
             "error"
         );
 
 
     } finally {
-
-
-        /* =====================================
-           RESET BUTTONS
-        ===================================== */
-
-        isSendingOtp =
-            false;
 
 
         sendOtpBtn.disabled =
@@ -1021,25 +733,18 @@ async function sendOtp(
             false;
 
 
-        changeEmailBtn.disabled =
-            false;
-
-
         sendOtpBtn.textContent =
             "Send OTP";
 
 
-        resendOtpBtn.textContent =
-            "Resend OTP";
-
-
     }
+
 
 }
 
 
 /* ==========================================
-   VERIFY OTP BUTTON
+   VERIFY OTP
 ========================================== */
 
 verifyOtpBtn.addEventListener(
@@ -1048,18 +753,7 @@ verifyOtpBtn.addEventListener(
 );
 
 
-/* ==========================================
-   VERIFY OTP
-========================================== */
-
 async function verifyOtp() {
-
-
-    if (isVerifyingOtp) {
-
-        return;
-
-    }
 
 
     const email =
@@ -1073,30 +767,21 @@ async function verifyOtp() {
             .trim();
 
 
-    /* =====================================
-       EMAIL REQUIRED
-    ===================================== */
-
-    if (!email) {
+    if (
+        !email
+    ) {
 
 
         showMessage(
-            "Email address is missing. Please enter your email again.",
+            "Email address is missing.",
             "error"
         );
-
-
-        showEmailStep();
 
 
         return;
 
     }
 
-
-    /* =====================================
-       VALID OTP
-    ===================================== */
 
     if (
         !/^\d{6}$/.test(
@@ -1119,23 +804,7 @@ async function verifyOtp() {
     }
 
 
-    /* =====================================
-       START VERIFYING
-    ===================================== */
-
-    isVerifyingOtp =
-        true;
-
-
     verifyOtpBtn.disabled =
-        true;
-
-
-    resendOtpBtn.disabled =
-        true;
-
-
-    changeEmailBtn.disabled =
         true;
 
 
@@ -1145,21 +814,17 @@ async function verifyOtp() {
 
     showMessage(
         "Verifying OTP...",
-        "info"
+        ""
     );
 
 
     try {
 
 
-        /* =====================================
-           CALL BACKEND
-        ===================================== */
-
         const response =
-            await fetchWithTimeout(
+            await fetch(
 
-                API_ENDPOINTS.verifyOtp,
+                `${API_BASE_URL}/api/auth/verify-otp`,
 
                 {
 
@@ -1169,9 +834,6 @@ async function verifyOtp() {
                     headers: {
 
                         "Content-Type":
-                            "application/json",
-
-                        "Accept":
                             "application/json"
 
                     },
@@ -1187,38 +849,33 @@ async function verifyOtp() {
 
                         })
 
-                },
-
-                20000
+                }
 
             );
 
 
-        /* =====================================
-           READ RESPONSE
-        ===================================== */
+        let result;
 
-        const result =
-            await parseJsonResponse(
-                response
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch (jsonError) {
+
+            throw new Error(
+                "Invalid response received from the server."
             );
 
-
-        console.log(
-            "VERIFY OTP STATUS:",
-            response.status
-        );
+        }
 
 
         console.log(
-            "VERIFY OTP RESPONSE:",
+            "VERIFY OTP:",
             result
         );
 
-
-        /* =====================================
-           BACKEND ERROR
-        ===================================== */
 
         if (
             !response.ok ||
@@ -1229,27 +886,21 @@ async function verifyOtp() {
             throw new Error(
 
                 result.message ||
-                getHttpErrorMessage(
-                    response.status
-                )
+                "OTP verification failed"
 
             );
 
         }
 
 
-        /* =====================================
+        /* ==========================================
            VALIDATE ROLE
-        ===================================== */
+        ========================================== */
 
         const allowedRoles = [
-
             "campaigner",
-
             "counsellor",
-
             "admin"
-
         ];
 
 
@@ -1264,15 +915,15 @@ async function verifyOtp() {
 
 
             throw new Error(
-                "Invalid user role returned by the server."
+                "Invalid user role."
             );
 
         }
 
 
-        /* =====================================
+        /* ==========================================
            SAVE LOGIN SESSION
-        ===================================== */
+        ========================================== */
 
         sessionStorage.setItem(
             "medical_logged_in",
@@ -1293,41 +944,93 @@ async function verifyOtp() {
 
 
         console.log(
-            "LOGIN SUCCESS:",
-            {
-                email:
-                    email,
-
-                role:
-                    result.role
-            }
+            "LOGIN SAVED:",
+            sessionStorage.getItem(
+                "medical_logged_in"
+            ),
+            sessionStorage.getItem(
+                "medical_user_email"
+            ),
+            sessionStorage.getItem(
+                "medical_user_role"
+            )
         );
 
 
-        /* =====================================
-           SUCCESS MESSAGE
-        ===================================== */
-
         showMessage(
-            result.message ||
             "Login successful.",
             "success"
         );
 
 
-        /* =====================================
-           REDIRECT
-        ===================================== */
+        /* ==========================================
+           ROLE BASED REDIRECTION
+        ========================================== */
 
-        setTimeout(
-            function () {
 
-                redirectByRole(
-                    result.role
-                );
+        /* CAMPAIGNER */
 
-            },
-            300
+        if (
+            result.role ===
+            "campaigner"
+        ) {
+
+
+            window.location.replace(
+                "./dashboard.html"
+            );
+
+
+            return;
+
+        }
+
+
+        /* COUNSELLOR */
+
+        if (
+            result.role ===
+            "counsellor"
+        ) {
+
+
+            window.location.replace(
+                "./counsellor.html"
+            );
+
+
+            return;
+
+        }
+
+
+        /* ADMIN */
+
+        if (
+            result.role ===
+            "admin"
+        ) {
+
+
+            window.location.replace(
+                "./admin-dashboard.html"
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+         * Fallback
+         */
+
+        clearLogin();
+
+
+        throw new Error(
+            "Invalid user role."
         );
 
 
@@ -1335,71 +1038,22 @@ async function verifyOtp() {
 
 
         console.error(
-            "VERIFY OTP ERROR:",
+            "VERIFY ERROR:",
             error
         );
 
 
-        let errorMessage =
-            error.message ||
-            "Unable to verify OTP.";
-
-
-        if (
-            error.name ===
-            "AbortError"
-        ) {
-
-
-            errorMessage =
-                "The server took too long to respond. Please try again.";
-
-        }
-
-
-        if (
-            error instanceof TypeError &&
-            error.message.includes(
-                "fetch"
-            )
-        ) {
-
-
-            errorMessage =
-                "Unable to connect to the server. Please check your internet connection.";
-
-        }
-
-
         showMessage(
-            errorMessage,
+            error.message ||
+            "Login failed",
             "error"
         );
-
-
-        otpInput.focus();
 
 
     } finally {
 
 
-        /* =====================================
-           RESET VERIFY BUTTON
-        ===================================== */
-
-        isVerifyingOtp =
-            false;
-
-
         verifyOtpBtn.disabled =
-            false;
-
-
-        resendOtpBtn.disabled =
-            false;
-
-
-        changeEmailBtn.disabled =
             false;
 
 
@@ -1409,69 +1063,6 @@ async function verifyOtp() {
 
     }
 
-}
-
-
-/* ==========================================
-   ROLE REDIRECTION
-========================================== */
-
-function redirectByRole(
-    role
-) {
-
-
-    if (
-        role ===
-        "campaigner"
-    ) {
-
-
-        window.location.replace(
-            "./dashboard.html"
-        );
-
-
-        return;
-
-    }
-
-
-    if (
-        role ===
-        "counsellor"
-    ) {
-
-
-        window.location.replace(
-            "./counsellor.html"
-        );
-
-
-        return;
-
-    }
-
-
-    if (
-        role ===
-        "admin"
-    ) {
-
-
-        window.location.replace(
-            "./admin-dashboard.html"
-        );
-
-
-        return;
-
-    }
-
-
-    /* Invalid saved role */
-
-    clearLogin();
 
 }
 
@@ -1485,7 +1076,22 @@ changeEmailBtn.addEventListener(
     function () {
 
 
-        showEmailStep();
+        otpStep
+            .classList
+            .add(
+                "hidden"
+            );
+
+
+        emailStep
+            .classList
+            .remove(
+                "hidden"
+            );
+
+
+        otpInput.value =
+            "";
 
 
         showMessage(
@@ -1494,38 +1100,11 @@ changeEmailBtn.addEventListener(
         );
 
 
+        emailInput.focus();
+
+
     }
 );
-
-
-/* ==========================================
-   SHOW EMAIL STEP
-========================================== */
-
-function showEmailStep() {
-
-
-    otpStep
-        .classList
-        .add(
-            "hidden"
-        );
-
-
-    emailStep
-        .classList
-        .remove(
-            "hidden"
-        );
-
-
-    otpInput.value =
-        "";
-
-
-    emailInput.focus();
-
-}
 
 
 /* ==========================================
@@ -1554,7 +1133,7 @@ otpInput.addEventListener(
 
 
 /* ==========================================
-   EMAIL ENTER KEY
+   ENTER KEY
 ========================================== */
 
 emailInput.addEventListener(
@@ -1568,12 +1147,8 @@ emailInput.addEventListener(
         ) {
 
 
-            event.preventDefault();
+            sendOtp();
 
-
-            sendOtp(
-                false
-            );
 
         }
 
@@ -1581,10 +1156,6 @@ emailInput.addEventListener(
     }
 );
 
-
-/* ==========================================
-   OTP ENTER KEY
-========================================== */
 
 otpInput.addEventListener(
     "keydown",
@@ -1597,10 +1168,8 @@ otpInput.addEventListener(
         ) {
 
 
-            event.preventDefault();
-
-
             verifyOtp();
+
 
         }
 
@@ -1623,186 +1192,6 @@ function validateEmail(
             email
         );
 
-}
-
-
-/* ==========================================
-   FETCH WITH TIMEOUT
-========================================== */
-
-async function fetchWithTimeout(
-    url,
-    options = {},
-    timeout = 20000
-) {
-
-
-    const controller =
-        new AbortController();
-
-
-    const timeoutId =
-        setTimeout(
-            function () {
-
-                controller.abort();
-
-            },
-            timeout
-        );
-
-
-    try {
-
-
-        const response =
-            await fetch(
-
-                url,
-
-                {
-
-                    ...options,
-
-                    signal:
-                        controller.signal
-
-                }
-
-            );
-
-
-        return response;
-
-
-    } finally {
-
-
-        clearTimeout(
-            timeoutId
-        );
-
-
-    }
-
-}
-
-
-/* ==========================================
-   SAFE JSON RESPONSE
-========================================== */
-
-async function parseJsonResponse(
-    response
-) {
-
-
-    const responseText =
-        await response.text();
-
-
-    if (!responseText) {
-
-
-        return {
-
-            success: false,
-
-            message:
-                `Server returned an empty response (${response.status}).`
-
-        };
-
-    }
-
-
-    try {
-
-
-        return JSON.parse(
-            responseText
-        );
-
-
-    } catch (error) {
-
-
-        console.error(
-            "INVALID SERVER RESPONSE:",
-            responseText
-        );
-
-
-        return {
-
-            success: false,
-
-            message:
-                `Invalid response from server (${response.status}).`
-
-        };
-
-    }
-
-}
-
-
-/* ==========================================
-   HTTP ERROR MESSAGE
-========================================== */
-
-function getHttpErrorMessage(
-    status
-) {
-
-
-    switch (status) {
-
-
-        case 400:
-
-            return "Invalid request.";
-
-
-        case 401:
-
-            return "Authentication failed.";
-
-
-        case 403:
-
-            return "You don't have permission to access this dashboard.";
-
-
-        case 404:
-
-            return "Backend API endpoint was not found.";
-
-
-        case 429:
-
-            return "Too many attempts. Please wait and try again.";
-
-
-        case 500:
-
-            return "Server error. Unable to complete the request.";
-
-
-        case 502:
-
-        case 503:
-
-        case 504:
-
-            return "The server is temporarily unavailable. Please try again.";
-
-
-        default:
-
-            return `Request failed with status ${status}.`;
-
-    }
 
 }
 
@@ -1828,6 +1217,7 @@ function clearLogin() {
         "medical_user_role"
     );
 
+
 }
 
 
@@ -1845,18 +1235,22 @@ function showMessage(
         "message";
 
 
-    if (type) {
+    if (
+        type
+    ) {
 
 
         message.classList.add(
             type
         );
 
+
     }
 
 
     message.textContent =
         text;
+
 
 }
 
