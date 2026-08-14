@@ -42,23 +42,31 @@ const allowedUsers = {
 
 const sendOtp = async (req, res) => {
 
+    let email = "";
+
     try {
 
-        const email =
+        /* =====================================
+           GET EMAIL SAFELY
+        ===================================== */
+
+        email =
             String(
-                req.body.email || ""
+                req.body?.email || ""
             )
-            .trim()
-            .toLowerCase();
+                .trim()
+                .toLowerCase();
 
 
         console.log(
-            "Login attempt:",
+            "LOGIN ATTEMPT:",
             email
         );
 
 
-        /* Email required */
+        /* =====================================
+           EMAIL REQUIRED
+        ===================================== */
 
         if (!email) {
 
@@ -76,15 +84,15 @@ const sendOtp = async (req, res) => {
         }
 
 
-        /* Email validation */
+        /* =====================================
+           EMAIL VALIDATION
+        ===================================== */
 
         const emailRegex =
             /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
-        if (
-            !emailRegex.test(email)
-        ) {
+        if (!emailRegex.test(email)) {
 
             return res
                 .status(400)
@@ -101,7 +109,7 @@ const sendOtp = async (req, res) => {
 
 
         /* =====================================
-           CHECK PERMISSION BEFORE SENDING OTP
+           CHECK AUTHORIZED USER
         ===================================== */
 
         const user =
@@ -111,7 +119,7 @@ const sendOtp = async (req, res) => {
         if (!user) {
 
             console.log(
-                "Unauthorized login:",
+                "UNAUTHORIZED LOGIN:",
                 email
             );
 
@@ -131,10 +139,52 @@ const sendOtp = async (req, res) => {
 
 
         console.log(
-            "Authorized user:",
+            "AUTHORIZED USER:",
             email,
             user.role
         );
+
+
+        /* =====================================
+           CHECK SMTP CONFIGURATION
+        ===================================== */
+
+        if (
+            !process.env.SMTP_USER ||
+            !process.env.SMTP_PASS
+        ) {
+
+            console.error(
+                "SMTP CONFIGURATION MISSING"
+            );
+
+            console.error(
+                "SMTP_USER:",
+                process.env.SMTP_USER
+                    ? "SET"
+                    : "MISSING"
+            );
+
+            console.error(
+                "SMTP_PASS:",
+                process.env.SMTP_PASS
+                    ? "SET"
+                    : "MISSING"
+            );
+
+
+            return res
+                .status(500)
+                .json({
+
+                    success: false,
+
+                    message:
+                        "Email service is not configured."
+
+                });
+
+        }
 
 
         /* =====================================
@@ -155,74 +205,222 @@ const sendOtp = async (req, res) => {
             5 * 60 * 1000;
 
 
+        /* =====================================
+           STORE OTP
+        ===================================== */
+
         otpStore.set(
             email,
             {
 
-                otp,
+                otp: otp,
 
-                expiresAt,
+                expiresAt: expiresAt,
 
-                role:
-                    user.role
+                role: user.role,
+
+                attempts: 0
 
             }
         );
 
 
+        console.log(
+            "OTP GENERATED FOR:",
+            email
+        );
+
+
         /* =====================================
-           SEND OTP
+           SEND OTP EMAIL
         ===================================== */
 
-        await transporter.sendMail({
+        try {
 
-            from:
-                `"Medical Dashboard" <${process.env.SMTP_USER}>`,
+            const info =
+                await transporter.sendMail({
 
-            to:
-                email,
+                    from:
+                        `"Medical Dashboard" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
 
-            subject:
-                "Medical Dashboard Login OTP",
+                    to:
+                        email,
 
-            html: `
+                    subject:
+                        "Medical Dashboard Login OTP",
 
-                <div
-                    style="
-                        font-family:Arial,sans-serif;
-                        max-width:500px;
-                        margin:auto;
-                        padding:25px;
-                    "
-                >
+                    text:
+                        `Your Medical Dashboard login OTP is ${otp}. This OTP expires in 5 minutes.`,
 
-                    <h2>
-                        Medical Dashboard
-                    </h2>
+                    html: `
 
-                    <p>
-                        Your login OTP is:
-                    </p>
+                        <div
+                            style="
+                                font-family: Arial, sans-serif;
+                                max-width: 500px;
+                                margin: auto;
+                                padding: 30px;
+                                border: 1px solid #e5e7eb;
+                                border-radius: 12px;
+                                background: #ffffff;
+                            "
+                        >
 
-                    <h1
-                        style="
-                            letter-spacing:6px;
-                        "
-                    >
-                        ${otp}
-                    </h1>
+                            <div
+                                style="
+                                    text-align: center;
+                                    margin-bottom: 20px;
+                                "
+                            >
 
-                    <p>
-                        This OTP expires in
-                        5 minutes.
-                    </p>
+                                <h2
+                                    style="
+                                        margin: 0;
+                                        color: #0D5174;
+                                    "
+                                >
+                                    Medical Dashboard
+                                </h2>
 
-                </div>
+                            </div>
 
-            `
 
-        });
+                            <p
+                                style="
+                                    font-size: 15px;
+                                    color: #334155;
+                                "
+                            >
+                                Your login OTP is:
+                            </p>
 
+
+                            <div
+                                style="
+                                    background: #f1f5f9;
+                                    border-radius: 10px;
+                                    padding: 20px;
+                                    margin: 20px 0;
+                                    text-align: center;
+                                "
+                            >
+
+                                <span
+                                    style="
+                                        font-size: 32px;
+                                        font-weight: bold;
+                                        letter-spacing: 7px;
+                                        color: #0f172a;
+                                    "
+                                >
+                                    ${otp}
+                                </span>
+
+                            </div>
+
+
+                            <p
+                                style="
+                                    color: #475569;
+                                    font-size: 14px;
+                                "
+                            >
+                                This OTP expires in
+                                <strong>5 minutes</strong>.
+                            </p>
+
+
+                            <p
+                                style="
+                                    color: #94a3b8;
+                                    font-size: 12px;
+                                    margin-top: 25px;
+                                "
+                            >
+                                If you did not request this OTP,
+                                please ignore this email.
+                            </p>
+
+                        </div>
+
+                    `
+
+                });
+
+
+            console.log(
+                "OTP EMAIL SENT SUCCESSFULLY"
+            );
+
+            console.log(
+                "MESSAGE ID:",
+                info.messageId
+            );
+
+
+        } catch (mailError) {
+
+            /* Remove OTP when email sending fails */
+
+            otpStore.delete(email);
+
+
+            console.error(
+                "========== SMTP ERROR =========="
+            );
+
+            console.error(
+                "MESSAGE:",
+                mailError.message
+            );
+
+            console.error(
+                "CODE:",
+                mailError.code
+            );
+
+            console.error(
+                "COMMAND:",
+                mailError.command
+            );
+
+            console.error(
+                "RESPONSE:",
+                mailError.response
+            );
+
+            console.error(
+                "RESPONSE CODE:",
+                mailError.responseCode
+            );
+
+            console.error(
+                "STACK:",
+                mailError.stack
+            );
+
+            console.error(
+                "================================"
+            );
+
+
+            return res
+                .status(500)
+                .json({
+
+                    success: false,
+
+                    message:
+                        "Unable to send OTP. Email service error."
+
+                });
+
+        }
+
+
+        /* =====================================
+           SUCCESS
+        ===================================== */
 
         return res
             .status(200)
@@ -238,9 +436,34 @@ const sendOtp = async (req, res) => {
 
     } catch (error) {
 
+        if (email) {
+
+            otpStore.delete(email);
+
+        }
+
+
         console.error(
-            "SEND OTP ERROR:",
-            error
+            "========== SEND OTP ERROR =========="
+        );
+
+        console.error(
+            "MESSAGE:",
+            error.message
+        );
+
+        console.error(
+            "CODE:",
+            error.code
+        );
+
+        console.error(
+            "STACK:",
+            error.stack
+        );
+
+        console.error(
+            "===================================="
         );
 
 
@@ -270,20 +493,42 @@ const verifyOtp = async (req, res) => {
 
         const email =
             String(
-                req.body.email || ""
+                req.body?.email || ""
             )
-            .trim()
-            .toLowerCase();
+                .trim()
+                .toLowerCase();
 
 
         const otp =
             String(
-                req.body.otp || ""
+                req.body?.otp || ""
             )
-            .trim();
+                .trim();
 
 
-        /* Check permission again */
+        /* =====================================
+           EMAIL REQUIRED
+        ===================================== */
+
+        if (!email) {
+
+            return res
+                .status(400)
+                .json({
+
+                    success: false,
+
+                    message:
+                        "Email is required"
+
+                });
+
+        }
+
+
+        /* =====================================
+           CHECK AUTHORIZED USER
+        ===================================== */
 
         const user =
             allowedUsers[email];
@@ -305,6 +550,10 @@ const verifyOtp = async (req, res) => {
         }
 
 
+        /* =====================================
+           OTP VALIDATION
+        ===================================== */
+
         if (!otp) {
 
             return res
@@ -320,6 +569,26 @@ const verifyOtp = async (req, res) => {
 
         }
 
+
+        if (!/^\d{6}$/.test(otp)) {
+
+            return res
+                .status(400)
+                .json({
+
+                    success: false,
+
+                    message:
+                        "Enter a valid 6-digit OTP"
+
+                });
+
+        }
+
+
+        /* =====================================
+           GET STORED OTP
+        ===================================== */
 
         const stored =
             otpStore.get(email);
@@ -341,14 +610,16 @@ const verifyOtp = async (req, res) => {
         }
 
 
+        /* =====================================
+           CHECK EXPIRY
+        ===================================== */
+
         if (
             Date.now() >
             stored.expiresAt
         ) {
 
-            otpStore.delete(
-                email
-            );
+            otpStore.delete(email);
 
 
             return res
@@ -364,6 +635,37 @@ const verifyOtp = async (req, res) => {
 
         }
 
+
+        /* =====================================
+           LIMIT WRONG ATTEMPTS
+        ===================================== */
+
+        stored.attempts =
+            (stored.attempts || 0) + 1;
+
+
+        if (stored.attempts > 5) {
+
+            otpStore.delete(email);
+
+
+            return res
+                .status(429)
+                .json({
+
+                    success: false,
+
+                    message:
+                        "Too many incorrect attempts. Please request a new OTP."
+
+                });
+
+        }
+
+
+        /* =====================================
+           CHECK OTP
+        ===================================== */
 
         if (
             stored.otp !== otp
@@ -383,14 +685,31 @@ const verifyOtp = async (req, res) => {
         }
 
 
+        /* =====================================
+           GET ROLE
+        ===================================== */
+
         const role =
             stored.role;
 
 
-        otpStore.delete(
-            email
+        /* =====================================
+           DELETE USED OTP
+        ===================================== */
+
+        otpStore.delete(email);
+
+
+        console.log(
+            "LOGIN SUCCESS:",
+            email,
+            role
         );
 
+
+        /* =====================================
+           LOGIN SUCCESS
+        ===================================== */
 
         return res
             .status(200)
@@ -401,8 +720,7 @@ const verifyOtp = async (req, res) => {
                 message:
                     "Login successful",
 
-                role:
-                    role
+                role: role
 
             });
 
@@ -410,7 +728,10 @@ const verifyOtp = async (req, res) => {
     } catch (error) {
 
         console.error(
-            "VERIFY OTP ERROR:",
+            "VERIFY OTP ERROR:"
+        );
+
+        console.error(
             error
         );
 

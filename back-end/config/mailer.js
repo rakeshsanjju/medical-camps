@@ -1,45 +1,140 @@
-const nodemailer = require("nodemailer");
+const nodemailer =
+    require("nodemailer");
 
+
+/* =========================================
+   SMTP SETTINGS
+========================================= */
+
+const SMTP_HOST =
+    process.env.SMTP_HOST ||
+    "smtp.gmail.com";
+
+const SMTP_PORT =
+    Number(
+        process.env.SMTP_PORT ||
+        587
+    );
+
+const SMTP_USER =
+    process.env.SMTP_USER;
+
+const SMTP_PASS =
+    process.env.SMTP_PASS;
+
+
+/* =========================================
+   CHECK VARIABLES
+========================================= */
+
+console.log(
+    "SMTP HOST:",
+    SMTP_HOST
+);
+
+console.log(
+    "SMTP PORT:",
+    SMTP_PORT
+);
+
+console.log(
+    "SMTP USER:",
+    SMTP_USER
+        ? SMTP_USER
+        : "MISSING"
+);
+
+console.log(
+    "SMTP PASSWORD:",
+    SMTP_PASS
+        ? "SET"
+        : "MISSING"
+);
+
+
+/* =========================================
+   CREATE TRANSPORTER
+========================================= */
 
 const transporter =
     nodemailer.createTransport({
 
-        service: "gmail",
+        host:
+            SMTP_HOST,
+
+        port:
+            SMTP_PORT,
+
+        secure:
+            SMTP_PORT === 465,
 
         auth: {
 
             user:
-                process.env.SMTP_USER,
+                SMTP_USER,
 
             pass:
-                process.env.SMTP_PASS
+                SMTP_PASS
 
-        }
+        },
+
+        connectionTimeout:
+            15000,
+
+        greetingTimeout:
+            15000,
+
+        socketTimeout:
+            20000
 
     });
 
 
-transporter.verify(
-    function (error, success) {
+/* =========================================
+   VERIFY SMTP
+========================================= */
 
-        if (error) {
+transporter
+    .verify()
+    .then(() => {
 
-            console.error(
-                "SMTP CONNECTION ERROR:"
-            );
+        console.log(
+            "✅ SMTP SERVER READY"
+        );
 
-            console.error(error);
+        console.log(
+            "✅ SMTP LOGIN SUCCESSFUL"
+        );
 
-        } else {
+    })
+    .catch((error) => {
 
-            console.log(
-                "SMTP connected successfully"
-            );
+        console.error(
+            "❌ SMTP VERIFICATION FAILED"
+        );
 
-        }
+        console.error(
+            "MESSAGE:",
+            error.message
+        );
 
-    }
-);
+        console.error(
+            "CODE:",
+            error.code
+        );
+
+        console.error(
+            "COMMAND:",
+            error.command
+        );
+
+        console.error(
+            "RESPONSE:",
+            error.response
+        );
+
+    });
 
 
-module.exports = transporter;
+module.exports =
+    transporter;
