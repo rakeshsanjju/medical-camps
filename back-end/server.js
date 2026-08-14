@@ -24,7 +24,7 @@ const allowedOrigins = [
 
     // Railway production frontend
     "https://peaceful-courtesy-production-1ef1.up.railway.app",
-    "https://medical-camps-production.up.railway.app/"
+    "https://medical-camps-production.up.railway.app"
 
 ];
 
