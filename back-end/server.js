@@ -23,7 +23,8 @@ const allowedOrigins = [
     "http://localhost:3001",
 
     // Railway production frontend
-    "https://peaceful-courtesy-production-1ef1.up.railway.app"
+    "https://peaceful-courtesy-production-1ef1.up.railway.app",
+    "https://medical-camps-production-xxxx.up.railway.app"
 
 ];
 
