@@ -1,0 +1,12 @@
+{
+  "name": "medical-camps-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "serve . -l 3001",
+    "start": "serve . -l $PORT"
+  },
+  "dependencies": {
+    "serve": "^14.2.6"
+  }
+}
