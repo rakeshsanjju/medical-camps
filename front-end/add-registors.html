@@ -1,0 +1,4138 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Campaigners</title>
+
+
+<!-- =====================================================
+     ADMIN AUTHENTICATION
+====================================================== -->
+
+<script>
+
+    function getAuthData() {
+
+        return {
+
+            loggedIn:
+                sessionStorage.getItem(
+                    "medical_logged_in"
+                ),
+
+            email:
+                sessionStorage.getItem(
+                    "medical_user_email"
+                ),
+
+            role:
+                sessionStorage.getItem(
+                    "medical_user_role"
+                )
+
+        };
+
+    }
+
+
+    function clearMedicalLogin() {
+
+        sessionStorage.removeItem(
+            "medical_logged_in"
+        );
+
+        sessionStorage.removeItem(
+            "medical_user_email"
+        );
+
+        sessionStorage.removeItem(
+            "medical_user_role"
+        );
+
+    }
+
+
+    function requireAdmin() {
+
+        const auth =
+            getAuthData();
+
+
+        if (
+            auth.loggedIn !== "true" ||
+            auth.role !== "admin"
+        ) {
+
+            clearMedicalLogin();
+
+            window.location.replace(
+                "./login.html"
+            );
+
+            return false;
+
+        }
+
+
+        return true;
+
+    }
+
+
+    function logoutMedicalUser() {
+
+        clearMedicalLogin();
+
+        window.location.replace(
+            "./login.html"
+        );
+
+    }
+
+
+    requireAdmin();
+
+</script>
+
+
+
+<style>
+
+    /* =====================================================
+       GLOBAL
+    ====================================================== */
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    html,
+    body {
+
+        margin: 0;
+        padding: 0;
+
+    }
+
+
+    body {
+
+        min-height: 100vh;
+
+        background: #f5f7fb;
+
+        color: #0f172a;
+
+        font-family:
+            Arial,
+            Helvetica,
+            sans-serif;
+
+    }
+
+
+    button,
+    input {
+
+        font-family: inherit;
+
+    }
+
+
+
+    /* =====================================================
+       TOP BAR
+    ====================================================== */
+
+    .topbar {
+
+        background: #0f172a;
+
+        color: #ffffff;
+
+        padding:
+            16px 30px;
+
+        display: flex;
+
+        justify-content:
+            space-between;
+
+        align-items:
+            center;
+
+        gap: 20px;
+
+    }
+
+
+    .brand {
+
+        font-size: 20px;
+
+        font-weight: 700;
+
+    }
+
+
+    .topbar-actions {
+
+        display: flex;
+
+        align-items:
+            center;
+
+        gap: 12px;
+
+    }
+
+
+    .admin-email {
+
+        color: #cbd5e1;
+
+        font-size: 13px;
+
+    }
+
+
+    .back-btn,
+    .logout-btn {
+
+        border: none;
+
+        border-radius:
+            8px;
+
+        padding:
+            10px 15px;
+
+        cursor: pointer;
+
+        font-weight: 600;
+
+    }
+
+
+    .back-btn {
+
+        background:
+            #2563eb;
+
+        color:
+            #ffffff;
+
+    }
+
+
+    .back-btn:hover {
+
+        background:
+            #1d4ed8;
+
+    }
+
+
+    .logout-btn {
+
+        background:
+            #dc2626;
+
+        color:
+            #ffffff;
+
+    }
+
+
+    .logout-btn:hover {
+
+        background:
+            #b91c1c;
+
+    }
+
+
+
+    /* =====================================================
+       PAGE
+    ====================================================== */
+
+    .page {
+
+        max-width:
+            1600px;
+
+        margin:
+            0 auto;
+
+        padding:
+            30px;
+
+    }
+
+
+    .page-heading {
+
+        margin-bottom:
+            25px;
+
+    }
+
+
+    .page-heading h1 {
+
+        margin:
+            0 0 7px;
+
+        font-size:
+            30px;
+
+    }
+
+
+    .page-heading p {
+
+        margin: 0;
+
+        color:
+            #64748b;
+
+        line-height:
+            1.5;
+
+    }
+
+
+
+    /* =====================================================
+       STATISTICS
+    ====================================================== */
+
+    .stats {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
+
+        gap: 20px;
+
+        margin-bottom:
+            25px;
+
+    }
+
+
+    .stat-card {
+
+        background:
+            #ffffff;
+
+        padding:
+            22px;
+
+        border-radius:
+            12px;
+
+        box-shadow:
+            0 5px 20px
+            rgba(
+                15,
+                23,
+                42,
+                0.05
+            );
+
+    }
+
+
+    .stat-title {
+
+        color:
+            #64748b;
+
+        font-size:
+            13px;
+
+        margin-bottom:
+            8px;
+
+    }
+
+
+    .stat-value {
+
+        font-size:
+            30px;
+
+        font-weight:
+            700;
+
+    }
+
+
+
+    /* =====================================================
+       CARD
+    ====================================================== */
+
+    .card {
+
+        background:
+            #ffffff;
+
+        padding:
+            24px;
+
+        border-radius:
+            14px;
+
+        box-shadow:
+            0 5px 20px
+            rgba(
+                15,
+                23,
+                42,
+                0.05
+            );
+
+    }
+
+
+
+    /* =====================================================
+       TOOLBAR
+    ====================================================== */
+
+    .toolbar {
+
+        display: flex;
+
+        justify-content:
+            space-between;
+
+        align-items:
+            center;
+
+        gap: 20px;
+
+        margin-bottom:
+            20px;
+
+    }
+
+
+    .toolbar h2 {
+
+        margin: 0;
+
+    }
+
+
+    .toolbar-right {
+
+        display: flex;
+
+        gap: 10px;
+
+    }
+
+
+    .search-input {
+
+        width:
+            330px;
+
+        padding:
+            10px 12px;
+
+        border:
+            1px solid
+            #cbd5e1;
+
+        border-radius:
+            8px;
+
+        outline: none;
+
+    }
+
+
+    .search-input:focus {
+
+        border-color:
+            #2563eb;
+
+        box-shadow:
+            0 0 0 3px
+            rgba(
+                37,
+                99,
+                235,
+                0.08
+            );
+
+    }
+
+
+    .refresh-btn {
+
+        border: none;
+
+        border-radius:
+            8px;
+
+        padding:
+            10px 16px;
+
+        background:
+            #2563eb;
+
+        color:
+            #ffffff;
+
+        font-weight:
+            600;
+
+        cursor:
+            pointer;
+
+    }
+
+
+    .refresh-btn:hover {
+
+        background:
+            #1d4ed8;
+
+    }
+
+
+    .refresh-btn:disabled {
+
+        opacity: 0.6;
+
+        cursor:
+            not-allowed;
+
+    }
+
+
+
+    /* =====================================================
+       WARNING
+    ====================================================== */
+
+    .load-warning {
+
+        display: none;
+
+        margin-bottom:
+            18px;
+
+        padding:
+            12px 14px;
+
+        border:
+            1px solid
+            #f59e0b;
+
+        border-radius:
+            8px;
+
+        background:
+            #fffbeb;
+
+        color:
+            #92400e;
+
+        font-size:
+            13px;
+
+        line-height:
+            1.5;
+
+    }
+
+
+    .load-warning.active {
+
+        display: block;
+
+    }
+
+
+
+    /* =====================================================
+       TABLE
+    ====================================================== */
+
+    .table-wrapper {
+
+        width: 100%;
+
+        overflow-x:
+            auto;
+
+    }
+
+
+    .main-table {
+
+        width: 100%;
+
+        min-width:
+            1000px;
+
+        border-collapse:
+            collapse;
+
+    }
+
+
+    .main-table th {
+
+        padding:
+            13px 12px;
+
+        background:
+            #f1f5f9;
+
+        text-align:
+            left;
+
+        color:
+            #334155;
+
+        font-size:
+            12px;
+
+        white-space:
+            nowrap;
+
+    }
+
+
+    .main-table td {
+
+        padding:
+            14px 12px;
+
+        border-bottom:
+            1px solid
+            #e2e8f0;
+
+        color:
+            #475569;
+
+        font-size:
+            13px;
+
+    }
+
+
+    .email {
+
+        color:
+            #2563eb !important;
+
+        font-weight:
+            700;
+
+    }
+
+
+    .view-btn {
+
+        border: none;
+
+        border-radius:
+            7px;
+
+        padding:
+            8px 14px;
+
+        background:
+            #2563eb;
+
+        color:
+            #ffffff;
+
+        cursor: pointer;
+
+        font-size:
+            12px;
+
+        font-weight:
+            600;
+
+    }
+
+
+    .view-btn:hover {
+
+        background:
+            #1d4ed8;
+
+    }
+
+
+
+    /* =====================================================
+       EXPANDED ROW
+    ====================================================== */
+
+    .expand-row {
+
+        display: none;
+
+    }
+
+
+    .expand-row.active {
+
+        display:
+            table-row;
+
+    }
+
+
+    .expand-cell {
+
+        padding:
+            0 !important;
+
+        background:
+            #f8fafc;
+
+    }
+
+
+    .panel {
+
+        padding:
+            24px;
+
+        border-top:
+            3px solid
+            #2563eb;
+
+    }
+
+
+    .panel-header {
+
+        display: flex;
+
+        justify-content:
+            space-between;
+
+        align-items:
+            flex-start;
+
+        gap: 20px;
+
+        margin-bottom:
+            20px;
+
+    }
+
+
+    .panel-header h3 {
+
+        margin:
+            0 0 6px;
+
+    }
+
+
+    .panel-header p {
+
+        margin: 0;
+
+        color:
+            #64748b;
+
+        font-size:
+            13px;
+
+    }
+
+
+    .count-badge {
+
+        display:
+            inline-block;
+
+        padding:
+            6px 11px;
+
+        border-radius:
+            20px;
+
+        background:
+            #dbeafe;
+
+        color:
+            #1d4ed8;
+
+        font-size:
+            12px;
+
+        font-weight:
+            700;
+
+        white-space:
+            nowrap;
+
+    }
+
+
+
+    /* =====================================================
+       CAMPS
+    ====================================================== */
+
+    .section-title {
+
+        margin:
+            0 0 12px;
+
+        font-size:
+            15px;
+
+        color:
+            #334155;
+
+    }
+
+
+    .camps-grid {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
+
+        gap: 12px;
+
+        margin-bottom:
+            25px;
+
+    }
+
+
+    .camp-box {
+
+        padding:
+            14px;
+
+        background:
+            #ffffff;
+
+        border:
+            1px solid
+            #dbe2ea;
+
+        border-radius:
+            9px;
+
+    }
+
+
+    .camp-id {
+
+        color:
+            #2563eb;
+
+        font-weight:
+            700;
+
+        font-size:
+            12px;
+
+    }
+
+
+    .camp-name {
+
+        margin-top:
+            5px;
+
+        font-weight:
+            700;
+
+    }
+
+
+    .camp-meta {
+
+        margin-top:
+            7px;
+
+        color:
+            #64748b;
+
+        font-size:
+            12px;
+
+        line-height:
+            1.6;
+
+    }
+
+
+
+    /* =====================================================
+       PATIENT TABLE
+    ====================================================== */
+
+    .patient-wrapper {
+
+        overflow-x:
+            auto;
+
+        background:
+            #ffffff;
+
+        border:
+            1px solid
+            #e2e8f0;
+
+        border-radius:
+            10px;
+
+    }
+
+
+    .patient-table {
+
+        width:
+            100%;
+
+        min-width:
+            1500px;
+
+        border-collapse:
+            collapse;
+
+    }
+
+
+    .patient-table th {
+
+        padding: 12px;
+
+        background:
+            #eaf1f8;
+
+        text-align:
+            left;
+
+        color:
+            #334155;
+
+        font-size:
+            11px;
+
+        white-space:
+            nowrap;
+
+    }
+
+
+    .patient-table td {
+
+        padding:
+            13px 12px;
+
+        border-bottom:
+            1px solid
+            #e2e8f0;
+
+        color:
+            #475569;
+
+        font-size:
+            12px;
+
+    }
+
+
+    .patient-id {
+
+        color:
+            #2563eb !important;
+
+        font-weight:
+            700;
+
+    }
+
+
+    .status-badge {
+
+        display:
+            inline-block;
+
+        padding:
+            5px 9px;
+
+        border-radius:
+            16px;
+
+        background:
+            #e2e8f0;
+
+        font-size:
+            11px;
+
+        font-weight:
+            600;
+
+    }
+
+
+
+    /* =====================================================
+       BUTTON FOOTER
+    ====================================================== */
+
+    .panel-footer {
+
+        display: flex;
+
+        justify-content:
+            center;
+
+        margin-top:
+            22px;
+
+    }
+
+
+    .cancel-btn {
+
+        min-width:
+            145px;
+
+        border: none;
+
+        border-radius:
+            7px;
+
+        padding:
+            10px 20px;
+
+        background:
+            #dc2626;
+
+        color:
+            #ffffff;
+
+        font-weight:
+            700;
+
+        cursor:
+            pointer;
+
+    }
+
+
+
+    /* =====================================================
+       EMPTY / ERROR
+    ====================================================== */
+
+    .empty {
+
+        padding:
+            35px;
+
+        text-align:
+            center;
+
+        color:
+            #64748b;
+
+    }
+
+
+    .error {
+
+        padding:
+            25px;
+
+        text-align:
+            center;
+
+        color:
+            #dc2626 !important;
+
+    }
+
+
+
+    /* =====================================================
+       RESPONSIVE
+    ====================================================== */
+
+    @media(max-width: 768px) {
+
+        .page {
+
+            padding:
+                15px;
+
+        }
+
+
+        .topbar {
+
+            flex-direction:
+                column;
+
+            align-items:
+                flex-start;
+
+        }
+
+
+        .topbar-actions {
+
+            width:
+                100%;
+
+            flex-wrap:
+                wrap;
+
+        }
+
+
+        .stats {
+
+            grid-template-columns:
+                1fr;
+
+        }
+
+
+        .toolbar {
+
+            flex-direction:
+                column;
+
+            align-items:
+                stretch;
+
+        }
+
+
+        .toolbar-right {
+
+            flex-direction:
+                column;
+
+        }
+
+
+        .search-input {
+
+            width:
+                100%;
+
+        }
+
+
+        .camps-grid {
+
+            grid-template-columns:
+                1fr;
+
+        }
+
+
+        .panel-header {
+
+            flex-direction:
+                column;
+
+        }
+
+    }
+
+</style>
+
+</head>
+
+
+
+<body>
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="topbar">
+
+<div class="brand">
+
+    Medical Camps Admin
+
+</div>
+
+
+<div class="topbar-actions">
+
+
+    <span
+        id="adminEmail"
+        class="admin-email"
+    >
+        Admin
+    </span>
+
+
+    <button
+        type="button"
+        class="back-btn"
+        onclick="
+            window.location.href =
+            './admin-dashboard.html'
+        "
+    >
+        Admin Dashboard
+    </button>
+
+
+    <button
+        type="button"
+        class="logout-btn"
+        onclick="logoutMedicalUser()"
+    >
+        Logout
+    </button>
+
+
+</div>
+
+</header>
+
+
+
+<!-- =========================================================
+     PAGE
+========================================================= -->
+
+<div class="page">
+
+<div class="page-heading">
+
+    <h1>
+        Campaigners
+    </h1>
+
+    <p>
+        View campaigners, assigned camps and patient
+        records associated with each campaigner.
+    </p>
+
+</div>
+
+
+
+<!-- =====================================================
+     STATISTICS
+====================================================== -->
+
+<div class="stats">
+
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Total Campaigners
+        </div>
+
+        <div
+            id="totalCampaigners"
+            class="stat-value"
+        >
+            0
+        </div>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Assigned Camps
+        </div>
+
+        <div
+            id="totalCamps"
+            class="stat-value"
+        >
+            0
+        </div>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Campaigner Patients
+        </div>
+
+        <div
+            id="totalPatients"
+            class="stat-value"
+        >
+            0
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     DATA CARD
+====================================================== -->
+
+<div class="card">
+
+
+    <div class="toolbar">
+
+
+        <h2>
+            Campaigner Data
+        </h2>
+
+
+        <div class="toolbar-right">
+
+
+            <input
+                type="search"
+                id="searchInput"
+                class="search-input"
+                placeholder="Search campaigner or camp..."
+            >
+
+
+            <button
+                type="button"
+                id="refreshBtn"
+                class="refresh-btn"
+            >
+                Refresh
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <div
+        id="loadWarning"
+        class="load-warning"
+    ></div>
+
+
+
+    <div class="table-wrapper">
+
+
+        <table class="main-table">
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Campaigner
+                    </th>
+
+                    <th>
+                        Assigned Camps
+                    </th>
+
+                    <th>
+                        Patients
+                    </th>
+
+                    <th>
+                        Last Modified
+                    </th>
+
+                    <th>
+                        Data
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="tableBody">
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="empty"
+                    >
+                        Loading...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</div>
+
+</div>
+
+
+
+<script>
+
+
+/* =========================================================
+   API URLS
+========================================================= */
+
+
+/*
+ * WORKING CAMPS API
+ */
+const CAMPS_API_URL =
+    "https://script.google.com/macros/s/AKfycbwdfXWbuvA9K8P5V76hFzGH9WrerBIkz2Uhm2T7OJRG1hmqJf0ElXcWmIvqn78neNSIZw/exec";
+
+
+/*
+ * IMPORTANT FIX
+ *
+ * Your old Leads API Web App URL is returning HTTP 404.
+ *
+ * Keep this blank for now.
+ *
+ * Campaigners + Assigned Camps will still work.
+ *
+ * Later paste a NEW ACTIVE Google Apps Script /exec URL here
+ * when your Leads Web App is deployed.
+ */
+const LEADS_API_URL = "https://script.google.com/macros/s/AKfycbz1pRQuuOg8niURZ-oObllLAacDWSIXs20pUu19r6p8mtrRCeSXmtN9B7Bl6hd0D81V4Q/exec";
+
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+const auth =
+    getAuthData();
+
+
+document
+    .getElementById(
+        "adminEmail"
+    )
+    .textContent =
+        auth.email ||
+        "Admin";
+
+
+
+/* =========================================================
+   GLOBAL DATA
+========================================================= */
+
+let allCamps = [];
+
+let allLeads = [];
+
+let campaigners = [];
+
+
+
+/* =========================================================
+   SAFE JSON FETCH
+========================================================= */
+
+async function fetchJson(
+    url,
+    apiName
+) {
+
+
+    let response;
+
+
+    try {
+
+
+        response =
+            await fetch(
+
+                url,
+
+                {
+
+                    method:
+                        "GET",
+
+                    cache:
+                        "no-store",
+
+                    redirect:
+                        "follow"
+
+                }
+
+            );
+
+
+    } catch(error) {
+
+
+        throw new Error(
+
+            apiName +
+            " network error: " +
+            error.message
+
+        );
+
+
+    }
+
+
+
+    const text =
+        await response.text();
+
+
+    console.log(
+        apiName + " RESPONSE:",
+        text
+    );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+
+            apiName +
+            " returned HTTP " +
+            response.status
+
+        );
+
+    }
+
+
+    const trimmed =
+        text.trim();
+
+
+    if (!trimmed) {
+
+        throw new Error(
+            apiName +
+            " returned an empty response."
+        );
+
+    }
+
+
+    /*
+     * Google errors often return an HTML page.
+     */
+    if (
+        trimmed.startsWith("<")
+    ) {
+
+        throw new Error(
+
+            apiName +
+            " returned HTML instead of JSON."
+
+        );
+
+    }
+
+
+    try {
+
+        return JSON.parse(
+            trimmed
+        );
+
+    } catch(error) {
+
+        throw new Error(
+
+            apiName +
+            " returned invalid JSON."
+
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   FIRST NON EMPTY VALUE
+========================================================= */
+
+function firstValue() {
+
+
+    for (
+        let index = 0;
+        index < arguments.length;
+        index++
+    ) {
+
+
+        const value =
+            arguments[index];
+
+
+        if (
+            value !== undefined &&
+            value !== null &&
+            String(value).trim() !== ""
+        ) {
+
+            return String(
+                value
+            ).trim();
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+
+/* =========================================================
+   NORMALIZE CAMP
+========================================================= */
+
+function normalizeCamp(
+    camp
+) {
+
+
+    return {
+
+
+        id:
+            firstValue(
+
+                camp.id,
+
+                camp.campId,
+
+                camp.campID,
+
+                camp.camp_id,
+
+                camp.CampID,
+
+                camp["Camp ID"]
+
+            ),
+
+
+        campName:
+            firstValue(
+
+                camp.campName,
+
+                camp.name,
+
+                camp.camp_name,
+
+                camp.CampName,
+
+                camp["Camp Name"]
+
+            ),
+
+
+        campDate:
+            firstValue(
+
+                camp.campDate,
+
+                camp.date,
+
+                camp.camp_date,
+
+                camp["Camp Date"]
+
+            ),
+
+
+        city:
+            firstValue(
+
+                camp.city,
+
+                camp.City
+
+            ),
+
+
+        doctorName:
+            firstValue(
+
+                camp.doctorName,
+
+                camp.doctor,
+
+                camp["Doctor Name"]
+
+            ),
+
+
+        campaigner:
+            firstValue(
+
+                camp.campaigner,
+
+                camp.campaignerEmail,
+
+                camp.Campaigner,
+
+                camp["Campaigner"],
+
+                camp["Campaigner Email"]
+
+            ),
+
+
+        counsellor:
+            firstValue(
+
+                camp.counsellor,
+
+                camp.counsellorEmail,
+
+                camp.Counsellor,
+
+                camp["Counsellor"],
+
+                camp["Counsellor Email"]
+
+            )
+
+
+    };
+
+}
+
+
+
+/* =========================================================
+   NORMALIZE LEAD
+========================================================= */
+
+/* =========================================================
+   NORMALIZE LEAD
+========================================================= */
+
+function normalizeLead(
+    lead
+) {
+
+
+    return {
+
+
+        id:
+            firstValue(
+
+                lead.id,
+
+                lead.ID,
+
+                lead.Id,
+
+                lead.patientId,
+
+                lead.patientID,
+
+                lead["ID"],
+
+                lead["Patient ID"]
+
+            ),
+
+
+        date:
+            firstValue(
+
+                lead.date,
+
+                lead.Date,
+
+                lead.createdDate,
+
+                lead["Date"]
+
+            ),
+
+
+        name:
+            firstValue(
+
+                lead.name,
+
+                lead.Name,
+
+                lead.patientName,
+
+                lead["Patient Name"]
+
+            ),
+
+
+        age:
+            firstValue(
+
+                lead.age,
+
+                lead.Age
+
+            ),
+
+
+        gender:
+            firstValue(
+
+                lead.gender,
+
+                lead.Gender
+
+            ),
+
+
+        mobile:
+            firstValue(
+
+                lead.mobile,
+
+                lead.Mobile,
+
+                lead.phone,
+
+                lead.Phone,
+
+                lead.mobileNumber,
+
+                lead.phoneNumber,
+
+                lead["Mobile"],
+
+                lead["Phone"]
+
+            ),
+
+
+        city:
+            firstValue(
+
+                lead.city,
+
+                lead.City
+
+            ),
+
+
+        source:
+            firstValue(
+
+                lead.source,
+
+                lead.Source
+
+            ),
+
+
+        doctorName:
+            firstValue(
+
+                lead.doctorName,
+
+                lead.doctor,
+
+                lead.Doctor,
+
+                lead["Doctor Name"]
+
+            ),
+
+
+        treatment:
+            firstValue(
+
+                lead.treatment,
+
+                lead.Treatment
+
+            ),
+
+
+        status:
+            firstValue(
+
+                lead.status,
+
+                lead.Status
+
+            ),
+
+
+        campId:
+            firstValue(
+
+                lead.campId,
+
+                lead.campID,
+
+                lead.CampId,
+
+                lead.CampID,
+
+                lead.camp_id,
+
+                lead["Camp ID"],
+
+                lead["CampID"]
+
+            ),
+
+
+        campName:
+            firstValue(
+
+                lead.campName,
+
+                lead.CampName,
+
+                lead.camp_name,
+
+                lead["Camp Name"]
+
+            ),
+
+
+        campaignerEmail:
+            firstValue(
+
+                lead.campaignerEmail,
+
+                lead.campaigner,
+
+                lead.Campaigner,
+
+                lead.CampaignerEmail,
+
+                lead["Campaigner Email"],
+
+                lead["Campaigner"]
+
+            ),
+
+
+        counsellorEmail:
+            firstValue(
+
+                lead.counsellorEmail,
+
+                lead.counsellor,
+
+                lead.Counsellor,
+
+                lead.CounsellorEmail,
+
+                lead["Counsellor Email"],
+
+                lead["Counsellor"]
+
+            ),
+
+
+        campaignerUpdatedAt:
+            firstValue(
+
+                lead.campaignerUpdatedAt,
+
+                lead.updatedAt,
+
+                lead.modifiedAt,
+
+                lead["Campaigner Updated At"],
+
+                lead["Updated At"]
+
+            ),
+
+
+        counsellorUpdatedAt:
+            firstValue(
+
+                lead.counsellorUpdatedAt,
+
+                lead["Counsellor Updated At"]
+
+            )
+
+
+    };
+
+}
+
+
+/* =========================================================
+   LOAD DATA
+========================================================= */
+
+/* =========================================================
+   LOAD DATA
+========================================================= */
+
+async function loadData() {
+
+
+    const body =
+        document.getElementById(
+            "tableBody"
+        );
+
+
+    const refreshBtn =
+        document.getElementById(
+            "refreshBtn"
+        );
+
+
+    refreshBtn.disabled =
+        true;
+
+
+    refreshBtn.textContent =
+        "Loading...";
+
+
+    setLoadWarning(
+        ""
+    );
+
+
+    body.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="5"
+                class="empty"
+            >
+
+                Loading campaigner and patient data...
+
+            </td>
+
+        </tr>
+
+    `;
+
+
+    /*
+     * Clear previous data
+     */
+
+    allCamps = [];
+
+    allLeads = [];
+
+    campaigners = [];
+
+
+    try {
+
+
+        const timestamp =
+            Date.now();
+
+
+
+        /* =====================================================
+           LOAD CAMPS
+        ====================================================== */
+
+        const campResult =
+            await fetchJson(
+
+                CAMPS_API_URL +
+                "?action=getCamps&t=" +
+                timestamp,
+
+                "CAMPS API"
+
+            );
+
+
+        console.log(
+            "CAMP RESULT:",
+            campResult
+        );
+
+
+        if (
+            !campResult.success
+        ) {
+
+            throw new Error(
+
+                campResult.message ||
+                "Unable to load camps."
+
+            );
+
+        }
+
+
+        allCamps =
+            (
+                Array.isArray(
+                    campResult.camps
+                )
+                    ? campResult.camps
+                    : []
+            )
+            .map(
+                normalizeCamp
+            );
+
+
+        console.log(
+            "NORMALIZED CAMPS:",
+            allCamps
+        );
+
+
+
+        /* =====================================================
+           LOAD PATIENT DATA
+        ====================================================== */
+
+        try {
+
+
+            const leadResult =
+                await fetchJson(
+
+                    LEADS_API_URL +
+                    "?action=getLeads&t=" +
+                    Date.now(),
+
+                    "LEADS API"
+
+                );
+
+
+            console.log(
+                "LEAD API RESULT:",
+                leadResult
+            );
+
+
+            if (
+                !leadResult.success
+            ) {
+
+                throw new Error(
+
+                    leadResult.message ||
+                    "Unable to load patient data."
+
+                );
+
+            }
+
+
+
+            /* =================================================
+               GET LEADS ARRAY
+            ================================================= */
+
+            if (
+                Array.isArray(
+                    leadResult.leads
+                )
+            ) {
+
+
+                allLeads =
+                    leadResult.leads
+                        .map(
+                            normalizeLead
+                        );
+
+
+            } else {
+
+
+                allLeads = [];
+
+
+            }
+
+
+            console.log(
+                "RAW LEADS:",
+                leadResult.leads
+            );
+
+
+            console.log(
+                "NORMALIZED LEADS:",
+                allLeads
+            );
+
+
+        } catch(leadError) {
+
+
+            console.error(
+                "PATIENT API ERROR:",
+                leadError
+            );
+
+
+            /*
+             * Campaigners should still display
+             * even if patient API fails.
+             */
+
+            allLeads = [];
+
+
+            setLoadWarning(
+
+                "Campaigners loaded, but patient data could not be loaded. " +
+                leadError.message
+
+            );
+
+
+        }
+
+
+
+        /* =====================================================
+           BUILD CAMPAIGNERS
+        ====================================================== */
+
+        buildCampaigners();
+
+
+
+        /* =====================================================
+           RENDER
+        ====================================================== */
+
+        renderCampaigners(
+            campaigners
+        );
+
+
+        updateStats();
+
+
+
+        console.log(
+            "FINAL CAMPAIGNERS:",
+            campaigners
+        );
+
+
+        console.log(
+            "TOTAL CAMPAIGNERS:",
+            campaigners.length
+        );
+
+
+        console.log(
+            "TOTAL LEADS:",
+            allLeads.length
+        );
+
+
+    } catch(error) {
+
+
+        console.error(
+            "CAMPAIGNER PAGE ERROR:",
+            error
+        );
+
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="5"
+                    class="error"
+                >
+
+                    ${escapeHtml(
+                        error.message
+                    )}
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        document
+            .getElementById(
+                "totalCampaigners"
+            )
+            .textContent =
+                "0";
+
+
+        document
+            .getElementById(
+                "totalCamps"
+            )
+            .textContent =
+                "0";
+
+
+        document
+            .getElementById(
+                "totalPatients"
+            )
+            .textContent =
+                "0";
+
+
+        setLoadWarning(
+            error.message
+        );
+
+
+    } finally {
+
+
+        refreshBtn.disabled =
+            false;
+
+
+        refreshBtn.textContent =
+            "Refresh";
+
+
+    }
+
+}
+
+
+
+/* =========================================================
+   BUILD CAMPAIGNERS
+========================================================= */
+
+/* =========================================================
+   BUILD CAMPAIGNERS
+========================================================= */
+
+function buildCampaigners() {
+
+
+    const map =
+        new Map();
+
+
+
+    /* =====================================================
+       STEP 1
+       CREATE CAMPAIGNERS FROM CAMPS
+    ====================================================== */
+
+    allCamps.forEach(
+        function(camp) {
+
+
+            const email =
+                normalizeEmail(
+                    camp.campaigner
+                );
+
+
+            if (!email) {
+
+                return;
+
+            }
+
+
+            if (
+                !map.has(
+                    email
+                )
+            ) {
+
+
+                map.set(
+
+                    email,
+
+                    {
+
+                        email:
+                            email,
+
+                        camps:
+                            [],
+
+                        leads:
+                            []
+
+                    }
+
+                );
+
+            }
+
+
+            map
+                .get(
+                    email
+                )
+                .camps
+                .push(
+                    camp
+                );
+
+
+        }
+    );
+
+
+
+    /* =====================================================
+       STEP 2
+       ALSO CREATE CAMPAIGNER FROM PATIENT DATA
+    ====================================================== */
+
+    allLeads.forEach(
+        function(lead) {
+
+
+            const email =
+                normalizeEmail(
+                    lead.campaignerEmail
+                );
+
+
+            if (!email) {
+
+                return;
+
+            }
+
+
+            if (
+                !map.has(
+                    email
+                )
+            ) {
+
+
+                map.set(
+
+                    email,
+
+                    {
+
+                        email:
+                            email,
+
+                        camps:
+                            [],
+
+                        leads:
+                            []
+
+                    }
+
+                );
+
+            }
+
+
+        }
+    );
+
+
+
+    /* =====================================================
+       STEP 3
+       MATCH PATIENT DATA
+    ====================================================== */
+
+    map.forEach(
+        function(
+            campaigner,
+            campaignerEmail
+        ) {
+
+
+
+            const assignedCampIds =
+                campaigner.camps
+
+                    .map(
+                        function(camp) {
+
+                            return normalizeKey(
+                                camp.id
+                            );
+
+                        }
+                    )
+
+                    .filter(
+                        Boolean
+                    );
+
+
+
+            const assignedCampNames =
+                campaigner.camps
+
+                    .map(
+                        function(camp) {
+
+                            return normalizeKey(
+                                camp.campName
+                            );
+
+                        }
+                    )
+
+                    .filter(
+                        Boolean
+                    );
+
+
+
+            const matchedLeads =
+                allLeads.filter(
+                    function(lead) {
+
+
+
+                        const leadCampId =
+                            normalizeKey(
+                                lead.campId
+                            );
+
+
+                        const leadCampName =
+                            normalizeKey(
+                                lead.campName
+                            );
+
+
+                        const leadCampaigner =
+                            normalizeEmail(
+                                lead.campaignerEmail
+                            );
+
+
+
+                        /*
+                         * MATCH BY CAMPAIGNER EMAIL
+                         */
+
+                        const campaignerMatch =
+
+                            leadCampaigner &&
+
+                            leadCampaigner ===
+                            campaignerEmail;
+
+
+
+                        /*
+                         * MATCH BY CAMP ID
+                         */
+
+                        const campIdMatch =
+
+                            leadCampId &&
+
+                            assignedCampIds.includes(
+                                leadCampId
+                            );
+
+
+
+                        /*
+                         * MATCH BY CAMP NAME
+                         */
+
+                        const campNameMatch =
+
+                            leadCampName &&
+
+                            assignedCampNames.includes(
+                                leadCampName
+                            );
+
+
+
+                        return (
+
+                            campaignerMatch ||
+
+                            campIdMatch ||
+
+                            campNameMatch
+
+                        );
+
+
+                    }
+                );
+
+
+
+            console.log(
+                "PATIENT MATCH:",
+                campaignerEmail,
+                matchedLeads
+            );
+
+
+
+            /* =================================================
+               REMOVE DUPLICATES
+            ================================================= */
+
+            const unique =
+                new Map();
+
+
+            matchedLeads.forEach(
+                function(lead) {
+
+
+                    let key =
+                        normalizeKey(
+                            lead.id
+                        );
+
+
+                    if (!key) {
+
+
+                        key =
+
+                            normalizeKey(
+                                lead.mobile
+                            )
+
+                            +
+
+                            "_"
+
+                            +
+
+                            normalizeKey(
+                                lead.date
+                            );
+
+
+                    }
+
+
+                    /*
+                     * Final fallback so blank values
+                     * don't overwrite each other.
+                     */
+
+                    if (
+                        !key ||
+                        key === "_"
+                    ) {
+
+                        key =
+                            JSON.stringify(
+                                lead
+                            );
+
+                    }
+
+
+                    if (
+                        !unique.has(
+                            key
+                        )
+                    ) {
+
+                        unique.set(
+                            key,
+                            lead
+                        );
+
+                    }
+
+
+                }
+            );
+
+
+            campaigner.leads =
+                Array.from(
+                    unique.values()
+                );
+
+
+        }
+    );
+
+
+
+    /* =====================================================
+       FINAL CAMPAIGNER ARRAY
+    ====================================================== */
+
+    campaigners =
+        Array.from(
+            map.values()
+        );
+
+
+    campaigners.sort(
+        function(a, b) {
+
+
+            return a.email
+                .localeCompare(
+                    b.email
+                );
+
+
+        }
+    );
+
+
+}
+
+
+
+/* =========================================================
+   RENDER CAMPAIGNERS
+========================================================= */
+
+function renderCampaigners(
+    records
+) {
+
+
+    const body =
+        document.getElementById(
+            "tableBody"
+        );
+
+
+    if (
+        !records.length
+    ) {
+
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="5"
+                    class="empty"
+                >
+
+                    No campaigners found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
+
+
+
+    body.innerHTML =
+        records
+
+            .map(
+                function(
+                    item,
+                    index
+                ) {
+
+
+                    const rowId =
+                        "campaigner_" +
+                        index;
+
+
+                    return `
+
+
+                        <tr>
+
+
+                            <td class="email">
+
+                                ${escapeHtml(
+                                    item.email
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${item.camps.length}
+
+                            </td>
+
+
+                            <td>
+
+                                ${item.leads.length}
+
+                            </td>
+
+
+                            <td>
+
+                                ${escapeHtml(
+                                    getLastModified(
+                                        item.leads
+                                    )
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                <button
+                                    type="button"
+                                    class="view-btn"
+                                    onclick="
+                                        viewCampaigner(
+                                            '${rowId}'
+                                        )
+                                    "
+                                >
+
+                                    View Data
+
+                                </button>
+
+                            </td>
+
+
+                        </tr>
+
+
+
+                        <tr
+                            id="${rowId}"
+                            class="expand-row"
+                            data-email="${escapeHtml(
+                                item.email
+                            )}"
+                        >
+
+                            <td
+                                colspan="5"
+                                class="expand-cell"
+                            >
+
+                                <div
+                                    id="${rowId}_content"
+                                    class="panel"
+                                ></div>
+
+                            </td>
+
+                        </tr>
+
+
+                    `;
+
+
+                }
+            )
+
+            .join("");
+
+}
+
+
+
+/* =========================================================
+   VIEW CAMPAIGNER
+========================================================= */
+
+function viewCampaigner(
+    rowId
+) {
+
+
+    const row =
+        document.getElementById(
+            rowId
+        );
+
+
+    if (!row) {
+
+        return;
+
+    }
+
+
+    const alreadyOpen =
+        row.classList.contains(
+            "active"
+        );
+
+
+    closeAll();
+
+
+    if (
+        alreadyOpen
+    ) {
+
+        return;
+
+    }
+
+
+    const email =
+        normalizeEmail(
+            row.dataset.email
+        );
+
+
+    const campaigner =
+        campaigners.find(
+            function(item) {
+
+                return (
+
+                    normalizeEmail(
+                        item.email
+                    )
+
+                    ===
+
+                    email
+
+                );
+
+            }
+        );
+
+
+    if (!campaigner) {
+
+        return;
+
+    }
+
+
+    row.classList.add(
+        "active"
+    );
+
+
+    document
+        .getElementById(
+            rowId +
+            "_content"
+        )
+        .innerHTML =
+            buildCampaignerDetails(
+                campaigner,
+                rowId
+            );
+
+}
+
+
+
+/* =========================================================
+   BUILD DETAILS
+========================================================= */
+
+function buildCampaignerDetails(
+    campaigner,
+    rowId
+) {
+
+
+
+    /* =====================================================
+       CAMP DETAILS
+    ====================================================== */
+
+    let campsHtml =
+        "";
+
+
+    if (
+        campaigner.camps.length
+    ) {
+
+
+        campsHtml =
+            campaigner.camps
+
+                .map(
+                    function(camp) {
+
+
+                        return `
+
+                            <div class="camp-box">
+
+
+                                <div class="camp-id">
+
+                                    Camp ID:
+                                    ${display(
+                                        camp.id
+                                    )}
+
+                                </div>
+
+
+                                <div class="camp-name">
+
+                                    ${display(
+                                        camp.campName
+                                    )}
+
+                                </div>
+
+
+                                <div class="camp-meta">
+
+                                    Date:
+                                    ${display(
+                                        camp.campDate
+                                    )}
+
+                                    <br>
+
+                                    City:
+                                    ${display(
+                                        camp.city
+                                    )}
+
+                                    <br>
+
+                                    Doctor:
+                                    ${display(
+                                        camp.doctorName
+                                    )}
+
+                                    <br>
+
+                                    Counsellor:
+                                    ${display(
+                                        camp.counsellor
+                                    )}
+
+                                </div>
+
+
+                            </div>
+
+                        `;
+
+
+                    }
+                )
+
+                .join("");
+
+
+    } else {
+
+
+        campsHtml = `
+
+            <div class="camp-box">
+
+                No assigned camps.
+
+            </div>
+
+        `;
+
+
+    }
+
+
+
+    /* =====================================================
+       PATIENT DETAILS
+    ====================================================== */
+
+    let patientHtml =
+        "";
+
+
+    if (
+        !campaigner.leads.length
+    ) {
+
+
+        patientHtml = `
+
+            <div class="empty">
+
+                No patient records available for this campaigner.
+
+            </div>
+
+        `;
+
+
+    } else {
+
+
+        const rows =
+            campaigner.leads
+
+                .map(
+                    function(lead) {
+
+
+                        return `
+
+                            <tr>
+
+                                <td class="patient-id">
+
+                                    ${display(
+                                        lead.id
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${display(
+                                        lead.campId
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${display(
+                                        lead.campName
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${display(
+                                        lead.date
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${display(
+                                        lead.name
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${display(
+                                        lead.age
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${display(
+                                        lead.gender
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${display(
+                                        lead.mobile
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${display(
+                                        lead.city
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${display(
+                                        lead.source
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${display(
+                                        lead.doctorName
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${display(
+                                        lead.treatment
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="status-badge">
+
+                                        ${display(
+                                            lead.status
+                                        )}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    ${display(
+                                        lead.campaignerEmail
+                                    )}
+
+                                </td>
+
+                            </tr>
+
+                        `;
+
+
+                    }
+                )
+
+                .join("");
+
+
+
+        patientHtml = `
+
+            <div class="patient-wrapper">
+
+
+                <table class="patient-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Camp ID
+                            </th>
+
+                            <th>
+                                Camp Name
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Name
+                            </th>
+
+                            <th>
+                                Age
+                            </th>
+
+                            <th>
+                                Gender
+                            </th>
+
+                            <th>
+                                Phone
+                            </th>
+
+                            <th>
+                                City
+                            </th>
+
+                            <th>
+                                Source
+                            </th>
+
+                            <th>
+                                Doctor
+                            </th>
+
+                            <th>
+                                Treatment
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Campaigner
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        ${rows}
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+        `;
+
+
+    }
+
+
+
+    return `
+
+
+        <div class="panel-header">
+
+
+            <div>
+
+                <h3>
+
+                    ${escapeHtml(
+                        campaigner.email
+                    )}
+
+                </h3>
+
+
+                <p>
+
+                    Assigned camps and patient records
+                    associated with this campaigner.
+
+                </p>
+
+            </div>
+
+
+            <span class="count-badge">
+
+                ${campaigner.leads.length}
+
+                ${
+                    campaigner.leads.length === 1
+                        ? "Patient"
+                        : "Patients"
+                }
+
+            </span>
+
+
+        </div>
+
+
+
+        <h4 class="section-title">
+
+            Assigned Camps
+
+        </h4>
+
+
+        <div class="camps-grid">
+
+            ${campsHtml}
+
+        </div>
+
+
+
+        <h4 class="section-title">
+
+            Patient Records
+
+        </h4>
+
+
+        ${patientHtml}
+
+
+
+        <div class="panel-footer">
+
+            <button
+                type="button"
+                class="cancel-btn"
+                onclick="
+                    closeCampaigner(
+                        '${rowId}'
+                    )
+                "
+            >
+
+                Cancel
+
+            </button>
+
+        </div>
+
+
+    `;
+
+}
+
+
+
+/* =========================================================
+   CLOSE DETAILS
+========================================================= */
+
+function closeCampaigner(
+    rowId
+) {
+
+
+    const row =
+        document.getElementById(
+            rowId
+        );
+
+
+    if (row) {
+
+        row.classList.remove(
+            "active"
+        );
+
+    }
+
+}
+
+
+
+function closeAll() {
+
+
+    document
+        .querySelectorAll(
+            ".expand-row"
+        )
+        .forEach(
+            function(row) {
+
+                row.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+}
+
+
+
+/* =========================================================
+   UPDATE STATISTICS
+========================================================= */
+
+/* =========================================================
+   UPDATE STATISTICS
+========================================================= */
+
+function updateStats() {
+
+
+    document
+        .getElementById(
+            "totalCampaigners"
+        )
+        .textContent =
+            campaigners.length;
+
+
+
+    const uniqueCamps =
+        new Set();
+
+
+    campaigners.forEach(
+        function(item) {
+
+
+            item.camps.forEach(
+                function(camp) {
+
+
+                    const key =
+
+                        normalizeKey(
+                            camp.id
+                        )
+
+                        ||
+
+                        normalizeKey(
+                            camp.campName
+                        );
+
+
+                    if (key) {
+
+                        uniqueCamps.add(
+                            key
+                        );
+
+                    }
+
+
+                }
+            );
+
+
+        }
+    );
+
+
+    document
+        .getElementById(
+            "totalCamps"
+        )
+        .textContent =
+            uniqueCamps.size;
+
+
+
+    const uniquePatients =
+        new Map();
+
+
+    campaigners.forEach(
+        function(campaigner) {
+
+
+            campaigner.leads.forEach(
+                function(lead) {
+
+
+                    let key =
+                        normalizeKey(
+                            lead.id
+                        );
+
+
+                    if (!key) {
+
+
+                        key =
+
+                            normalizeKey(
+                                lead.mobile
+                            )
+
+                            +
+
+                            "_"
+
+                            +
+
+                            normalizeKey(
+                                lead.date
+                            );
+
+
+                    }
+
+
+                    if (
+                        !key ||
+                        key === "_"
+                    ) {
+
+                        key =
+                            JSON.stringify(
+                                lead
+                            );
+
+                    }
+
+
+                    if (
+                        !uniquePatients.has(
+                            key
+                        )
+                    ) {
+
+                        uniquePatients.set(
+                            key,
+                            lead
+                        );
+
+                    }
+
+
+                }
+            );
+
+
+        }
+    );
+
+
+    document
+        .getElementById(
+            "totalPatients"
+        )
+        .textContent =
+            uniquePatients.size;
+
+
+}
+
+/* =========================================================
+   LAST MODIFIED
+========================================================= */
+
+function getLastModified(
+    leads
+) {
+
+
+    if (
+        !leads.length
+    ) {
+
+        return "-";
+
+    }
+
+
+    const values =
+        leads
+
+            .map(
+                function(lead) {
+
+
+                    return firstValue(
+
+                        lead.campaignerUpdatedAt,
+
+                        lead.counsellorUpdatedAt,
+
+                        lead.date
+
+                    );
+
+
+                }
+            )
+
+            .filter(
+                Boolean
+            );
+
+
+    return (
+
+        values.length
+            ? values[0]
+            : "-"
+
+    );
+
+}
+
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+document
+    .getElementById(
+        "searchInput"
+    )
+    .addEventListener(
+        "input",
+        function() {
+
+
+            const keyword =
+                this.value
+                    .trim()
+                    .toLowerCase();
+
+
+            closeAll();
+
+
+            if (!keyword) {
+
+
+                renderCampaigners(
+                    campaigners
+                );
+
+
+                return;
+
+            }
+
+
+
+            const filtered =
+                campaigners.filter(
+                    function(item) {
+
+
+                        const campText =
+                            item.camps
+
+                                .map(
+                                    function(camp) {
+
+
+                                        return [
+
+                                            camp.id,
+
+                                            camp.campName,
+
+                                            camp.city,
+
+                                            camp.doctorName,
+
+                                            camp.counsellor
+
+                                        ]
+                                        .join(
+                                            " "
+                                        );
+
+
+                                    }
+                                )
+
+                                .join(
+                                    " "
+                                );
+
+
+                        const patientText =
+                            item.leads
+
+                                .map(
+                                    function(lead) {
+
+
+                                        return [
+
+                                            lead.name,
+
+                                            lead.mobile,
+
+                                            lead.city,
+
+                                            lead.campId,
+
+                                            lead.campName
+
+                                        ]
+                                        .join(
+                                            " "
+                                        );
+
+
+                                    }
+                                )
+
+                                .join(
+                                    " "
+                                );
+
+
+                        return (
+
+                            item.email +
+                            " " +
+                            campText +
+                            " " +
+                            patientText
+
+                        )
+                        .toLowerCase()
+                        .includes(
+                            keyword
+                        );
+
+
+                    }
+                );
+
+
+            renderCampaigners(
+                filtered
+            );
+
+
+        }
+    );
+
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+document
+    .getElementById(
+        "refreshBtn"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+
+            document
+                .getElementById(
+                    "searchInput"
+                )
+                .value =
+                    "";
+
+
+            closeAll();
+
+
+            loadData();
+
+
+        }
+    );
+
+
+
+/* =========================================================
+   WARNING
+========================================================= */
+
+function setLoadWarning(
+    message
+) {
+
+
+    const warning =
+        document.getElementById(
+            "loadWarning"
+        );
+
+
+    if (!warning) {
+
+        return;
+
+    }
+
+
+    if (!message) {
+
+
+        warning.textContent =
+            "";
+
+
+        warning.classList.remove(
+            "active"
+        );
+
+
+        return;
+
+    }
+
+
+    warning.textContent =
+        message;
+
+
+    warning.classList.add(
+        "active"
+    );
+
+}
+
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function normalizeEmail(
+    value
+) {
+
+
+    return String(
+
+        value == null
+            ? ""
+            : value
+
+    )
+    .trim()
+    .toLowerCase();
+
+}
+
+
+
+function normalizeKey(
+    value
+) {
+
+
+    return String(
+
+        value == null
+            ? ""
+            : value
+
+    )
+    .trim()
+    .toLowerCase();
+
+}
+
+
+
+function display(
+    value
+) {
+
+
+    const text =
+        String(
+
+            value == null
+                ? ""
+                : value
+
+        )
+        .trim();
+
+
+    if (
+        !text ||
+        text === "-"
+    ) {
+
+        return "-";
+
+    }
+
+
+    return escapeHtml(
+        text
+    );
+
+}
+
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(
+    value
+) {
+
+
+    return String(
+
+        value == null
+            ? ""
+            : value
+
+    )
+
+    .replaceAll(
+        "&",
+        "&amp;"
+    )
+
+    .replaceAll(
+        "<",
+        "&lt;"
+    )
+
+    .replaceAll(
+        ">",
+        "&gt;"
+    )
+
+    .replaceAll(
+        '"',
+        "&quot;"
+    )
+
+    .replaceAll(
+        "'",
+        "&#039;"
+    );
+
+}
+
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+loadData();
+
+
+</script>
+
+</body>
+
+</html>

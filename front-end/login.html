@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Medical Camps Login</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+
+            background: #f4f7fb;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+        .login-wrapper {
+            width: 100%;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 430px;
+
+            margin: auto;
+
+            padding: 32px;
+
+            background: white;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 12px 35px
+                rgba(15, 23, 42, 0.1);
+        }
+
+        h1 {
+            margin:
+                0
+                0
+                8px;
+
+            text-align: center;
+
+            font-size: 28px;
+
+            color: #0f172a;
+        }
+
+        .subtitle {
+            margin:
+                0
+                0
+                28px;
+
+            text-align: center;
+
+            color: #64748b;
+
+            font-size: 14px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #334155;
+
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+
+            margin-bottom: 16px;
+
+            padding:
+                13px
+                14px;
+
+            border:
+                1px solid
+                #cbd5e1;
+
+            border-radius: 9px;
+
+            outline: none;
+
+            font-size: 15px;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+        }
+
+        button {
+            width: 100%;
+
+            padding: 13px;
+
+            border: 0;
+
+            border-radius: 9px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .secondary-btn {
+            margin-top: 10px;
+
+            background: #e2e8f0;
+
+            color: #0f172a;
+        }
+
+        .text-btn {
+            margin-top: 8px;
+
+            background: transparent;
+
+            color: #2563eb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message {
+            min-height: 20px;
+
+            margin-top: 16px;
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+        .message.success {
+            color: #15803d;
+        }
+
+        .message.error {
+            color: #dc2626;
+        }
+
+        .otp-info {
+            margin-bottom: 18px;
+
+            color: #64748b;
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+        #otp {
+            text-align: center;
+
+            letter-spacing: 6px;
+
+            font-size: 20px;
+        }
+
+        @media screen and (max-width: 480px) {
+
+            body {
+                padding: 14px;
+            }
+
+            .login-card {
+                padding:
+                    24px
+                    18px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="login-wrapper">
+
+
+    <div class="login-card">
+
+
+        <center>
+            <img
+                src="	https://avisvascularcentre.com/assets/logo-1.png"
+                alt="Medical Camps Logo"
+                width="370" height="180"
+            >
+
+
+        <h1>
+            Medical Camps  
+        </h1>
+
+
+        <p class="subtitle">
+            Login using your authorized email
+        </p>
+
+
+
+
+        <!-- EMAIL -->
+
+        <div id="emailStep">
+
+
+            <label for="email">
+                Email Address
+            </label>
+
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter your email address"
+                autocomplete="email"
+            >
+
+
+            <button
+                type="button"
+                id="sendOtpBtn"
+            >
+                Send OTP
+            </button>
+
+
+        </div>
+
+
+        <!-- OTP -->
+
+        <div
+            id="otpStep"
+            class="hidden"
+        >
+
+
+            <p class="otp-info">
+
+                OTP sent to
+
+                <strong id="displayEmail"></strong>
+
+            </p>
+
+
+            <label for="otp">
+                Enter OTP
+            </label>
+
+
+            <input
+                type="text"
+                id="otp"
+                maxlength="6"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                placeholder="6-digit OTP"
+            >
+
+
+            <button
+                type="button"
+                id="verifyOtpBtn"
+            >
+                Verify OTP
+            </button>
+
+
+            <button
+                type="button"
+                id="resendOtpBtn"
+                class="secondary-btn"
+            >
+                Resend OTP
+            </button>
+
+
+            <button
+                type="button"
+                id="changeEmailBtn"
+                class="text-btn"
+            >
+                Change Email
+            </button>
+
+
+        </div>
+
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+/* ==========================================
+   BACKEND
+========================================== */
+
+const API_BASE_URL =
+    "http://localhost:3000";
+
+
+/* ==========================================
+   ELEMENTS
+========================================== */
+
+const emailStep =
+    document.getElementById(
+        "emailStep"
+    );
+
+
+const otpStep =
+    document.getElementById(
+        "otpStep"
+    );
+
+
+const emailInput =
+    document.getElementById(
+        "email"
+    );
+
+
+const otpInput =
+    document.getElementById(
+        "otp"
+    );
+
+
+const sendOtpBtn =
+    document.getElementById(
+        "sendOtpBtn"
+    );
+
+
+const verifyOtpBtn =
+    document.getElementById(
+        "verifyOtpBtn"
+    );
+
+
+const resendOtpBtn =
+    document.getElementById(
+        "resendOtpBtn"
+    );
+
+
+const changeEmailBtn =
+    document.getElementById(
+        "changeEmailBtn"
+    );
+
+
+const displayEmail =
+    document.getElementById(
+        "displayEmail"
+    );
+
+
+const message =
+    document.getElementById(
+        "message"
+    );
+
+
+/* ==========================================
+   IF ALREADY LOGGED IN
+========================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        const loggedIn =
+            sessionStorage.getItem(
+                "medical_logged_in"
+            );
+
+
+        const role =
+            sessionStorage.getItem(
+                "medical_user_role"
+            );
+
+
+        if (
+            loggedIn === "true"
+        ) {
+
+
+            /* CAMPAIGNER */
+
+            if (
+                role === "campaigner"
+            ) {
+
+                window.location.replace(
+                    "./dashboard.html"
+                );
+
+                return;
+
+            }
+
+
+            /* COUNSELLOR */
+
+            if (
+                role === "counsellor"
+            ) {
+
+                window.location.replace(
+                    "./counsellor.html"
+                );
+
+                return;
+
+            }
+
+
+            /* ADMIN */
+
+            if (
+                role === "admin"
+            ) {
+
+                window.location.replace(
+                    "./admin-dashboard.html"
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Invalid saved role
+             */
+
+            clearLogin();
+
+
+        }
+
+
+    }
+);
+
+
+/* ==========================================
+   SEND OTP
+========================================== */
+
+sendOtpBtn.addEventListener(
+    "click",
+    sendOtp
+);
+
+
+resendOtpBtn.addEventListener(
+    "click",
+    sendOtp
+);
+
+
+async function sendOtp() {
+
+
+    const email =
+        emailInput.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!email) {
+
+
+        showMessage(
+            "Enter your email address.",
+            "error"
+        );
+
+
+        emailInput.focus();
+
+
+        return;
+
+    }
+
+
+    if (
+        !validateEmail(
+            email
+        )
+    ) {
+
+
+        showMessage(
+            "Enter a valid email address.",
+            "error"
+        );
+
+
+        emailInput.focus();
+
+
+        return;
+
+    }
+
+
+    sendOtpBtn.disabled =
+        true;
+
+
+    resendOtpBtn.disabled =
+        true;
+
+
+    sendOtpBtn.textContent =
+        "Sending...";
+
+
+    showMessage(
+        "Sending OTP...",
+        ""
+    );
+
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                `${API_BASE_URL}/api/auth/send-otp`,
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            email:
+                                email
+
+                        })
+
+                }
+
+            );
+
+
+        let result;
+
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch (jsonError) {
+
+            throw new Error(
+                "Invalid response received from the server."
+            );
+
+        }
+
+
+        console.log(
+            "SEND OTP:",
+            result
+        );
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+
+            throw new Error(
+
+                result.message ||
+                "Unable to send OTP"
+
+            );
+
+        }
+
+
+        displayEmail.textContent =
+            email;
+
+
+        emailStep
+            .classList
+            .add(
+                "hidden"
+            );
+
+
+        otpStep
+            .classList
+            .remove(
+                "hidden"
+            );
+
+
+        otpInput.value =
+            "";
+
+
+        otpInput.focus();
+
+
+        showMessage(
+            "OTP sent successfully.",
+            "success"
+        );
+
+
+    } catch (error) {
+
+
+        console.error(
+            "SEND OTP ERROR:",
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Unable to send OTP.",
+            "error"
+        );
+
+
+    } finally {
+
+
+        sendOtpBtn.disabled =
+            false;
+
+
+        resendOtpBtn.disabled =
+            false;
+
+
+        sendOtpBtn.textContent =
+            "Send OTP";
+
+
+    }
+
+
+}
+
+
+/* ==========================================
+   VERIFY OTP
+========================================== */
+
+verifyOtpBtn.addEventListener(
+    "click",
+    verifyOtp
+);
+
+
+async function verifyOtp() {
+
+
+    const email =
+        emailInput.value
+            .trim()
+            .toLowerCase();
+
+
+    const otp =
+        otpInput.value
+            .trim();
+
+
+    if (
+        !email
+    ) {
+
+
+        showMessage(
+            "Email address is missing.",
+            "error"
+        );
+
+
+        return;
+
+    }
+
+
+    if (
+        !/^\d{6}$/.test(
+            otp
+        )
+    ) {
+
+
+        showMessage(
+            "Enter a valid 6-digit OTP.",
+            "error"
+        );
+
+
+        otpInput.focus();
+
+
+        return;
+
+    }
+
+
+    verifyOtpBtn.disabled =
+        true;
+
+
+    verifyOtpBtn.textContent =
+        "Verifying...";
+
+
+    showMessage(
+        "Verifying OTP...",
+        ""
+    );
+
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                `${API_BASE_URL}/api/auth/verify-otp`,
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            email:
+                                email,
+
+                            otp:
+                                otp
+
+                        })
+
+                }
+
+            );
+
+
+        let result;
+
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch (jsonError) {
+
+            throw new Error(
+                "Invalid response received from the server."
+            );
+
+        }
+
+
+        console.log(
+            "VERIFY OTP:",
+            result
+        );
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+
+            throw new Error(
+
+                result.message ||
+                "OTP verification failed"
+
+            );
+
+        }
+
+
+        /* ==========================================
+           VALIDATE ROLE
+        ========================================== */
+
+        const allowedRoles = [
+            "campaigner",
+            "counsellor",
+            "admin"
+        ];
+
+
+        if (
+            !allowedRoles.includes(
+                result.role
+            )
+        ) {
+
+
+            clearLogin();
+
+
+            throw new Error(
+                "Invalid user role."
+            );
+
+        }
+
+
+        /* ==========================================
+           SAVE LOGIN SESSION
+        ========================================== */
+
+        sessionStorage.setItem(
+            "medical_logged_in",
+            "true"
+        );
+
+
+        sessionStorage.setItem(
+            "medical_user_email",
+            email
+        );
+
+
+        sessionStorage.setItem(
+            "medical_user_role",
+            result.role
+        );
+
+
+        console.log(
+            "LOGIN SAVED:",
+            sessionStorage.getItem(
+                "medical_logged_in"
+            ),
+            sessionStorage.getItem(
+                "medical_user_email"
+            ),
+            sessionStorage.getItem(
+                "medical_user_role"
+            )
+        );
+
+
+        showMessage(
+            "Login successful.",
+            "success"
+        );
+
+
+        /* ==========================================
+           ROLE BASED REDIRECTION
+        ========================================== */
+
+
+        /* CAMPAIGNER */
+
+        if (
+            result.role ===
+            "campaigner"
+        ) {
+
+
+            window.location.replace(
+                "./dashboard.html"
+            );
+
+
+            return;
+
+        }
+
+
+        /* COUNSELLOR */
+
+        if (
+            result.role ===
+            "counsellor"
+        ) {
+
+
+            window.location.replace(
+                "./counsellor.html"
+            );
+
+
+            return;
+
+        }
+
+
+        /* ADMIN */
+
+        if (
+            result.role ===
+            "admin"
+        ) {
+
+
+            window.location.replace(
+                "./admin-dashboard.html"
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+         * Fallback
+         */
+
+        clearLogin();
+
+
+        throw new Error(
+            "Invalid user role."
+        );
+
+
+    } catch (error) {
+
+
+        console.error(
+            "VERIFY ERROR:",
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Login failed",
+            "error"
+        );
+
+
+    } finally {
+
+
+        verifyOtpBtn.disabled =
+            false;
+
+
+        verifyOtpBtn.textContent =
+            "Verify OTP";
+
+
+    }
+
+
+}
+
+
+/* ==========================================
+   CHANGE EMAIL
+========================================== */
+
+changeEmailBtn.addEventListener(
+    "click",
+    function () {
+
+
+        otpStep
+            .classList
+            .add(
+                "hidden"
+            );
+
+
+        emailStep
+            .classList
+            .remove(
+                "hidden"
+            );
+
+
+        otpInput.value =
+            "";
+
+
+        showMessage(
+            "",
+            ""
+        );
+
+
+        emailInput.focus();
+
+
+    }
+);
+
+
+/* ==========================================
+   OTP NUMBERS ONLY
+========================================== */
+
+otpInput.addEventListener(
+    "input",
+    function () {
+
+
+        this.value =
+            this.value
+                .replace(
+                    /\D/g,
+                    ""
+                )
+                .slice(
+                    0,
+                    6
+                );
+
+
+    }
+);
+
+
+/* ==========================================
+   ENTER KEY
+========================================== */
+
+emailInput.addEventListener(
+    "keydown",
+    function (event) {
+
+
+        if (
+            event.key ===
+            "Enter"
+        ) {
+
+
+            sendOtp();
+
+
+        }
+
+
+    }
+);
+
+
+otpInput.addEventListener(
+    "keydown",
+    function (event) {
+
+
+        if (
+            event.key ===
+            "Enter"
+        ) {
+
+
+            verifyOtp();
+
+
+        }
+
+
+    }
+);
+
+
+/* ==========================================
+   VALIDATE EMAIL
+========================================== */
+
+function validateEmail(
+    email
+) {
+
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(
+            email
+        );
+
+
+}
+
+
+/* ==========================================
+   CLEAR LOGIN
+========================================== */
+
+function clearLogin() {
+
+
+    sessionStorage.removeItem(
+        "medical_logged_in"
+    );
+
+
+    sessionStorage.removeItem(
+        "medical_user_email"
+    );
+
+
+    sessionStorage.removeItem(
+        "medical_user_role"
+    );
+
+
+}
+
+
+/* ==========================================
+   MESSAGE
+========================================== */
+
+function showMessage(
+    text,
+    type
+) {
+
+
+    message.className =
+        "message";
+
+
+    if (
+        type
+    ) {
+
+
+        message.classList.add(
+            type
+        );
+
+
+    }
+
+
+    message.textContent =
+        text;
+
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
