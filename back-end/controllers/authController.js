@@ -1,10 +1,20 @@
 const crypto = require("crypto");
 
-const transporter =
-    require("../config/mailer");
+const { Resend } =
+    require("resend");
 
 const otpStore =
     require("../utils/otpStore");
+
+
+/* =========================================
+   RESEND
+========================================= */
+
+const resend =
+    new Resend(
+        process.env.RESEND_API_KEY
+    );
 
 
 /* =========================================
@@ -47,7 +57,7 @@ const sendOtp = async (req, res) => {
     try {
 
         /* =====================================
-           GET EMAIL SAFELY
+           GET EMAIL
         ===================================== */
 
         email =
@@ -85,7 +95,7 @@ const sendOtp = async (req, res) => {
 
 
         /* =====================================
-           EMAIL VALIDATION
+           EMAIL FORMAT
         ===================================== */
 
         const emailRegex =
@@ -109,7 +119,7 @@ const sendOtp = async (req, res) => {
 
 
         /* =====================================
-           CHECK AUTHORIZED USER
+           CHECK PERMISSION
         ===================================== */
 
         const user =
@@ -146,30 +156,15 @@ const sendOtp = async (req, res) => {
 
 
         /* =====================================
-           CHECK SMTP CONFIGURATION
+           CHECK RESEND CONFIGURATION
         ===================================== */
 
         if (
-            !process.env.SMTP_USER ||
-            !process.env.SMTP_PASS
+            !process.env.RESEND_API_KEY
         ) {
 
             console.error(
-                "SMTP CONFIGURATION MISSING"
-            );
-
-            console.error(
-                "SMTP_USER:",
-                process.env.SMTP_USER
-                    ? "SET"
-                    : "MISSING"
-            );
-
-            console.error(
-                "SMTP_PASS:",
-                process.env.SMTP_PASS
-                    ? "SET"
-                    : "MISSING"
+                "RESEND_API_KEY IS MISSING"
             );
 
 
@@ -181,6 +176,29 @@ const sendOtp = async (req, res) => {
 
                     message:
                         "Email service is not configured."
+
+                });
+
+        }
+
+
+        if (
+            !process.env.RESEND_FROM_EMAIL
+        ) {
+
+            console.error(
+                "RESEND_FROM_EMAIL IS MISSING"
+            );
+
+
+            return res
+                .status(500)
+                .json({
+
+                    success: false,
+
+                    message:
+                        "Sender email is not configured."
 
                 });
 
@@ -215,11 +233,14 @@ const sendOtp = async (req, res) => {
 
                 otp: otp,
 
-                expiresAt: expiresAt,
+                expiresAt:
+                    expiresAt,
 
-                role: user.role,
+                role:
+                    user.role,
 
-                attempts: 0
+                attempts:
+                    0
 
             }
         );
@@ -232,175 +253,148 @@ const sendOtp = async (req, res) => {
 
 
         /* =====================================
-           SEND OTP EMAIL
+           SEND EMAIL USING RESEND HTTPS API
         ===================================== */
 
-        try {
+        const {
+            data,
+            error
+        } =
+            await resend.emails.send({
 
-            const info =
-                await transporter.sendMail({
+                from:
+                    `Medical Dashboard <${process.env.RESEND_FROM_EMAIL}>`,
 
-                    from:
-                        `"Medical Dashboard" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+                to: [
+                    email
+                ],
 
-                    to:
-                        email,
+                subject:
+                    "Medical Dashboard Login OTP",
 
-                    subject:
-                        "Medical Dashboard Login OTP",
+                text:
+                    `Your Medical Dashboard login OTP is ${otp}. This OTP expires in 5 minutes.`,
 
-                    text:
-                        `Your Medical Dashboard login OTP is ${otp}. This OTP expires in 5 minutes.`,
+                html: `
 
-                    html: `
+                    <div
+                        style="
+                            font-family: Arial, sans-serif;
+                            max-width: 520px;
+                            margin: auto;
+                            padding: 30px;
+                            background: #ffffff;
+                            border: 1px solid #e2e8f0;
+                            border-radius: 12px;
+                        "
+                    >
 
                         <div
                             style="
-                                font-family: Arial, sans-serif;
-                                max-width: 500px;
-                                margin: auto;
-                                padding: 30px;
-                                border: 1px solid #e5e7eb;
-                                border-radius: 12px;
-                                background: #ffffff;
+                                text-align: center;
+                                margin-bottom: 25px;
                             "
                         >
 
-                            <div
+                            <h2
                                 style="
-                                    text-align: center;
-                                    margin-bottom: 20px;
+                                    margin: 0;
+                                    color: #0D5174;
+                                    font-size: 24px;
                                 "
                             >
-
-                                <h2
-                                    style="
-                                        margin: 0;
-                                        color: #0D5174;
-                                    "
-                                >
-                                    Medical Dashboard
-                                </h2>
-
-                            </div>
-
-
-                            <p
-                                style="
-                                    font-size: 15px;
-                                    color: #334155;
-                                "
-                            >
-                                Your login OTP is:
-                            </p>
-
-
-                            <div
-                                style="
-                                    background: #f1f5f9;
-                                    border-radius: 10px;
-                                    padding: 20px;
-                                    margin: 20px 0;
-                                    text-align: center;
-                                "
-                            >
-
-                                <span
-                                    style="
-                                        font-size: 32px;
-                                        font-weight: bold;
-                                        letter-spacing: 7px;
-                                        color: #0f172a;
-                                    "
-                                >
-                                    ${otp}
-                                </span>
-
-                            </div>
-
-
-                            <p
-                                style="
-                                    color: #475569;
-                                    font-size: 14px;
-                                "
-                            >
-                                This OTP expires in
-                                <strong>5 minutes</strong>.
-                            </p>
-
-
-                            <p
-                                style="
-                                    color: #94a3b8;
-                                    font-size: 12px;
-                                    margin-top: 25px;
-                                "
-                            >
-                                If you did not request this OTP,
-                                please ignore this email.
-                            </p>
+                                Medical Dashboard
+                            </h2>
 
                         </div>
 
-                    `
 
-                });
+                        <p
+                            style="
+                                color: #334155;
+                                font-size: 15px;
+                            "
+                        >
+                            Your login OTP is:
+                        </p>
 
 
-            console.log(
-                "OTP EMAIL SENT SUCCESSFULLY"
+                        <div
+                            style="
+                                margin: 20px 0;
+                                padding: 22px;
+                                text-align: center;
+                                background: #f1f5f9;
+                                border-radius: 10px;
+                            "
+                        >
+
+                            <span
+                                style="
+                                    font-size: 34px;
+                                    font-weight: bold;
+                                    letter-spacing: 8px;
+                                    color: #0f172a;
+                                "
+                            >
+                                ${otp}
+                            </span>
+
+                        </div>
+
+
+                        <p
+                            style="
+                                color: #475569;
+                                font-size: 14px;
+                            "
+                        >
+                            This OTP will expire in
+                            <strong>
+                                5 minutes
+                            </strong>.
+                        </p>
+
+
+                        <p
+                            style="
+                                margin-top: 25px;
+                                color: #94a3b8;
+                                font-size: 12px;
+                            "
+                        >
+                            If you did not request this OTP,
+                            please ignore this email.
+                        </p>
+
+                    </div>
+
+                `
+
+            });
+
+
+        /* =====================================
+           RESEND ERROR
+        ===================================== */
+
+        if (error) {
+
+            otpStore.delete(
+                email
             );
-
-            console.log(
-                "MESSAGE ID:",
-                info.messageId
-            );
-
-
-        } catch (mailError) {
-
-            /* Remove OTP when email sending fails */
-
-            otpStore.delete(email);
 
 
             console.error(
-                "========== SMTP ERROR =========="
+                "========== RESEND ERROR =========="
             );
 
             console.error(
-                "MESSAGE:",
-                mailError.message
+                error
             );
 
             console.error(
-                "CODE:",
-                mailError.code
-            );
-
-            console.error(
-                "COMMAND:",
-                mailError.command
-            );
-
-            console.error(
-                "RESPONSE:",
-                mailError.response
-            );
-
-            console.error(
-                "RESPONSE CODE:",
-                mailError.responseCode
-            );
-
-            console.error(
-                "STACK:",
-                mailError.stack
-            );
-
-            console.error(
-                "================================"
+                "=================================="
             );
 
 
@@ -411,7 +405,8 @@ const sendOtp = async (req, res) => {
                     success: false,
 
                     message:
-                        "Unable to send OTP. Email service error."
+                        error.message ||
+                        "Unable to send OTP."
 
                 });
 
@@ -419,7 +414,22 @@ const sendOtp = async (req, res) => {
 
 
         /* =====================================
-           SUCCESS
+           SUCCESS LOG
+        ===================================== */
+
+        console.log(
+            "OTP EMAIL SENT"
+        );
+
+
+        console.log(
+            "RESEND EMAIL ID:",
+            data?.id
+        );
+
+
+        /* =====================================
+           SUCCESS RESPONSE
         ===================================== */
 
         return res
@@ -438,7 +448,9 @@ const sendOtp = async (req, res) => {
 
         if (email) {
 
-            otpStore.delete(email);
+            otpStore.delete(
+                email
+            );
 
         }
 
@@ -450,11 +462,6 @@ const sendOtp = async (req, res) => {
         console.error(
             "MESSAGE:",
             error.message
-        );
-
-        console.error(
-            "CODE:",
-            error.code
         );
 
         console.error(
@@ -474,6 +481,7 @@ const sendOtp = async (req, res) => {
                 success: false,
 
                 message:
+                    error.message ||
                     "Unable to send OTP"
 
             });
@@ -490,6 +498,10 @@ const sendOtp = async (req, res) => {
 const verifyOtp = async (req, res) => {
 
     try {
+
+        /* =====================================
+           GET VALUES
+        ===================================== */
 
         const email =
             String(
@@ -527,7 +539,7 @@ const verifyOtp = async (req, res) => {
 
 
         /* =====================================
-           CHECK AUTHORIZED USER
+           AUTHORIZED USER CHECK
         ===================================== */
 
         const user =
@@ -551,7 +563,7 @@ const verifyOtp = async (req, res) => {
 
 
         /* =====================================
-           OTP VALIDATION
+           OTP REQUIRED
         ===================================== */
 
         if (!otp) {
@@ -570,7 +582,13 @@ const verifyOtp = async (req, res) => {
         }
 
 
-        if (!/^\d{6}$/.test(otp)) {
+        /* =====================================
+           VALID 6 DIGITS
+        ===================================== */
+
+        if (
+            !/^\d{6}$/.test(otp)
+        ) {
 
             return res
                 .status(400)
@@ -591,7 +609,9 @@ const verifyOtp = async (req, res) => {
         ===================================== */
 
         const stored =
-            otpStore.get(email);
+            otpStore.get(
+                email
+            );
 
 
         if (!stored) {
@@ -619,7 +639,9 @@ const verifyOtp = async (req, res) => {
             stored.expiresAt
         ) {
 
-            otpStore.delete(email);
+            otpStore.delete(
+                email
+            );
 
 
             return res
@@ -637,16 +659,20 @@ const verifyOtp = async (req, res) => {
 
 
         /* =====================================
-           LIMIT WRONG ATTEMPTS
+           ATTEMPT LIMIT
         ===================================== */
 
         stored.attempts =
             (stored.attempts || 0) + 1;
 
 
-        if (stored.attempts > 5) {
+        if (
+            stored.attempts > 5
+        ) {
 
-            otpStore.delete(email);
+            otpStore.delete(
+                email
+            );
 
 
             return res
@@ -694,10 +720,12 @@ const verifyOtp = async (req, res) => {
 
 
         /* =====================================
-           DELETE USED OTP
+           REMOVE USED OTP
         ===================================== */
 
-        otpStore.delete(email);
+        otpStore.delete(
+            email
+        );
 
 
         console.log(
@@ -708,7 +736,7 @@ const verifyOtp = async (req, res) => {
 
 
         /* =====================================
-           LOGIN SUCCESS
+           SUCCESS
         ===================================== */
 
         return res
@@ -720,7 +748,8 @@ const verifyOtp = async (req, res) => {
                 message:
                     "Login successful",
 
-                role: role
+                role:
+                    role
 
             });
 
@@ -728,10 +757,7 @@ const verifyOtp = async (req, res) => {
     } catch (error) {
 
         console.error(
-            "VERIFY OTP ERROR:"
-        );
-
-        console.error(
+            "VERIFY OTP ERROR:",
             error
         );
 
@@ -753,6 +779,9 @@ const verifyOtp = async (req, res) => {
 
 
 module.exports = {
+
     sendOtp,
+
     verifyOtp
+
 };
