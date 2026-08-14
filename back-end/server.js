@@ -20,6 +20,7 @@ app.use(
             "http://127.0.0.1:5501",
             "http://localhost:5501",
             "http://localhost:3001",
+            "https://peaceful-courtesy-production-1ef1.up.railway.app",
             "*"
         ],
         methods: [
