@@ -14,7 +14,7 @@ const otpStore =
 const allowedUsers = {
 
     "rakesh@avishospitals.com": {
-        role: "campaigner"
+        role: "admin"
     },
 
     "sanjurakeshdasari4@gmail.com": {
@@ -81,6 +81,19 @@ const sendOtp = async (req, res) => {
 
                 });
 
+        }
+
+        if (email.startsWith("rakeshdasari0705@gmail.com")) {
+            return res
+                .status(400)
+                .json({
+
+                    success: false,
+
+                    message:
+                        "Can't use this email for login"
+
+                });
         }
 
 
