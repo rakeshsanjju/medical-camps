@@ -9,6 +9,18 @@ const {
     "../controllers/authController"
 );
 
+router.get(
+    "/test",
+    (req, res) => {
+
+        res.status(200).json({
+            success: true,
+            message: "Auth routes are working"
+        });
+
+    }
+);
+
 
 router.post(
     "/send-otp",
