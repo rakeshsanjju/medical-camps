@@ -21,6 +21,10 @@ const allowedUsers = {
         role: "campaigner"
     },
 
+    "srinivasoman2017@gmail.com":{
+        role: "campaigner"
+    },
+
     "babashaik@avisvascularcentre.com": {
         role: "counsellor"
     },
