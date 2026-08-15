@@ -491,7 +491,7 @@ document.addEventListener(
             ) {
 
                 window.location.replace(
-                    "./admin.html"
+                    "./admin-dashboard.html"
                 );
 
             }
@@ -887,6 +887,21 @@ async function verifyOtp() {
 
             window.location.replace(
                 "./counsellor.html"
+            );
+
+
+            return;
+
+        }
+
+         if (
+            result.role ===
+            "admin"
+        ) {
+
+
+            window.location.replace(
+                "./admin-dashboard.html"
             );
 
 
