@@ -370,7 +370,7 @@
 ========================================== */
 
 const API_BASE_URL =
-    "https://medical-camps-production.up.railway.app";
+    "http://localhost:3000";
 
 
 /* ==========================================
@@ -463,8 +463,6 @@ document.addEventListener(
         ) {
 
 
-            /* CAMPAIGNER */
-
             if (
                 role === "campaigner"
             ) {
@@ -478,8 +476,6 @@ document.addEventListener(
             }
 
 
-            /* COUNSELLOR */
-
             if (
                 role === "counsellor"
             ) {
@@ -488,31 +484,7 @@ document.addEventListener(
                     "./counsellor.html"
                 );
 
-                return;
-
             }
-
-
-            /* ADMIN */
-
-            if (
-                role === "admin"
-            ) {
-
-                window.location.replace(
-                    "./admin-dashboard.html"
-                );
-
-                return;
-
-            }
-
-
-            /*
-             * Invalid saved role
-             */
-
-            clearLogin();
 
 
         }
@@ -556,18 +528,13 @@ async function sendOtp() {
         );
 
 
-        emailInput.focus();
-
-
         return;
 
     }
 
 
     if (
-        !validateEmail(
-            email
-        )
+        !validateEmail(email)
     ) {
 
 
@@ -575,9 +542,6 @@ async function sendOtp() {
             "Enter a valid email address.",
             "error"
         );
-
-
-        emailInput.focus();
 
 
         return;
@@ -636,21 +600,8 @@ async function sendOtp() {
             );
 
 
-        let result;
-
-
-        try {
-
-            result =
-                await response.json();
-
-        } catch (jsonError) {
-
-            throw new Error(
-                "Invalid response received from the server."
-            );
-
-        }
+        const result =
+            await response.json();
 
 
         console.log(
@@ -710,14 +661,12 @@ async function sendOtp() {
 
 
         console.error(
-            "SEND OTP ERROR:",
             error
         );
 
 
         showMessage(
-            error.message ||
-            "Unable to send OTP.",
+            error.message,
             "error"
         );
 
@@ -768,25 +717,7 @@ async function verifyOtp() {
 
 
     if (
-        !email
-    ) {
-
-
-        showMessage(
-            "Email address is missing.",
-            "error"
-        );
-
-
-        return;
-
-    }
-
-
-    if (
-        !/^\d{6}$/.test(
-            otp
-        )
+        !/^\d{6}$/.test(otp)
     ) {
 
 
@@ -794,9 +725,6 @@ async function verifyOtp() {
             "Enter a valid 6-digit OTP.",
             "error"
         );
-
-
-        otpInput.focus();
 
 
         return;
@@ -854,21 +782,8 @@ async function verifyOtp() {
             );
 
 
-        let result;
-
-
-        try {
-
-            result =
-                await response.json();
-
-        } catch (jsonError) {
-
-            throw new Error(
-                "Invalid response received from the server."
-            );
-
-        }
+        const result =
+            await response.json();
 
 
         console.log(
@@ -893,37 +808,11 @@ async function verifyOtp() {
         }
 
 
-        /* ==========================================
-           VALIDATE ROLE
-        ========================================== */
-
-        const allowedRoles = [
-            "campaigner",
-            "counsellor",
-            "admin"
-        ];
-
-
-        if (
-            !allowedRoles.includes(
-                result.role
-            )
-        ) {
-
-
-            clearLogin();
-
-
-            throw new Error(
-                "Invalid user role."
-            );
-
-        }
-
-
-        /* ==========================================
-           SAVE LOGIN SESSION
-        ========================================== */
+        /*
+         * IMPORTANT
+         *
+         * Save authentication BEFORE redirect.
+         */
 
         sessionStorage.setItem(
             "medical_logged_in",
@@ -949,9 +838,6 @@ async function verifyOtp() {
                 "medical_logged_in"
             ),
             sessionStorage.getItem(
-                "medical_user_email"
-            ),
-            sessionStorage.getItem(
                 "medical_user_role"
             )
         );
@@ -963,12 +849,9 @@ async function verifyOtp() {
         );
 
 
-        /* ==========================================
-           ROLE BASED REDIRECTION
-        ========================================== */
-
-
-        /* CAMPAIGNER */
+        /*
+         * ROLE REDIRECTION
+         */
 
         if (
             result.role ===
@@ -986,8 +869,6 @@ async function verifyOtp() {
         }
 
 
-        /* COUNSELLOR */
-
         if (
             result.role ===
             "counsellor"
@@ -1004,26 +885,8 @@ async function verifyOtp() {
         }
 
 
-        /* ADMIN */
-
-        if (
-            result.role ===
-            "admin"
-        ) {
-
-
-            window.location.replace(
-                "./admin-dashboard.html"
-            );
-
-
-            return;
-
-        }
-
-
         /*
-         * Fallback
+         * Unknown role
          */
 
         clearLogin();
@@ -1182,9 +1045,7 @@ otpInput.addEventListener(
    VALIDATE EMAIL
 ========================================== */
 
-function validateEmail(
-    email
-) {
+function validateEmail(email) {
 
 
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -1235,9 +1096,7 @@ function showMessage(
         "message";
 
 
-    if (
-        type
-    ) {
+    if (type) {
 
 
         message.classList.add(

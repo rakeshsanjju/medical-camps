@@ -21,6 +21,7 @@ const allowedOrigins = [
     "http://localhost:5501",
     "http://127.0.0.1:3001",
     "http://localhost:3001",
+    "https://camps.avisvascularcentre.com",
 
     // Railway production frontend
     "https://peaceful-courtesy-production-1ef1.up.railway.app",
