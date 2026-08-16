@@ -22,7 +22,7 @@ const allowedUsers = {
     },
 
     "srinivasoman2017@gmail.com":{
-        role: "campaigner"
+        role: "counsellor"
     },
 
     "babashaik@avisvascularcentre.com": {
