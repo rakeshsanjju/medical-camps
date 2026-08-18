@@ -56,7 +56,7 @@ const ALLOWED_USERS = {
             "admin"
     },
 
-    "rakeshdasari0705@gmail.com": {
+    "praveen@avishospitals.com": {
         role:
             "admin"
     },
