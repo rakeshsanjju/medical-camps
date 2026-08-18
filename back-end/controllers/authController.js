@@ -36,6 +36,9 @@ const allowedUsers = {
     "rakeshdasari0705@gmail.com": {
         role: "admin"
     }
+     "praveen@avishospitals.com": {
+        role: "admin"
+    }
 
 };
 
