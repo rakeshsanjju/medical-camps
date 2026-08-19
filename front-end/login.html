@@ -10,7 +10,10 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Medical Camps Login</title>
+    <title>
+        Medical Camps Login
+    </title>
+
 
     <style>
 
@@ -18,13 +21,16 @@
             box-sizing: border-box;
         }
 
+
         html,
         body {
             margin: 0;
             padding: 0;
         }
 
+
         body {
+
             min-height: 100vh;
 
             display: flex;
@@ -39,13 +45,17 @@
                 Arial,
                 Helvetica,
                 sans-serif;
+
         }
+
 
         .login-wrapper {
             width: 100%;
         }
 
+
         .login-card {
+
             width: 100%;
             max-width: 430px;
 
@@ -53,16 +63,34 @@
 
             padding: 32px;
 
-            background: white;
+            background: #ffffff;
 
             border-radius: 16px;
 
             box-shadow:
                 0 12px 35px
                 rgba(15, 23, 42, 0.1);
+
         }
 
+
+        .logo-wrap {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+
+        .logo-wrap img {
+
+            max-width: 100%;
+            width: 370px;
+            height: auto;
+
+        }
+
+
         h1 {
+
             margin:
                 0
                 0
@@ -73,9 +101,12 @@
             font-size: 28px;
 
             color: #0f172a;
+
         }
 
+
         .subtitle {
+
             margin:
                 0
                 0
@@ -86,9 +117,12 @@
             color: #64748b;
 
             font-size: 14px;
+
         }
 
+
         label {
+
             display: block;
 
             margin-bottom: 8px;
@@ -97,9 +131,12 @@
 
             font-size: 14px;
             font-weight: 600;
+
         }
 
+
         input {
+
             width: 100%;
 
             margin-bottom: 16px;
@@ -117,13 +154,24 @@
             outline: none;
 
             font-size: 15px;
+
         }
+
 
         input:focus {
-            border-color: #2563eb;
+
+            border-color:
+                #2563eb;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(37, 99, 235, 0.08);
+
         }
 
+
         button {
+
             width: 100%;
 
             padding: 13px;
@@ -134,45 +182,73 @@
 
             background: #2563eb;
 
-            color: white;
+            color: #ffffff;
 
             font-size: 14px;
 
             font-weight: 600;
 
             cursor: pointer;
+
         }
+
 
         button:hover {
             background: #1d4ed8;
         }
 
+
         button:disabled {
+
             opacity: 0.6;
+
             cursor: not-allowed;
+
         }
 
+
         .secondary-btn {
+
             margin-top: 10px;
 
             background: #e2e8f0;
 
             color: #0f172a;
+
         }
 
+
+        .secondary-btn:hover {
+            background: #cbd5e1;
+        }
+
+
         .text-btn {
+
             margin-top: 8px;
 
             background: transparent;
 
             color: #2563eb;
+
         }
+
+
+        .text-btn:hover {
+
+            background:
+                rgba(37, 99, 235, 0.06);
+
+        }
+
 
         .hidden {
             display: none;
         }
 
+
         .message {
+
             min-height: 20px;
 
             margin-top: 16px;
@@ -180,17 +256,22 @@
             text-align: center;
 
             font-size: 13px;
+
         }
+
 
         .message.success {
             color: #15803d;
         }
 
+
         .message.error {
             color: #dc2626;
         }
 
+
         .otp-info {
+
             margin-bottom: 18px;
 
             color: #64748b;
@@ -198,15 +279,20 @@
             text-align: center;
 
             font-size: 13px;
+
         }
 
+
         #otp {
+
             text-align: center;
 
             letter-spacing: 6px;
 
             font-size: 20px;
+
         }
+
 
         @media screen and (max-width: 480px) {
 
@@ -214,11 +300,15 @@
                 padding: 14px;
             }
 
+
             .login-card {
+
                 padding:
                     24px
                     18px;
+
             }
+
 
             h1 {
                 font-size: 24px;
@@ -240,16 +330,18 @@
     <div class="login-card">
 
 
-        <center>
+        <div class="logo-wrap">
+
             <img
-                src="	https://avisvascularcentre.com/assets/logo-1.png"
+                src="https://avisvascularcentre.com/assets/logo-1.png"
                 alt="Medical Camps Logo"
-                width="370" height="180"
             >
+
+        </div>
 
 
         <h1>
-            Medical Camps  
+            Medical Camps
         </h1>
 
 
@@ -259,8 +351,9 @@
 
 
 
-
-        <!-- EMAIL -->
+        <!-- =====================================================
+             EMAIL STEP
+        ====================================================== -->
 
         <div id="emailStep">
 
@@ -289,7 +382,10 @@
         </div>
 
 
-        <!-- OTP -->
+
+        <!-- =====================================================
+             OTP STEP
+        ====================================================== -->
 
         <div
             id="otpStep"
@@ -301,7 +397,9 @@
 
                 OTP sent to
 
-                <strong id="displayEmail"></strong>
+                <strong
+                    id="displayEmail"
+                ></strong>
 
             </p>
 
@@ -362,20 +460,181 @@
 </div>
 
 
+
 <script>
 
 
-/* ==========================================
+/* =========================================================
    BACKEND
-========================================== */
+========================================================= */
 
 const API_BASE_URL =
     "https://medical-camps-production.up.railway.app";
 
 
-/* ==========================================
+const EXPECTED_AUTH_VERSION =
+    "2026-08-18-telesales-login-v3";
+
+
+
+/* =========================================================
+   ROLE / DASHBOARD CONFIGURATION
+========================================================= */
+
+const ROLE_DASHBOARDS = {
+
+    admin:
+        "admin-dashboard.html",
+
+    campaigner:
+        "dashboard.html",
+
+    counsellor:
+        "counsellor.html",
+
+    telesales:
+        "telesales.html"
+
+};
+
+
+
+const ALLOWED_DASHBOARDS =
+    new Set(
+
+        Object.values(
+            ROLE_DASHBOARDS
+        )
+
+    );
+
+
+
+/* =========================================================
+   NORMALIZE ROLE
+========================================================= */
+
+function normalizeRole(
+    value
+) {
+
+    return String(
+
+        value == null
+            ? ""
+            : value
+
+    )
+        .trim()
+        .toLowerCase();
+
+}
+
+
+
+/* =========================================================
+   NORMALIZE DASHBOARD
+========================================================= */
+
+function normalizeDashboardName(
+    value
+) {
+
+    return String(
+
+        value == null
+            ? ""
+            : value
+
+    )
+        .trim()
+        .replace(
+            /^\.\//,
+            ""
+        )
+        .replace(
+            /^\//,
+            ""
+        );
+
+}
+
+
+
+/* =========================================================
+   RESOLVE DASHBOARD
+
+   Backend dashboard is preferred,
+   but only known application pages
+   are allowed.
+========================================================= */
+
+function resolveDashboard(
+    role,
+    backendDashboard = ""
+) {
+
+    const normalizedRole =
+        normalizeRole(
+            role
+        );
+
+
+    const dashboardFromBackend =
+        normalizeDashboardName(
+            backendDashboard
+        );
+
+
+    if (
+
+        dashboardFromBackend &&
+
+        ALLOWED_DASHBOARDS.has(
+            dashboardFromBackend
+        )
+
+    ) {
+
+        return (
+
+            "./" +
+            dashboardFromBackend
+
+        );
+
+    }
+
+
+    const dashboardFromRole =
+        ROLE_DASHBOARDS[
+            normalizedRole
+        ];
+
+
+    if (
+        dashboardFromRole
+    ) {
+
+        return (
+
+            "./" +
+            dashboardFromRole
+
+        );
+
+    }
+
+
+    return "";
+
+}
+
+
+
+/* =========================================================
    ELEMENTS
-========================================== */
+========================================================= */
 
 const emailStep =
     document.getElementById(
@@ -437,9 +696,10 @@ const message =
     );
 
 
-/* ==========================================
+
+/* =========================================================
    IF ALREADY LOGGED IN
-========================================== */
+========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -453,9 +713,20 @@ document.addEventListener(
 
 
         const role =
-            sessionStorage.getItem(
-                "medical_user_role"
+            normalizeRole(
+
+                sessionStorage.getItem(
+                    "medical_user_role"
+                )
+
             );
+
+
+        const savedDashboard =
+            sessionStorage.getItem(
+                "medical_user_dashboard"
+            ) ||
+            "";
 
 
         if (
@@ -463,50 +734,47 @@ document.addEventListener(
         ) {
 
 
+            const destination =
+                resolveDashboard(
+
+                    role,
+
+                    savedDashboard
+
+                );
+
+
             if (
-                role === "campaigner"
+                destination
             ) {
 
+
                 window.location.replace(
-                    "./dashboard.html"
+                    destination
                 );
+
 
                 return;
 
             }
 
 
-            if (
-                role === "counsellor"
-            ) {
+            /*
+            Invalid / old session.
+            */
 
-                window.location.replace(
-                    "./counsellor.html"
-                );
-
-            }
-
-            if (
-                role === "admin"
-            ) {
-
-                window.location.replace(
-                    "./admin-dashboard.html"
-                );
-
-            }
-
+            clearLogin();
 
         }
-
 
     }
 );
 
 
-/* ==========================================
-   SEND OTP
-========================================== */
+
+/* =========================================================
+   SEND OTP BUTTON
+========================================================= */
 
 sendOtpBtn.addEventListener(
     "click",
@@ -520,16 +788,24 @@ resendOtpBtn.addEventListener(
 );
 
 
+
+/* =========================================================
+   SEND OTP
+========================================================= */
+
 async function sendOtp() {
 
 
     const email =
-        emailInput.value
+        emailInput
+            .value
             .trim()
             .toLowerCase();
 
 
-    if (!email) {
+    if (
+        !email
+    ) {
 
 
         showMessage(
@@ -538,13 +814,18 @@ async function sendOtp() {
         );
 
 
+        emailInput.focus();
+
+
         return;
 
     }
 
 
     if (
-        !validateEmail(email)
+        !validateEmail(
+            email
+        )
     ) {
 
 
@@ -552,6 +833,9 @@ async function sendOtp() {
             "Enter a valid email address.",
             "error"
         );
+
+
+        emailInput.focus();
 
 
         return;
@@ -610,8 +894,21 @@ async function sendOtp() {
             );
 
 
-        const result =
-            await response.json();
+        let result;
+
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch (error) {
+
+            throw new Error(
+                "Invalid response received from login server."
+            );
+
+        }
 
 
         console.log(
@@ -621,14 +918,59 @@ async function sendOtp() {
 
 
         if (
-            !response.ok ||
-            !result.success
+            result.authVersion
         ) {
+
+            console.log(
+                "AUTH VERSION:",
+                result.authVersion,
+                "EXPECTED:",
+                EXPECTED_AUTH_VERSION
+            );
+
+        }
+
+
+        if (
+
+            !response.ok ||
+
+            !result.success
+
+        ) {
+
+
+            /*
+             * If Telesales is present in this frontend but Railway
+             * still returns the old permission error, the deployed
+             * backend has not been updated yet.
+             */
+            if (
+                response.status === 403 &&
+                email === "tele.sales@avisvascularcentre.com"
+            ) {
+
+                const version =
+                    result.authVersion ||
+                    "old/unknown";
+
+
+                throw new Error(
+
+                    "Telesales login is not enabled in the currently deployed backend. " +
+                    "Deploy the latest auth controller to Railway. " +
+                    "Backend version: " +
+                    version
+
+                );
+
+            }
 
 
             throw new Error(
 
                 result.message ||
+
                 "Unable to send OTP"
 
             );
@@ -667,17 +1009,25 @@ async function sendOtp() {
         );
 
 
-    } catch (error) {
+    } catch (
+        error
+    ) {
 
 
         console.error(
+            "SEND OTP ERROR:",
             error
         );
 
 
         showMessage(
-            error.message,
+
+            error.message ||
+
+            "Unable to send OTP.",
+
             "error"
+
         );
 
 
@@ -695,16 +1045,15 @@ async function sendOtp() {
         sendOtpBtn.textContent =
             "Send OTP";
 
-
     }
-
 
 }
 
 
-/* ==========================================
-   VERIFY OTP
-========================================== */
+
+/* =========================================================
+   VERIFY OTP BUTTON
+========================================================= */
 
 verifyOtpBtn.addEventListener(
     "click",
@@ -712,22 +1061,51 @@ verifyOtpBtn.addEventListener(
 );
 
 
+
+/* =========================================================
+   VERIFY OTP
+========================================================= */
+
 async function verifyOtp() {
 
 
     const email =
-        emailInput.value
+        emailInput
+            .value
             .trim()
             .toLowerCase();
 
 
     const otp =
-        otpInput.value
+        otpInput
+            .value
             .trim();
 
 
     if (
-        !/^\d{6}$/.test(otp)
+        !email
+    ) {
+
+
+        showMessage(
+            "Email is missing. Please enter your email again.",
+            "error"
+        );
+
+
+        changeToEmailStep();
+
+
+        return;
+
+    }
+
+
+    if (
+        !/^\d{6}$/
+            .test(
+                otp
+            )
     ) {
 
 
@@ -735,6 +1113,9 @@ async function verifyOtp() {
             "Enter a valid 6-digit OTP.",
             "error"
         );
+
+
+        otpInput.focus();
 
 
         return;
@@ -792,8 +1173,21 @@ async function verifyOtp() {
             );
 
 
-        const result =
-            await response.json();
+        let result;
+
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch (error) {
+
+            throw new Error(
+                "Invalid response received from login server."
+            );
+
+        }
 
 
         console.log(
@@ -803,14 +1197,32 @@ async function verifyOtp() {
 
 
         if (
+            result.authVersion
+        ) {
+
+            console.log(
+                "AUTH VERSION:",
+                result.authVersion,
+                "EXPECTED:",
+                EXPECTED_AUTH_VERSION
+            );
+
+        }
+
+
+        if (
+
             !response.ok ||
+
             !result.success
+
         ) {
 
 
             throw new Error(
 
                 result.message ||
+
                 "OTP verification failed"
 
             );
@@ -819,10 +1231,56 @@ async function verifyOtp() {
 
 
         /*
-         * IMPORTANT
-         *
-         * Save authentication BEFORE redirect.
-         */
+        Backend returns:
+
+        {
+            success: true,
+            email: "...",
+            role: "...",
+            dashboard: "..."
+        }
+        */
+
+
+        const normalizedRole =
+            normalizeRole(
+                result.role
+            );
+
+
+        const destination =
+            resolveDashboard(
+
+                normalizedRole,
+
+                result.dashboard
+
+            );
+
+
+        if (
+
+            !normalizedRole ||
+
+            !destination
+
+        ) {
+
+
+            clearLogin();
+
+
+            throw new Error(
+                "Invalid user role or dashboard."
+            );
+
+        }
+
+
+
+        /* =====================================================
+           SAVE LOGIN SESSION
+        ====================================================== */
 
         sessionStorage.setItem(
             "medical_logged_in",
@@ -831,25 +1289,67 @@ async function verifyOtp() {
 
 
         sessionStorage.setItem(
+
             "medical_user_email",
-            email
+
+            String(
+                result.email ||
+                email
+            )
+                .trim()
+                .toLowerCase()
+
         );
 
 
         sessionStorage.setItem(
             "medical_user_role",
-            result.role
+            normalizedRole
+        );
+
+
+        sessionStorage.setItem(
+
+            "medical_user_dashboard",
+
+            normalizeDashboardName(
+
+                result.dashboard ||
+
+                ROLE_DASHBOARDS[
+                    normalizedRole
+                ]
+
+            )
+
         );
 
 
         console.log(
             "LOGIN SAVED:",
-            sessionStorage.getItem(
-                "medical_logged_in"
-            ),
-            sessionStorage.getItem(
-                "medical_user_role"
-            )
+            {
+
+                loggedIn:
+                    sessionStorage.getItem(
+                        "medical_logged_in"
+                    ),
+
+                email:
+                    sessionStorage.getItem(
+                        "medical_user_email"
+                    ),
+
+                role:
+                    sessionStorage.getItem(
+                        "medical_user_role"
+                    ),
+
+                dashboard:
+                    sessionStorage.getItem(
+                        "medical_user_dashboard"
+                    )
+
+            }
         );
 
 
@@ -860,69 +1360,26 @@ async function verifyOtp() {
 
 
         /*
-         * ROLE REDIRECTION
-         */
+        ROLE ROUTING
 
-        if (
-            result.role ===
-            "campaigner"
-        ) {
-
-
-            window.location.replace(
-                "./dashboard.html"
-            );
+        admin       -> admin-dashboard.html
+        campaigner  -> dashboard.html
+        counsellor  -> counsellor.html
+        telesales   -> telesales.html
+        */
 
 
-            return;
-
-        }
-
-
-        if (
-            result.role ===
-            "counsellor"
-        ) {
-
-
-            window.location.replace(
-                "./counsellor.html"
-            );
-
-
-            return;
-
-        }
-
-         if (
-            result.role ===
-            "admin"
-        ) {
-
-
-            window.location.replace(
-                "./admin-dashboard.html"
-            );
-
-
-            return;
-
-        }
-
-
-        /*
-         * Unknown role
-         */
-
-        clearLogin();
-
-
-        throw new Error(
-            "Invalid user role."
+        window.location.replace(
+            destination
         );
 
 
-    } catch (error) {
+        return;
+
+
+    } catch (
+        error
+    ) {
 
 
         console.error(
@@ -932,9 +1389,13 @@ async function verifyOtp() {
 
 
         showMessage(
+
             error.message ||
+
             "Login failed",
+
             "error"
+
         );
 
 
@@ -948,56 +1409,59 @@ async function verifyOtp() {
         verifyOtpBtn.textContent =
             "Verify OTP";
 
-
     }
-
 
 }
 
 
-/* ==========================================
+
+/* =========================================================
    CHANGE EMAIL
-========================================== */
+========================================================= */
 
 changeEmailBtn.addEventListener(
     "click",
-    function () {
-
-
-        otpStep
-            .classList
-            .add(
-                "hidden"
-            );
-
-
-        emailStep
-            .classList
-            .remove(
-                "hidden"
-            );
-
-
-        otpInput.value =
-            "";
-
-
-        showMessage(
-            "",
-            ""
-        );
-
-
-        emailInput.focus();
-
-
-    }
+    changeToEmailStep
 );
 
 
-/* ==========================================
+
+function changeToEmailStep() {
+
+
+    otpStep
+        .classList
+        .add(
+            "hidden"
+        );
+
+
+    emailStep
+        .classList
+        .remove(
+            "hidden"
+        );
+
+
+    otpInput.value =
+        "";
+
+
+    showMessage(
+        "",
+        ""
+    );
+
+
+    emailInput.focus();
+
+}
+
+
+
+/* =========================================================
    OTP NUMBERS ONLY
-========================================== */
+========================================================= */
 
 otpInput.addEventListener(
     "input",
@@ -1015,39 +1479,49 @@ otpInput.addEventListener(
                     6
                 );
 
-
     }
 );
 
 
-/* ==========================================
-   ENTER KEY
-========================================== */
+
+/* =========================================================
+   ENTER KEY - EMAIL
+========================================================= */
 
 emailInput.addEventListener(
     "keydown",
-    function (event) {
+    function (
+        event
+    ) {
 
 
         if (
             event.key ===
             "Enter"
         ) {
+
+
+            event.preventDefault();
 
 
             sendOtp();
 
-
         }
-
 
     }
 );
 
 
+
+/* =========================================================
+   ENTER KEY - OTP
+========================================================= */
+
 otpInput.addEventListener(
     "keydown",
-    function (event) {
+    function (
+        event
+    ) {
 
 
         if (
@@ -1056,21 +1530,25 @@ otpInput.addEventListener(
         ) {
 
 
+            event.preventDefault();
+
+
             verifyOtp();
 
-
         }
-
 
     }
 );
 
 
-/* ==========================================
-   VALIDATE EMAIL
-========================================== */
 
-function validateEmail(email) {
+/* =========================================================
+   VALIDATE EMAIL
+========================================================= */
+
+function validateEmail(
+    email
+) {
 
 
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -1078,13 +1556,13 @@ function validateEmail(email) {
             email
         );
 
-
 }
 
 
-/* ==========================================
+
+/* =========================================================
    CLEAR LOGIN
-========================================== */
+========================================================= */
 
 function clearLogin() {
 
@@ -1104,12 +1582,17 @@ function clearLogin() {
     );
 
 
+    sessionStorage.removeItem(
+        "medical_user_dashboard"
+    );
+
 }
 
 
-/* ==========================================
+
+/* =========================================================
    MESSAGE
-========================================== */
+========================================================= */
 
 function showMessage(
     text,
@@ -1121,20 +1604,22 @@ function showMessage(
         "message";
 
 
-    if (type) {
+    if (
+        type
+    ) {
 
 
-        message.classList.add(
-            type
-        );
-
+        message
+            .classList
+            .add(
+                type
+            );
 
     }
 
 
     message.textContent =
         text;
-
 
 }
 

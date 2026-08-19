@@ -1,0 +1,2375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OP Data</title>
+
+<script>
+function getAuthData() {
+    return {
+        loggedIn: sessionStorage.getItem("medical_logged_in"),
+        email: sessionStorage.getItem("medical_user_email"),
+        role: sessionStorage.getItem("medical_user_role")
+    };
+}
+
+function clearMedicalLogin() {
+    sessionStorage.removeItem("medical_logged_in");
+    sessionStorage.removeItem("medical_user_email");
+    sessionStorage.removeItem("medical_user_role");
+}
+
+function requireAdmin() {
+    const auth = getAuthData();
+
+    if (auth.loggedIn !== "true" || auth.role !== "admin") {
+        clearMedicalLogin();
+        window.location.replace("./login.html");
+        return false;
+    }
+
+    return true;
+}
+
+function logoutMedicalUser() {
+    clearMedicalLogin();
+    window.location.replace("./login.html");
+}
+
+requireAdmin();
+</script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background: #f5f7fb;
+    color: #0f172a;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.topbar {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 16px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.topbar-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.admin-email {
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+.back-btn,
+.logout-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.back-btn {
+    background: #2563eb;
+    color: white;
+}
+
+.logout-btn {
+    background: #dc2626;
+    color: white;
+}
+
+.page {
+    max-width: 1600px;
+    margin: auto;
+    padding: 30px;
+}
+
+.page-heading {
+    margin-bottom: 25px;
+}
+
+.page-heading h1 {
+    margin: 0 0 7px;
+}
+
+.page-heading p {
+    margin: 0;
+    color: #64748b;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+}
+
+.stat-title {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.card {
+    background: white;
+    padding: 24px;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.toolbar h2 {
+    margin: 0;
+}
+
+.toolbar-right {
+    display: flex;
+    gap: 10px;
+}
+
+.search-input {
+    width: 360px;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+}
+
+.refresh-btn {
+    border: none;
+    padding: 10px 16px;
+    background: #2563eb;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.main-table {
+    width: 100%;
+    min-width: 1050px;
+    border-collapse: collapse;
+}
+
+.main-table th {
+    padding: 13px;
+    background: #f1f5f9;
+    text-align: left;
+    font-size: 12px;
+}
+
+.main-table td {
+    padding: 14px 13px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 13px;
+    vertical-align: top;
+}
+
+.camp-main-id {
+    color: #2563eb;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.camp-details-main {
+    min-width: 300px;
+}
+
+.camp-details-main strong {
+    display: block;
+    font-size: 14px;
+    color: #0f172a;
+    margin-bottom: 5px;
+}
+
+.camp-details-main span {
+    display: block;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.patient-count {
+    font-weight: 700;
+}
+
+.view-btn {
+    border: none;
+    padding: 8px 14px;
+    border-radius: 7px;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.view-btn:hover,
+.refresh-btn:hover,
+.back-btn:hover {
+    filter: brightness(0.95);
+}
+
+.expand-row {
+    display: none;
+}
+
+.expand-row.active {
+    display: table-row;
+}
+
+.expand-cell {
+    padding: 0 !important;
+    background: #f8fafc;
+}
+
+.panel {
+    padding: 24px;
+    border-top: 3px solid #2563eb;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.panel-header h3 {
+    margin: 0 0 6px;
+}
+
+.panel-header p {
+    margin: 0;
+    color: #64748b;
+}
+
+.badge {
+    background: #dbeafe;
+    color: #1d4ed8;
+    padding: 6px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.camp-summary {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.summary-box {
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+    padding: 14px;
+    background: white;
+}
+
+.summary-label {
+    color: #64748b;
+    font-size: 11px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.summary-value {
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+.patient-section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 12px;
+}
+
+.patient-section-title h4 {
+    margin: 0;
+    font-size: 15px;
+}
+
+.patient-wrapper {
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: white;
+}
+
+.patient-table {
+    width: 100%;
+    min-width: 2850px;
+    border-collapse: collapse;
+}
+
+.patient-table th {
+    padding: 12px;
+    background: #eaf1f8;
+    text-align: left;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.patient-table td {
+    padding: 13px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.patient-id {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+.modified {
+    color: #15803d;
+    font-weight: 700;
+}
+
+.converted-time {
+    color: #7c3aed;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.convert-btn {
+    border: none;
+    padding: 8px 13px;
+    border-radius: 7px;
+    background: #16a34a;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.convert-btn:hover:not(:disabled) {
+    filter: brightness(0.95);
+}
+
+.convert-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+.convert-btn.is-loading {
+    background: #64748b;
+}
+
+.converted-text {
+    color: #15803d;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+.followup-email {
+    color: #0369a1;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.followup-status-badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.followup-status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.followup-status-badge.contacted {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.followup-status-badge.interested {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.followup-status-badge.call-back,
+.followup-status-badge.no-answer {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.followup-status-badge.not-interested,
+.followup-status-badge.wrong-number {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.followup-status-badge.follow-up-completed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.followup-date {
+    color: #7c3aed;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.followup-remarks-cell {
+    min-width: 220px;
+    max-width: 320px;
+    white-space: normal;
+    line-height: 1.45;
+}
+
+.followup-time {
+    color: #15803d;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.history-btn {
+    border: none;
+    padding: 7px 11px;
+    border-radius: 7px;
+    background: #0f766e;
+    color: white;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.history-btn:hover {
+    filter: brightness(0.95);
+}
+
+.history-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 23, 42, 0.55);
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.history-modal.active {
+    display: block;
+}
+
+.history-modal-card {
+    width: min(1100px, 100%);
+    margin: 35px auto;
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 18px 60px rgba(15, 23, 42, 0.28);
+}
+
+.history-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 22px;
+    background: #0f172a;
+    color: white;
+}
+
+.history-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.history-modal-close {
+    border: none;
+    background: #dc2626;
+    color: white;
+    border-radius: 7px;
+    padding: 8px 13px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.history-modal-body {
+    padding: 22px;
+}
+
+.history-patient-summary {
+    margin-bottom: 18px;
+    color: #475569;
+    font-size: 13px;
+}
+
+.history-table-wrapper {
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+}
+
+.history-table th {
+    background: #f1f5f9;
+    text-align: left;
+    padding: 11px;
+    font-size: 11px;
+}
+
+.history-table td {
+    padding: 11px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 12px;
+    vertical-align: top;
+}
+
+.history-remarks {
+    min-width: 240px;
+    white-space: normal;
+}
+
+.panel-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 22px;
+}
+
+.close-btn {
+    min-width: 140px;
+    border: none;
+    padding: 10px 20px;
+    background: #dc2626;
+    color: white;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.empty {
+    padding: 35px;
+    text-align: center;
+    color: #64748b;
+}
+
+.error {
+    padding: 35px;
+    text-align: center;
+    color: #dc2626;
+}
+
+.load-note {
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+@media (max-width: 1000px) {
+    .camp-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .topbar {
+        padding: 14px 15px;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .topbar-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .page {
+        padding: 15px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toolbar-right {
+        flex-direction: column;
+    }
+
+    .search-input {
+        width: 100%;
+    }
+
+    .panel-header {
+        flex-direction: column;
+    }
+
+    .camp-summary {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+<header class="topbar">
+    <div class="brand">Medical Camps Admin</div>
+
+    <div class="topbar-actions">
+        <span id="adminEmail" class="admin-email">Admin</span>
+
+        <button
+            class="back-btn"
+            onclick="window.location.href='./updated-ip-data.html'"
+        >
+            IP Data
+        </button>
+
+        <button
+            class="back-btn"
+            onclick="window.location.href='./admin-dashboard.html'"
+        >
+            Admin Dashboard
+        </button>
+
+        <button class="logout-btn" onclick="logoutMedicalUser()">
+            Logout
+        </button>
+    </div>
+</header>
+
+<div class="page">
+    <div class="page-heading">
+        <h1>OP Data</h1>
+        <p>Camp-wise patient records with IP conversion action and converted time.</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-title">Total Camps</div>
+            <div id="totalCamps" class="stat-value">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Total Patients</div>
+            <div id="totalPatients" class="stat-value">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Camps With Patients</div>
+            <div id="campsWithPatients" class="stat-value">0</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="toolbar">
+            <h2>OP Data</h2>
+
+            <div class="toolbar-right">
+                <input
+                    type="search"
+                    id="searchInput"
+                    class="search-input"
+                    placeholder="Search camp ID, camp name, city, doctor..."
+                >
+
+                <button id="refreshBtn" class="refresh-btn">
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="main-table">
+                <thead>
+                    <tr>
+                        <th>Camp ID</th>
+                        <th>Camp Details</th>
+                        <th>Patients</th>
+                        <th>Last Modified</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="5" class="empty">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="loadNote" class="load-note"></div>
+    </div>
+</div>
+
+<!-- =========================================================
+     TELESALES FOLLOW-UP HISTORY MODAL
+========================================================= -->
+<div
+    id="followupHistoryModal"
+    class="history-modal"
+    onclick="handleHistoryModalBackdrop(event)"
+>
+    <div class="history-modal-card">
+        <div class="history-modal-header">
+            <h3 id="followupHistoryTitle">
+                Telesales Follow-up History
+            </h3>
+
+            <button
+                type="button"
+                class="history-modal-close"
+                onclick="closeFollowupHistory()"
+            >
+                Close
+            </button>
+        </div>
+
+        <div
+            id="followupHistoryBody"
+            class="history-modal-body"
+        >
+            Loading...
+        </div>
+    </div>
+</div>
+
+<script>
+/* =========================================================
+   URLS / API ACTIONS
+========================================================= */
+
+const LEADS_API_URL =
+    "https://script.google.com/macros/s/AKfycbwaY7WhanDFXtLn4PkSym_BmT_oGnea4-Ckm30wyJDkO6odi4f2HP-4YB07aPQEGd3t0Q/exec";
+
+const CAMPS_API_URL =
+    "https://script.google.com/macros/s/AKfycbw4w8S_nHPcdn3RWj-wm2XGT_6Il70lScUQFP71UooBPM7Npf0zedq_Vf2-4TdIBtTD1w/exec";
+
+/*
+   Existing lead-fetch action from your current code.
+   We call it once for EACH camp so the UI is camp-wise instead of
+   counsellor-wise.
+*/
+const GET_CAMP_PATIENTS_ACTION = "getCounsellorLeads";
+
+/*
+   Google is the source of truth.
+
+   convertToIp:
+   - finds the lead by ID in the Google "Leads" sheet
+   - writes Conversion Status = Converted
+   - writes Converted Time
+   - does NOT overwrite the existing clinical Status column
+
+   getIpData:
+   - returns ONLY rows whose Conversion Status is Converted
+*/
+const CONVERT_TO_IP_ACTION = "convertToIp";
+const GET_IP_DATA_ACTION = "getIpData";
+const GET_ALL_LEADS_ACTION = "getLeads";
+const GET_TELESALES_FOLLOWUPS_ACTION = "getTelesalesFollowups";
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+const auth = getAuthData();
+
+document.getElementById("adminEmail").textContent =
+    auth.email || "Admin";
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+let allCamps = [];
+let allLeads = [];
+
+
+/* =========================================================
+   FETCH HELPER
+========================================================= */
+
+async function fetchJson(url, options = {}) {
+    const response = await fetch(url, {
+        cache: "no-store",
+        ...options
+    });
+
+    const text = await response.text();
+
+    if (!response.ok) {
+        throw new Error("HTTP " + response.status);
+    }
+
+    if (text.trim().startsWith("<")) {
+        throw new Error("API returned HTML instead of JSON.");
+    }
+
+    try {
+        return JSON.parse(text);
+    } catch (error) {
+        throw new Error("API returned invalid JSON.");
+    }
+}
+
+
+/* =========================================================
+   LOAD CAMP-WISE OP DATA
+========================================================= */
+
+async function loadData() {
+    const tableBody = document.getElementById("tableBody");
+    const loadNote = document.getElementById("loadNote");
+
+    tableBody.innerHTML = `
+        <tr>
+            <td colspan="5" class="empty">Loading OP data...</td>
+        </tr>
+    `;
+
+    loadNote.textContent = "";
+
+    try {
+        const campResult = await fetchJson(
+            CAMPS_API_URL +
+            "?action=getCamps&t=" +
+            Date.now()
+        );
+
+        if (!campResult.success) {
+            throw new Error(
+                campResult.message || "Unable to load camps."
+            );
+        }
+
+        const rawCamps = Array.isArray(campResult.camps)
+            ? campResult.camps
+            : [];
+
+        allCamps = rawCamps.map(function(camp) {
+            return {
+                ...camp,
+                leads: [],
+                loadError: ""
+            };
+        });
+
+        /*
+           IMPORTANT CHANGE:
+           Earlier the code grouped camps by counsellor and then fetched
+           counsellor-wide patients. Now each camp fetches only its own data.
+
+           This means if a camp has 49 patients and the API returns all 49,
+           View Details will render all 49 rows.
+        */
+        const results = await Promise.allSettled(
+            allCamps.map(async function(camp) {
+                const campId = String(camp.id || "").trim();
+                const counsellorEmail = normalizeEmail(camp.counsellor);
+
+                if (!campId) {
+                    return {
+                        camp: camp,
+                        leads: []
+                    };
+                }
+
+                const url =
+                    LEADS_API_URL +
+                    "?action=" +
+                    encodeURIComponent(GET_CAMP_PATIENTS_ACTION) +
+                    "&campIds=" +
+                    encodeURIComponent(campId) +
+                    "&counsellorEmail=" +
+                    encodeURIComponent(counsellorEmail) +
+                    "&t=" +
+                    Date.now();
+
+                const result = await fetchJson(url);
+
+                if (!result.success) {
+                    throw new Error(
+                        result.message ||
+                        "Unable to load patients for camp " + campId
+                    );
+                }
+
+                return {
+                    camp: camp,
+                    leads: deduplicateLeads(
+                        Array.isArray(result.leads)
+                            ? result.leads
+                            : []
+                    )
+                };
+            })
+        );
+
+        let failedCampLoads = 0;
+
+        results.forEach(function(result, index) {
+            if (result.status === "fulfilled") {
+                allCamps[index].leads = result.value.leads;
+                allCamps[index].loadError = "";
+            } else {
+                failedCampLoads += 1;
+                allCamps[index].leads = [];
+                allCamps[index].loadError =
+                    result.reason && result.reason.message
+                        ? result.reason.message
+                        : "Unable to load patient data.";
+
+                console.error(
+                    "Camp patient load failed:",
+                    allCamps[index].id,
+                    result.reason
+                );
+            }
+        });
+
+        await mergeGoogleConversionState();
+        await mergeGoogleTelesalesFollowupState();
+        buildGlobalLeadList();
+        renderCamps(allCamps);
+        updateStats();
+
+        if (failedCampLoads > 0) {
+            loadNote.textContent =
+                failedCampLoads +
+                " camp(s) could not load patient data. Open the affected camp row to see the error.";
+        }
+
+    } catch (error) {
+        console.error(error);
+
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="5" class="error">
+                    ${escapeHtml(error.message)}
+                </td>
+            </tr>
+        `;
+    }
+}
+
+
+/* =========================================================
+   DEDUPLICATE PATIENTS
+========================================================= */
+
+function deduplicateLeads(leads) {
+    const map = new Map();
+
+    leads.forEach(function(lead, index) {
+        const key = getLeadKey(lead, index);
+
+        if (!map.has(key)) {
+            map.set(key, lead);
+        }
+    });
+
+    return Array.from(map.values());
+}
+
+
+/* =========================================================
+   GLOBAL PATIENT LIST FOR STATS
+========================================================= */
+
+function buildGlobalLeadList() {
+    const map = new Map();
+
+    allCamps.forEach(function(camp) {
+        camp.leads.forEach(function(lead, index) {
+            const key = getLeadKey(lead, index);
+
+            if (!map.has(key)) {
+                map.set(key, lead);
+            }
+        });
+    });
+
+    allLeads = Array.from(map.values());
+}
+
+
+/* =========================================================
+   MAIN CAMP TABLE
+========================================================= */
+
+function renderCamps(records) {
+    const body = document.getElementById("tableBody");
+
+    if (!records.length) {
+        body.innerHTML = `
+            <tr>
+                <td colspan="5" class="empty">
+                    No camp data found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    body.innerHTML = records
+        .map(function(camp, index) {
+            const rowId = "camp_" + index + "_" + Date.now();
+            const campId = String(camp.id || "").trim();
+
+            return `
+                <tr>
+                    <td class="camp-main-id">
+                        ${display(campId)}
+                    </td>
+
+                    <td class="camp-details-main">
+                        <strong>${display(camp.campName)}</strong>
+                        <span>Date: ${display(camp.campDate)}</span>
+                        <span>City: ${display(camp.city)}</span>
+                        <span>Doctor: ${display(camp.doctorName)}</span>
+                    </td>
+
+                    <td class="patient-count">
+                        ${camp.leads.length}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(getLastModified(camp.leads))}
+                    </td>
+
+                    <td>
+                        <button
+                            class="view-btn"
+                            data-row-id="${escapeAttribute(rowId)}"
+                            data-camp-id="${escapeAttribute(campId)}"
+                            onclick="showCamp(this)"
+                        >
+                            View Details
+                        </button>
+                    </td>
+                </tr>
+
+                <tr
+                    id="${escapeAttribute(rowId)}"
+                    class="expand-row"
+                >
+                    <td colspan="5" class="expand-cell">
+                        <div
+                            id="${escapeAttribute(rowId)}_content"
+                            class="panel"
+                        ></div>
+                    </td>
+                </tr>
+            `;
+        })
+        .join("");
+}
+
+
+/* =========================================================
+   VIEW CAMP DETAILS
+========================================================= */
+
+function showCamp(button) {
+    const rowId = button.dataset.rowId;
+    const campId = String(button.dataset.campId || "").trim();
+    const row = document.getElementById(rowId);
+
+    if (!row) {
+        return;
+    }
+
+    const wasOpen = row.classList.contains("active");
+
+    closeAll();
+
+    if (wasOpen) {
+        return;
+    }
+
+    const camp = findCampById(campId);
+
+    if (!camp) {
+        return;
+    }
+
+    row.classList.add("active");
+
+    document.getElementById(rowId + "_content").innerHTML =
+        buildCampDetails(camp, rowId);
+}
+
+
+/* =========================================================
+   CAMP DETAILS + ALL PATIENTS + CONVERT BUTTON
+========================================================= */
+
+function buildCampDetails(camp, rowId) {
+    let patientsHtml = "";
+
+    if (camp.loadError) {
+        patientsHtml = `
+            <div class="error">
+                ${escapeHtml(camp.loadError)}
+            </div>
+        `;
+    } else if (!camp.leads.length) {
+        patientsHtml = `
+            <div class="empty">
+                No patients found for this camp.
+            </div>
+        `;
+    } else {
+        const rows = camp.leads
+            .map(function(lead, leadIndex) {
+                const leadKey = getLeadKey(lead, leadIndex);
+                const converted = isConvertedLead(lead);
+
+                return `
+                    <tr>
+                        <td class="patient-id">
+                            ${display(lead.id)}
+                        </td>
+
+                        <td>${display(lead.campId || camp.id)}</td>
+                        <td>${display(lead.campName || camp.campName)}</td>
+                        <td>${display(lead.date)}</td>
+                        <td>${display(lead.name)}</td>
+                        <td>${display(lead.age)}</td>
+                        <td>${display(lead.gender)}</td>
+                        <td>${display(lead.mobile)}</td>
+                        <td>${display(lead.city)}</td>
+                        <td>${display(lead.source)}</td>
+                        <td>${display(lead.doctorName || camp.doctorName)}</td>
+                        <td>${display(lead.treatment)}</td>
+                        <td class="lead-status">${display(lead.status)}</td>
+
+                        <td class="modified">
+                            ${display(
+                                lead.counsellorUpdatedAt ||
+                                lead.updatedAt ||
+                                lead.modifiedAt
+                            )}
+                        </td>
+
+                        <td class="followup-email">
+                            ${display(lead.telesalesEmail)}
+                        </td>
+
+                        <td>
+                            <span class="followup-status-badge ${escapeAttribute(
+                                getFollowupStatusClass(
+                                    getFollowupStatus(lead)
+                                )
+                            )}">
+                                ${display(getFollowupStatus(lead))}
+                            </span>
+                        </td>
+
+                        <td class="followup-date">
+                            ${display(getNextFollowupDate(lead))}
+                        </td>
+
+                        <td class="followup-remarks-cell">
+                            ${display(getFollowupRemarks(lead))}
+                        </td>
+
+                        <td class="followup-time">
+                            ${escapeHtml(
+                                formatFollowupTime(
+                                    getLastFollowupAt(lead)
+                                )
+                            )}
+                        </td>
+
+                        <td>
+                            <button
+                                type="button"
+                                class="history-btn"
+                                data-lead-id="${escapeAttribute(lead.id)}"
+                                data-patient-name="${escapeAttribute(lead.name)}"
+                                onclick="openFollowupHistory(this)"
+                            >
+                                History
+                            </button>
+                        </td>
+
+                        <td class="converted-time">
+                            ${escapeHtml(formatConvertedTime(getConvertedTime(lead)))}
+                        </td>
+
+                        <td>
+                            ${converted
+                                ? `<span class="converted-text">Converted</span>`
+                                : `
+                                    <button
+                                        class="convert-btn"
+                                        data-camp-id="${escapeAttribute(camp.id)}"
+                                        data-lead-key="${escapeAttribute(leadKey)}"
+                                        onclick="convertPatient(this)"
+                                    >
+                                        Convert
+                                    </button>
+                                `
+                            }
+                        </td>
+                    </tr>
+                `;
+            })
+            .join("");
+
+        patientsHtml = `
+            <div class="patient-section-title">
+                <h4>Camp Patients</h4>
+                <span class="badge">
+                    ${camp.leads.length} Patients
+                </span>
+            </div>
+
+            <div class="patient-wrapper">
+                <table class="patient-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Camp ID</th>
+                            <th>Camp Name</th>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>City</th>
+                            <th>Source</th>
+                            <th>Doctor</th>
+                            <th>Treatment</th>
+                            <th>Status</th>
+                            <th>Modified At</th>
+                            <th>Telesales Email</th>
+                            <th>Follow-up Status</th>
+                            <th>Next Follow-up</th>
+                            <th>Follow-up Remarks</th>
+                            <th>Last Follow-up</th>
+                            <th>Follow-up History</th>
+                            <th>Converted Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="panel-header">
+            <div>
+                <h3>${display(camp.campName)}</h3>
+                <p>
+                    Camp ${display(camp.id)} — all patient records for this camp.
+                </p>
+            </div>
+
+            <span class="badge">
+                ${camp.leads.length} Patients
+            </span>
+        </div>
+
+        <div class="camp-summary">
+            <div class="summary-box">
+                <div class="summary-label">Camp ID</div>
+                <div class="summary-value">${display(camp.id)}</div>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-label">Camp Name</div>
+                <div class="summary-value">${display(camp.campName)}</div>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-label">Camp Date</div>
+                <div class="summary-value">${display(camp.campDate)}</div>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-label">City</div>
+                <div class="summary-value">${display(camp.city)}</div>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-label">Doctor</div>
+                <div class="summary-value">${display(camp.doctorName)}</div>
+            </div>
+        </div>
+
+        ${patientsHtml}
+
+        <div class="panel-footer">
+            <button
+                class="close-btn"
+                onclick="closeCamp('${escapeJsString(rowId)}')"
+            >
+                Close
+            </button>
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   CONVERT PATIENT TO IP
+   IMPORTANT:
+   The UI changes to "Converted" ONLY after Google Sheet
+   confirms that the row was updated successfully.
+========================================================= */
+
+async function convertPatient(button) {
+    const campId = String(button.dataset.campId || "").trim();
+    const leadKey = String(button.dataset.leadKey || "").trim();
+
+    const camp = findCampById(campId);
+
+    if (!camp) {
+        alert("Camp not found.");
+        return;
+    }
+
+    const lead = findLeadByKey(camp, leadKey);
+
+    if (!lead) {
+        alert("Patient record not found.");
+        return;
+    }
+
+    const leadId = String(lead.id || "").trim();
+
+    if (!leadId) {
+        alert("Patient ID is missing. Cannot convert this record.");
+        return;
+    }
+
+    if (isConvertedLead(lead)) {
+        alert("This patient is already converted to IP.");
+        return;
+    }
+
+    const patientName = String(lead.name || "this patient").trim();
+
+    const confirmed = window.confirm(
+        "Convert " + patientName + " to IP?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    const oldText = button.textContent;
+
+    button.disabled = true;
+    button.classList.add("is-loading");
+    button.textContent = "Converting...";
+
+    try {
+        const clientConvertedAt = new Date().toISOString();
+
+        const params = new URLSearchParams({
+            action: CONVERT_TO_IP_ACTION,
+            leadId: leadId,
+            id: leadId,
+            campId: String(camp.id || lead.campId || ""),
+            convertedAt: clientConvertedAt,
+            t: String(Date.now())
+        });
+
+        const result = await fetchJson(
+            LEADS_API_URL + "?" + params.toString()
+        );
+
+        if (!result || !result.success) {
+            throw new Error(
+                result && result.message
+                    ? result.message
+                    : "Google Sheet conversion failed."
+            );
+        }
+
+        const savedConvertedAt =
+            result.convertedAt ||
+            result.convertedTime ||
+            clientConvertedAt;
+
+        /*
+           Preserve the original lead.status because your Google sheet's
+           Status column contains clinical values such as Bilateral /
+           Unilateral. Conversion is stored separately in
+           "Conversion Status".
+        */
+        lead.converted = true;
+        lead.opConverted = true;
+        lead.ipConverted = true;
+        lead.conversionStatus =
+            result.conversionStatus ||
+            result.ipStatus ||
+            "Converted";
+        lead.convertedAt = savedConvertedAt;
+        lead.convertedTime = savedConvertedAt;
+        lead.ipConvertedAt = savedConvertedAt;
+
+        const currentRow = button.closest("tr");
+
+        if (currentRow) {
+            const convertedTimeCell =
+                currentRow.querySelector(".converted-time");
+
+            if (convertedTimeCell) {
+                convertedTimeCell.textContent =
+                    formatConvertedTime(savedConvertedAt);
+            }
+        }
+
+        button.outerHTML =
+            '<span class="converted-text">Converted</span>';
+
+    } catch (error) {
+        console.error(error);
+
+        button.disabled = false;
+        button.classList.remove("is-loading");
+        button.textContent = oldText;
+
+        alert(
+            "Convert failed. Nothing was marked as converted locally.\n\n" +
+            error.message
+        );
+    }
+}
+
+
+/* =========================================================
+   CLOSE DETAILS
+========================================================= */
+
+function closeCamp(rowId) {
+    const row = document.getElementById(rowId);
+
+    if (row) {
+        row.classList.remove("active");
+    }
+}
+
+function closeAll() {
+    document
+        .querySelectorAll(".expand-row")
+        .forEach(function(row) {
+            row.classList.remove("active");
+        });
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function updateStats() {
+    document.getElementById("totalCamps").textContent =
+        allCamps.length;
+
+    document.getElementById("totalPatients").textContent =
+        allLeads.length;
+
+    document.getElementById("campsWithPatients").textContent =
+        allCamps.filter(function(camp) {
+            return camp.leads.length > 0;
+        }).length;
+}
+
+
+/* =========================================================
+   LAST MODIFIED
+========================================================= */
+
+function getLastModified(leads) {
+    if (!leads.length) {
+        return "-";
+    }
+
+    const values = leads
+        .map(function(lead) {
+            return String(
+                lead.telesalesFollowupAt ||
+                lead.followupUpdatedAt ||
+                lead.lastFollowupAt ||
+                lead.counsellorUpdatedAt ||
+                lead.updatedAt ||
+                lead.modifiedAt ||
+                lead.date ||
+                ""
+            ).trim();
+        })
+        .filter(Boolean);
+
+    if (!values.length) {
+        return "-";
+    }
+
+    /*
+       Keep compatibility with your original data format.
+       If the API returns parseable dates, use the newest date.
+       Otherwise show the first non-empty value.
+    */
+    const parseable = values
+        .map(function(value) {
+            return {
+                value: value,
+                time: Date.parse(value)
+            };
+        })
+        .filter(function(item) {
+            return !Number.isNaN(item.time);
+        })
+        .sort(function(a, b) {
+            return b.time - a.time;
+        });
+
+    return parseable.length
+        ? parseable[0].value
+        : values[0];
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+document
+    .getElementById("searchInput")
+    .addEventListener("input", function() {
+        const keyword = this.value
+            .trim()
+            .toLowerCase();
+
+        closeAll();
+
+        if (!keyword) {
+            renderCamps(allCamps);
+            return;
+        }
+
+        const filtered = allCamps.filter(function(camp) {
+            const patientText = camp.leads
+                .map(function(lead) {
+                    return [
+                        lead.id,
+                        lead.name,
+                        lead.mobile,
+                        lead.city,
+                        lead.status,
+                        lead.treatment,
+                        lead.telesalesEmail,
+                        getFollowupStatus(lead),
+                        getNextFollowupDate(lead),
+                        getFollowupRemarks(lead),
+                        getLastFollowupAt(lead),
+                        getConvertedTime(lead)
+                    ].join(" ");
+                })
+                .join(" ");
+
+            const text = [
+                camp.id,
+                camp.campName,
+                camp.campDate,
+                camp.city,
+                camp.doctorName,
+                patientText
+            ]
+                .join(" ")
+                .toLowerCase();
+
+            return text.includes(keyword);
+        });
+
+        renderCamps(filtered);
+    });
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+document
+    .getElementById("refreshBtn")
+    .addEventListener("click", function() {
+        document.getElementById("searchInput").value = "";
+        closeAll();
+        loadData();
+    });
+
+
+/* =========================================================
+   FINDERS / KEYS
+========================================================= */
+
+function findCampById(campId) {
+    const target = String(campId || "").trim();
+
+    return allCamps.find(function(camp) {
+        return String(camp.id || "").trim() === target;
+    });
+}
+
+function getLeadKey(lead, fallbackIndex) {
+    const id = String(lead.id || "").trim();
+
+    if (id) {
+        return "id:" + id;
+    }
+
+    return (
+        "fallback:" +
+        [
+            lead.mobile || "",
+            lead.date || "",
+            lead.name || "",
+            fallbackIndex == null ? "" : fallbackIndex
+        ].join("|")
+    );
+}
+
+function findLeadByKey(camp, leadKey) {
+    return camp.leads.find(function(lead, index) {
+        return getLeadKey(lead, index) === leadKey;
+    });
+}
+
+function isConvertedLead(lead) {
+    if (
+        lead.converted === true ||
+        lead.opConverted === true ||
+        lead.ipConverted === true ||
+        Boolean(getConvertedTime(lead))
+    ) {
+        return true;
+    }
+
+    const conversionStatus = String(
+        lead.conversionStatus ||
+        lead.ipStatus ||
+        ""
+    )
+        .trim()
+        .toLowerCase();
+
+    return conversionStatus === "converted";
+}
+
+
+/* =========================================================
+   MERGE CONVERSION STATE FROM GOOGLE
+
+   OP data itself still comes from your existing camp/lead APIs.
+   This extra call asks Google for the IP list (converted rows only)
+   and marks matching OP leads as already converted after refresh.
+========================================================= */
+
+async function mergeGoogleConversionState() {
+    try {
+        const result = await fetchJson(
+            LEADS_API_URL +
+            "?action=" +
+            encodeURIComponent(GET_IP_DATA_ACTION) +
+            "&t=" +
+            Date.now()
+        );
+
+        if (!result || !result.success) {
+            throw new Error(
+                result && result.message
+                    ? result.message
+                    : "Unable to read converted records."
+            );
+        }
+
+        const records = Array.isArray(result.records)
+            ? result.records
+            : Array.isArray(result.leads)
+                ? result.leads
+                : Array.isArray(result.data)
+                    ? result.data
+                    : [];
+
+        const map = new Map();
+
+        records.forEach(function(record) {
+            const id = String(
+                record.id ||
+                record.leadId ||
+                ""
+            ).trim();
+
+            if (id) {
+                map.set(id, record);
+            }
+        });
+
+        allCamps.forEach(function(camp) {
+            camp.leads.forEach(function(lead) {
+                const id = String(lead.id || "").trim();
+                const record = id ? map.get(id) : null;
+
+                if (!record) {
+                    return;
+                }
+
+                lead.converted = true;
+                lead.opConverted = true;
+                lead.ipConverted = true;
+                lead.conversionStatus =
+                    record.conversionStatus ||
+                    record.ipStatus ||
+                    "Converted";
+
+                lead.convertedAt =
+                    record.convertedAt ||
+                    record.convertedTime ||
+                    "";
+
+                lead.convertedTime =
+                    record.convertedTime ||
+                    record.convertedAt ||
+                    "";
+
+                lead.ipConvertedAt =
+                    record.convertedAt ||
+                    record.convertedTime ||
+                    "";
+            });
+        });
+
+    } catch (error) {
+        console.warn(
+            "Could not merge converted records from Google:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   MERGE TELESALES FOLLOW-UP STATE FROM GOOGLE
+
+   The camp-specific lead call normally already contains the
+   latest follow-up fields. This extra getLeads call makes the
+   Admin OP page resilient and always merges the latest
+   Telesales values by Patient ID.
+========================================================= */
+
+async function mergeGoogleTelesalesFollowupState() {
+    try {
+        const result = await fetchJson(
+            LEADS_API_URL +
+            "?action=" +
+            encodeURIComponent(GET_ALL_LEADS_ACTION) +
+            "&t=" +
+            Date.now()
+        );
+
+        if (!result || !result.success) {
+            throw new Error(
+                result && result.message
+                    ? result.message
+                    : "Unable to read latest Telesales follow-up data."
+            );
+        }
+
+        const records = Array.isArray(result.leads)
+            ? result.leads
+            : Array.isArray(result.records)
+                ? result.records
+                : [];
+
+        const map = new Map();
+
+        records.forEach(function(record) {
+            const id = String(
+                record.id ||
+                record.leadId ||
+                ""
+            ).trim();
+
+            if (id) {
+                map.set(id, record);
+            }
+        });
+
+        allCamps.forEach(function(camp) {
+            camp.leads.forEach(function(lead) {
+                const id = String(lead.id || "").trim();
+                const record = id ? map.get(id) : null;
+
+                if (!record) {
+                    return;
+                }
+
+                lead.telesalesEmail =
+                    record.telesalesEmail ||
+                    record.teleSalesEmail ||
+                    "";
+
+                lead.telesalesFollowupStatus =
+                    record.telesalesFollowupStatus ||
+                    record.followupStatus ||
+                    "Pending";
+
+                lead.followupStatus =
+                    record.followupStatus ||
+                    record.telesalesFollowupStatus ||
+                    "Pending";
+
+                lead.telesalesNextFollowupDate =
+                    record.telesalesNextFollowupDate ||
+                    record.nextFollowupDate ||
+                    "";
+
+                lead.nextFollowupDate =
+                    record.nextFollowupDate ||
+                    record.telesalesNextFollowupDate ||
+                    "";
+
+                lead.telesalesRemarks =
+                    record.telesalesRemarks ||
+                    record.followupRemarks ||
+                    "";
+
+                lead.followupRemarks =
+                    record.followupRemarks ||
+                    record.telesalesRemarks ||
+                    "";
+
+                lead.telesalesFollowupAt =
+                    record.telesalesFollowupAt ||
+                    record.followupUpdatedAt ||
+                    record.lastFollowupAt ||
+                    "";
+
+                lead.followupUpdatedAt =
+                    record.followupUpdatedAt ||
+                    record.telesalesFollowupAt ||
+                    record.lastFollowupAt ||
+                    "";
+
+                lead.lastFollowupAt =
+                    record.lastFollowupAt ||
+                    record.telesalesFollowupAt ||
+                    record.followupUpdatedAt ||
+                    "";
+            });
+        });
+
+    } catch (error) {
+        console.warn(
+            "Could not merge latest Telesales follow-up data:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   TELESALES FOLLOW-UP DISPLAY HELPERS
+========================================================= */
+
+function getFollowupStatus(lead) {
+    return (
+        lead.telesalesFollowupStatus ||
+        lead.followupStatus ||
+        "Pending"
+    );
+}
+
+
+function getNextFollowupDate(lead) {
+    return (
+        lead.telesalesNextFollowupDate ||
+        lead.nextFollowupDate ||
+        ""
+    );
+}
+
+
+function getFollowupRemarks(lead) {
+    return (
+        lead.telesalesRemarks ||
+        lead.followupRemarks ||
+        ""
+    );
+}
+
+
+function getLastFollowupAt(lead) {
+    return (
+        lead.telesalesFollowupAt ||
+        lead.followupUpdatedAt ||
+        lead.lastFollowupAt ||
+        ""
+    );
+}
+
+
+function getFollowupStatusClass(value) {
+    const status = String(value || "Pending")
+        .trim()
+        .toLowerCase();
+
+    if (!status) {
+        return "pending";
+    }
+
+    return status
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "") ||
+        "pending";
+}
+
+
+function formatFollowupTime(value) {
+    const text = String(value == null ? "" : value).trim();
+
+    if (!text) {
+        return "-";
+    }
+
+    /*
+       Google Apps Script stores the value as:
+       dd-MM-yyyy HH:mm:ss
+       If it is already in that format, display it as-is.
+    */
+    if (
+        /^\d{1,2}-\d{1,2}-\d{4}\s+\d{1,2}:\d{2}:\d{2}$/
+            .test(text)
+    ) {
+        return text;
+    }
+
+    const date = new Date(text);
+
+    if (Number.isNaN(date.getTime())) {
+        return text;
+    }
+
+    return date.toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+    });
+}
+
+
+/* =========================================================
+   FOLLOW-UP HISTORY MODAL
+========================================================= */
+
+async function openFollowupHistory(button) {
+    const leadId = String(
+        button.dataset.leadId ||
+        ""
+    ).trim();
+
+    const patientName = String(
+        button.dataset.patientName ||
+        ""
+    ).trim();
+
+    if (!leadId) {
+        alert("Patient ID is missing.");
+        return;
+    }
+
+    const modal =
+        document.getElementById("followupHistoryModal");
+
+    const title =
+        document.getElementById("followupHistoryTitle");
+
+    const body =
+        document.getElementById("followupHistoryBody");
+
+    title.textContent =
+        "Telesales Follow-up History — " +
+        (patientName || leadId);
+
+    body.innerHTML = `
+        <div class="empty">
+            Loading follow-up history...
+        </div>
+    `;
+
+    modal.classList.add("active");
+
+    try {
+        const url =
+            LEADS_API_URL +
+            "?action=" +
+            encodeURIComponent(GET_TELESALES_FOLLOWUPS_ACTION) +
+            "&leadId=" +
+            encodeURIComponent(leadId) +
+            "&t=" +
+            Date.now();
+
+        const result =
+            await fetchJson(url);
+
+        if (!result || !result.success) {
+            throw new Error(
+                result && result.message
+                    ? result.message
+                    : "Unable to load follow-up history."
+            );
+        }
+
+        const followups =
+            Array.isArray(result.followups)
+                ? result.followups
+                : [];
+
+        renderFollowupHistory(
+            leadId,
+            patientName,
+            followups
+        );
+
+    } catch (error) {
+        console.error(
+            "FOLLOW-UP HISTORY ERROR:",
+            error
+        );
+
+        body.innerHTML = `
+            <div class="error">
+                ${escapeHtml(error.message)}
+            </div>
+        `;
+    }
+}
+
+
+function renderFollowupHistory(
+    leadId,
+    patientName,
+    followups
+) {
+    const body =
+        document.getElementById("followupHistoryBody");
+
+    if (!followups.length) {
+        body.innerHTML = `
+            <div class="history-patient-summary">
+                Patient:
+                <strong>${display(patientName || leadId)}</strong>
+                &nbsp; | &nbsp;
+                ID:
+                <strong>${display(leadId)}</strong>
+            </div>
+
+            <div class="empty">
+                No Telesales follow-ups have been added for this patient.
+            </div>
+        `;
+
+        return;
+    }
+
+    const rows =
+        followups
+            .map(function(item, index) {
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+
+                        <td>
+                            ${display(
+                                item.followupId
+                            )}
+                        </td>
+
+                        <td>
+                            ${display(
+                                item.telesalesEmail
+                            )}
+                        </td>
+
+                        <td>
+                            <span class="followup-status-badge ${escapeAttribute(
+                                getFollowupStatusClass(
+                                    item.followupStatus ||
+                                    item.telesalesFollowupStatus
+                                )
+                            )}">
+                                ${display(
+                                    item.followupStatus ||
+                                    item.telesalesFollowupStatus
+                                )}
+                            </span>
+                        </td>
+
+                        <td>
+                            ${display(
+                                item.nextFollowupDate ||
+                                item.telesalesNextFollowupDate
+                            )}
+                        </td>
+
+                        <td class="history-remarks">
+                            ${display(
+                                item.remarks ||
+                                item.telesalesRemarks
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                formatFollowupTime(
+                                    item.followupAt ||
+                                    item.telesalesFollowupAt ||
+                                    item.followupUpdatedAt
+                                )
+                            )}
+                        </td>
+                    </tr>
+                `;
+            })
+            .join("");
+
+    body.innerHTML = `
+        <div class="history-patient-summary">
+            Patient:
+            <strong>${display(patientName || leadId)}</strong>
+            &nbsp; | &nbsp;
+            ID:
+            <strong>${display(leadId)}</strong>
+            &nbsp; | &nbsp;
+            Total Follow-ups:
+            <strong>${followups.length}</strong>
+        </div>
+
+        <div class="history-table-wrapper">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Follow-up ID</th>
+                        <th>Telesales Email</th>
+                        <th>Status</th>
+                        <th>Next Follow-up</th>
+                        <th>Remarks</th>
+                        <th>Follow-up At</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+
+function closeFollowupHistory() {
+    const modal =
+        document.getElementById("followupHistoryModal");
+
+    modal.classList.remove("active");
+}
+
+
+function handleHistoryModalBackdrop(event) {
+    if (
+        event.target &&
+        event.target.id ===
+        "followupHistoryModal"
+    ) {
+        closeFollowupHistory();
+    }
+}
+
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+        if (
+            event.key ===
+            "Escape"
+        ) {
+            closeFollowupHistory();
+        }
+    }
+);
+
+
+/* =========================================================
+   CONVERTED TIME
+========================================================= */
+
+function getConvertedTime(lead) {
+    return (
+        lead.convertedAt ||
+        lead.convertedTime ||
+        lead.ipConvertedAt ||
+        lead.opConvertedAt ||
+        ""
+    );
+}
+
+function formatConvertedTime(value) {
+    const text = String(value == null ? "" : value).trim();
+
+    if (!text) {
+        return "-";
+    }
+
+    const date = new Date(text);
+
+    if (Number.isNaN(date.getTime())) {
+        return text;
+    }
+
+    return date.toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+    });
+}
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function normalizeEmail(value) {
+    return String(value == null ? "" : value)
+        .trim()
+        .toLowerCase();
+}
+
+function display(value) {
+    const text = String(value == null ? "" : value).trim();
+
+    if (!text || text === "-") {
+        return "-";
+    }
+
+    return escapeHtml(text);
+}
+
+function escapeHtml(value) {
+    return String(value == null ? "" : value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function escapeAttribute(value) {
+    return escapeHtml(value);
+}
+
+function escapeJsString(value) {
+    return String(value == null ? "" : value)
+        .replaceAll("\\", "\\\\")
+        .replaceAll("'", "\\'")
+        .replaceAll("\n", "\\n")
+        .replaceAll("\r", "\\r");
+}
+
+
+/* =========================================================
+   INITIAL
+========================================================= */
+
+loadData();
+</script>
+</body>
+</html>

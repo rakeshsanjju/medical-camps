@@ -1,1214 +1,641 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Camp Data</title>
-
-
-<!-- ======================================================
-     ADMIN AUTH
-====================================================== -->
-
-<script>
-
-function getAuthData() {
-
-    return {
-
-        loggedIn:
-            sessionStorage.getItem(
-                "medical_logged_in"
-            ),
-
-        email:
-            sessionStorage.getItem(
-                "medical_user_email"
-            ),
-
-        role:
-            sessionStorage.getItem(
-                "medical_user_role"
-            )
-
-    };
-
-}
-
-
-function clearMedicalLogin() {
-
-    sessionStorage.removeItem(
-        "medical_logged_in"
-    );
-
-    sessionStorage.removeItem(
-        "medical_user_email"
-    );
-
-    sessionStorage.removeItem(
-        "medical_user_role"
-    );
-
-}
-
-
-function requireAdmin() {
-
-    const auth =
-        getAuthData();
-
-
-    if (
-        auth.loggedIn !== "true" ||
-        auth.role !== "admin"
-    ) {
-
-        clearMedicalLogin();
-
-        window.location.replace(
-            "./login.html"
-        );
-
-        return false;
-
-    }
-
-
-    return true;
-
-}
-
-
-function logoutMedicalUser() {
-
-    clearMedicalLogin();
-
-    window.location.replace(
-        "./login.html"
-    );
-
-}
-
-
-requireAdmin();
-
-</script>
-
-
-<style>
-
-/* ======================================================
-   GLOBAL
-====================================================== */
-
-* {
-
-    box-sizing:
-        border-box;
-
-}
-
-
-html,
-body {
-
-    margin:
-        0;
-
-    padding:
-        0;
-
-}
-
-
-body {
-
-    min-height:
-        100vh;
-
-    background:
-        #f5f7fb;
-
-    color:
-        #0f172a;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-}
-
-
-button,
-input {
-
-    font-family:
-        inherit;
-
-}
-
-
-/* ======================================================
-   HEADER
-====================================================== */
-
-.topbar {
-
-    background:
-        #0f172a;
-
-    color:
-        #ffffff;
-
-    padding:
-        16px 30px;
-
-    display:
-        flex;
-
-    justify-content:
-        space-between;
-
-    align-items:
-        center;
-
-    gap:
-        20px;
-
-}
-
-
-.brand {
-
-    font-size:
-        20px;
-
-    font-weight:
-        700;
-
-}
-
-
-.topbar-actions {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        12px;
-
-}
-
-
-.admin-email {
-
-    font-size:
-        13px;
-
-    color:
-        #cbd5e1;
-
-}
-
-
-.back-btn,
-.logout-btn {
-
-    border:
-        none;
-
-    border-radius:
-        7px;
-
-    padding:
-        9px 15px;
-
-    cursor:
-        pointer;
-
-    font-weight:
-        600;
-
-}
-
-
-.back-btn {
-
-    background:
-        #2563eb;
-
-    color:
-        #ffffff;
-
-}
-
-
-.logout-btn {
-
-    background:
-        #dc2626;
-
-    color:
-        #ffffff;
-
-}
-
-
-/* ======================================================
-   PAGE
-====================================================== */
-
-.page {
-
-    max-width:
-        1600px;
-
-    margin:
-        0 auto;
-
-    padding:
-        30px;
-
-}
-
-
-.page-heading {
-
-    margin-bottom:
-        25px;
-
-}
-
-
-.page-heading h1 {
-
-    margin:
-        0 0 7px;
-
-    font-size:
-        30px;
-
-}
-
-
-.page-heading p {
-
-    margin:
-        0;
-
-    color:
-        #64748b;
-
-}
-
-
-/* ======================================================
-   STATS
-====================================================== */
-
-.stats {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        repeat(
-            2,
-            minmax(
-                0,
-                1fr
-            )
-        );
-
-    gap:
-        20px;
-
-    margin-bottom:
-        25px;
-
-}
-
-
-.stat-card {
-
-    background:
-        #ffffff;
-
-    padding:
-        22px;
-
-    border-radius:
-        12px;
-
-    box-shadow:
-        0 5px 20px
-        rgba(
-            15,
-            23,
-            42,
-            0.05
-        );
-
-}
-
-
-.stat-title {
-
-    font-size:
-        13px;
-
-    color:
-        #64748b;
-
-    margin-bottom:
-        8px;
-
-}
-
-
-.stat-value {
-
-    font-size:
-        30px;
-
-    font-weight:
-        700;
-
-}
-
-
-/* ======================================================
-   MAIN CARD
-====================================================== */
-
-.card {
-
-    background:
-        #ffffff;
-
-    padding:
-        24px;
-
-    border-radius:
-        14px;
-
-    box-shadow:
-        0 5px 20px
-        rgba(
-            15,
-            23,
-            42,
-            0.05
-        );
-
-}
-
-
-.table-toolbar {
-
-    display:
-        flex;
-
-    justify-content:
-        space-between;
-
-    align-items:
-        center;
-
-    gap:
-        20px;
-
-    margin-bottom:
-        20px;
-
-}
-
-
-.table-toolbar h2 {
-
-    margin:
-        0;
-
-    font-size:
-        20px;
-
-}
-
-
-.toolbar-right {
-
-    display:
-        flex;
-
-    gap:
-        10px;
-
-    align-items:
-        center;
-
-}
-
-
-.search-input {
-
-    min-width:
-        300px;
-
-    padding:
-        10px 12px;
-
-    border:
-        1px solid
-        #cbd5e1;
-
-    border-radius:
-        7px;
-
-    outline:
-        none;
-
-}
-
-
-.search-input:focus {
-
-    border-color:
-        #2563eb;
-
-}
-
-
-.refresh-btn {
-
-    padding:
-        10px 16px;
-
-    border:
-        none;
-
-    border-radius:
-        7px;
-
-    background:
-        #2563eb;
-
-    color:
-        #ffffff;
-
-    font-weight:
-        600;
-
-    cursor:
-        pointer;
-
-}
-
-
-/* ======================================================
-   CAMP TABLE
-====================================================== */
-
-.table-wrapper {
-
-    width:
-        100%;
-
-    overflow-x:
-        auto;
-
-}
-
-
-.camp-table {
-
-    width:
-        100%;
-
-    min-width:
-        1250px;
-
-    border-collapse:
-        collapse;
-
-}
-
-
-.camp-table thead {
-
-    background:
-        #f1f5f9;
-
-}
-
-
-.camp-table th {
-
-    padding:
-        13px 12px;
-
-    color:
-        #334155;
-
-    text-align:
-        left;
-
-    font-size:
-        12px;
-
-    text-transform:
-        uppercase;
-
-    letter-spacing:
-        0.3px;
-
-    white-space:
-        nowrap;
-
-}
-
-
-.camp-table td {
-
-    padding:
-        14px 12px;
-
-    border-bottom:
-        1px solid
-        #e2e8f0;
-
-    font-size:
-        13px;
-
-    color:
-        #475569;
-
-    vertical-align:
-        middle;
-
-}
-
-
-.camp-main-row:hover {
-
-    background:
-        #f8fafc;
-
-}
-
-
-.camp-id {
-
-    color:
-        #2563eb !important;
-
-    font-weight:
-        700;
-
-}
-
-
-/* ======================================================
-   VIEW DATA BUTTON
-====================================================== */
-
-.view-data-btn {
-
-    border:
-        none;
-
-    border-radius:
-        7px;
-
-    padding:
-        9px 14px;
-
-    background:
-        #2563eb;
-
-    color:
-        #ffffff;
-
-    font-size:
-        12px;
-
-    font-weight:
-        600;
-
-    cursor:
-        pointer;
-
-    white-space:
-        nowrap;
-
-    transition:
-        0.2s ease;
-
-}
-
-
-.view-data-btn:hover {
-
-    background:
-        #1d4ed8;
-
-}
-
-
-.view-data-btn:disabled {
-
-    opacity:
-        0.6;
-
-    cursor:
-        not-allowed;
-
-}
-
-
-/* ======================================================
-   EXPANDED DATA ROW
-====================================================== */
-
-.patient-expand-row {
-
-    display:
-        none;
-
-}
-
-
-.patient-expand-row.active {
-
-    display:
-        table-row;
-
-}
-
-
-.patient-expand-cell {
-
-    padding:
-        0 !important;
-
-    background:
-        #f8fafc;
-
-}
-
-
-.patient-panel {
-
-    padding:
-        25px;
-
-    border-top:
-        3px solid
-        #2563eb;
-
-    border-bottom:
-        1px solid
-        #cbd5e1;
-
-}
-
-
-.patient-panel-header {
-
-    display:
-        flex;
-
-    justify-content:
-        space-between;
-
-    align-items:
-        flex-start;
-
-    gap:
-        20px;
-
-    margin-bottom:
-        18px;
-
-}
-
-
-.patient-panel-title {
-
-    margin:
-        0 0 6px;
-
-    font-size:
-        19px;
-
-    color:
-        #0f172a;
-
-}
-
-
-.patient-panel-subtitle {
-
-    margin:
-        0;
-
-    font-size:
-        13px;
-
-    color:
-        #64748b;
-
-}
-
-
-.patient-count {
-
-    display:
-        inline-block;
-
-    background:
-        #dbeafe;
-
-    color:
-        #1d4ed8;
-
-    border-radius:
-        20px;
-
-    padding:
-        6px 11px;
-
-    font-size:
-        12px;
-
-    font-weight:
-        700;
-
-}
-
-
-/* ======================================================
-   PATIENT TABLE
-====================================================== */
-
-.patient-table-wrapper {
-
-    width:
-        100%;
-
-    overflow-x:
-        auto;
-
-    border:
-        1px solid
-        #e2e8f0;
-
-    border-radius:
-        10px;
-
-    background:
-        #ffffff;
-
-}
-
-
-.patient-table {
-
-    width:
-        100%;
-
-    min-width:
-        1400px;
-
-    border-collapse:
-        collapse;
-
-}
-
-
-.patient-table thead {
-
-    background:
-        #eaf1f8;
-
-}
-
-
-.patient-table th {
-
-    padding:
-        12px;
-
-    text-align:
-        left;
-
-    font-size:
-        11px;
-
-    color:
-        #334155;
-
-    text-transform:
-        uppercase;
-
-    white-space:
-        nowrap;
-
-}
-
-
-.patient-table td {
-
-    padding:
-        13px 12px;
-
-    font-size:
-        12px;
-
-    color:
-        #475569;
-
-    border-bottom:
-        1px solid
-        #e2e8f0;
-
-    vertical-align:
-        middle;
-
-}
-
-
-.patient-table tbody tr:last-child td {
-
-    border-bottom:
-        none;
-
-}
-
-
-.patient-table tbody tr:hover {
-
-    background:
-        #f8fafc;
-
-}
-
-
-/* ======================================================
-   DATA BADGES
-====================================================== */
-
-.patient-id {
-
-    font-weight:
-        700;
-
-    color:
-        #2563eb;
-
-}
-
-
-.status-badge {
-
-    display:
-        inline-block;
-
-    padding:
-        5px 9px;
-
-    border-radius:
-        20px;
-
-    background:
-        #e2e8f0;
-
-    color:
-        #334155;
-
-    font-size:
-        11px;
-
-    font-weight:
-        600;
-
-}
-
-
-.email-value {
-
-    color:
-        #334155;
-
-    word-break:
-        break-all;
-
-}
-
-
-/* ======================================================
-   EMPTY / LOADING
-====================================================== */
-
-.empty-message {
-
-    text-align:
-        center;
-
-    padding:
-        40px;
-
-    color:
-        #64748b;
-
-}
-
-
-.error-message {
-
-    text-align:
-        center;
-
-    padding:
-        40px;
-
-    color:
-        #dc2626;
-
-}
-
-
-.patient-loading {
-
-    text-align:
-        center;
-
-    padding:
-        35px;
-
-    color:
-        #64748b;
-
-}
-
-
-.no-patient-data {
-
-    text-align:
-        center;
-
-    padding:
-        35px;
-
-    background:
-        #ffffff;
-
-    border:
-        1px dashed
-        #cbd5e1;
-
-    border-radius:
-        8px;
-
-    color:
-        #64748b;
-
-}
-
-
-/* ======================================================
-   CANCEL / MINIMIZE BUTTON
-====================================================== */
-
-.panel-footer {
-
-    display:
-        flex;
-
-    justify-content:
-        center;
-
-    margin-top:
-        22px;
-
-}
-
-
-.cancel-data-btn {
-
-    min-width:
-        140px;
-
-    padding:
-        10px 20px;
-
-    border:
-        none;
-
-    border-radius:
-        7px;
-
-    background:
-        #dc2626;
-
-    color:
-        #ffffff;
-
-    font-size:
-        13px;
-
-    font-weight:
-        700;
-
-    cursor:
-        pointer;
-
-}
-
-
-.cancel-data-btn:hover {
-
-    background:
-        #b91c1c;
-
-}
-
-
-/* ======================================================
-   RESPONSIVE
-====================================================== */
-
-@media (
-    max-width: 768px
-) {
-
-    .page {
-
-        padding:
-            15px;
-
-    }
-
-
-    .topbar {
-
-        padding:
-            14px 15px;
-
-        align-items:
-            flex-start;
-
-        flex-direction:
-            column;
-
-    }
-
-
-    .topbar-actions {
-
-        width:
-            100%;
-
-        flex-wrap:
-            wrap;
-
-    }
-
-
-    .stats {
-
-        grid-template-columns:
-            1fr;
-
-    }
-
-
-    .table-toolbar {
-
-        align-items:
-            stretch;
-
-        flex-direction:
-            column;
-
-    }
-
-
-    .toolbar-right {
-
-        align-items:
-            stretch;
-
-        flex-direction:
-            column;
-
-    }
-
-
-    .search-input {
-
-        min-width:
-            0;
-
-        width:
-            100%;
-
-    }
-
-
-    .patient-panel {
-
-        padding:
-            15px;
-
-    }
-
-
-    .patient-panel-header {
-
-        flex-direction:
-            column;
-
-    }
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camp Data</title>
+
+    <script>
+        function getAuthData() {
+            return {
+                loggedIn: sessionStorage.getItem("medical_logged_in"),
+                email: sessionStorage.getItem("medical_user_email"),
+                role: sessionStorage.getItem("medical_user_role")
+            };
+        }
+
+        function clearMedicalLogin() {
+            sessionStorage.removeItem("medical_logged_in");
+            sessionStorage.removeItem("medical_user_email");
+            sessionStorage.removeItem("medical_user_role");
+        }
+
+        function requireAdmin() {
+            const auth = getAuthData();
+
+            if (
+                auth.loggedIn !== "true" ||
+                auth.role !== "admin"
+            ) {
+                clearMedicalLogin();
+                window.location.replace("./login.html");
+                return false;
+            }
+
+            return true;
+        }
+
+        function logoutMedicalUser() {
+            clearMedicalLogin();
+            window.location.replace("./login.html");
+        }
+
+        requireAdmin();
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f5f7fb;
+            color: #0f172a;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        button,
+        input,
+        select {
+            font-family: inherit;
+        }
+
+        .topbar {
+            background: #0f172a;
+            color: #ffffff;
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-email {
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        .back-btn,
+        .logout-btn {
+            border: none;
+            border-radius: 7px;
+            padding: 9px 15px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .back-btn {
+            background: #2563eb;
+        }
+
+        .logout-btn {
+            background: #dc2626;
+        }
+
+        .page {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .page-heading {
+            margin-bottom: 25px;
+        }
+
+        .page-heading h1 {
+            margin: 0 0 7px;
+            font-size: 30px;
+        }
+
+        .page-heading p {
+            margin: 0;
+            color: #64748b;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.05);
+        }
+
+        .stat-title {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.05);
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .table-toolbar h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .toolbar-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-input {
+            min-width: 300px;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #2563eb;
+        }
+
+        .refresh-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 7px;
+            background: #2563eb;
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .table-wrapper,
+        .patient-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .camp-table {
+            width: 100%;
+            min-width: 1480px;
+            border-collapse: collapse;
+        }
+
+        .camp-table thead {
+            background: #f1f5f9;
+        }
+
+        .camp-table th {
+            padding: 13px 12px;
+            color: #334155;
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .camp-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
+            color: #475569;
+            vertical-align: middle;
+        }
+
+        .camp-main-row:hover {
+            background: #f8fafc;
+        }
+
+        .camp-id {
+            color: #2563eb !important;
+            font-weight: 700;
+        }
+
+        .camp-action-buttons,
+        .patient-action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .view-data-btn,
+        .edit-camp-btn,
+        .edit-patient-btn {
+            border: none;
+            border-radius: 7px;
+            padding: 9px 14px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .view-data-btn {
+            background: #2563eb;
+        }
+
+        .edit-camp-btn,
+        .edit-patient-btn {
+            background: #f59e0b;
+        }
+
+        .view-data-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .edit-camp-btn:hover,
+        .edit-patient-btn:hover {
+            background: #d97706;
+        }
+
+        .view-data-btn:disabled,
+        .edit-camp-btn:disabled,
+        .edit-patient-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .patient-expand-row {
+            display: none;
+        }
+
+        .patient-expand-row.active {
+            display: table-row;
+        }
+
+        .patient-expand-cell {
+            padding: 0 !important;
+            background: #f8fafc;
+        }
+
+        .patient-panel {
+            padding: 25px;
+            border-top: 3px solid #2563eb;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .patient-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 18px;
+        }
+
+        .patient-panel-title {
+            margin: 0 0 6px;
+            font-size: 19px;
+        }
+
+        .patient-panel-subtitle {
+            margin: 0;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .patient-count {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1d4ed8;
+            border-radius: 20px;
+            padding: 6px 11px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .patient-table-wrapper {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #ffffff;
+        }
+
+        .patient-table {
+            width: 100%;
+            min-width: 1550px;
+            border-collapse: collapse;
+        }
+
+        .patient-table thead {
+            background: #eaf1f8;
+        }
+
+        .patient-table th {
+            padding: 12px;
+            text-align: left;
+            font-size: 11px;
+            color: #334155;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .patient-table td {
+            padding: 13px 12px;
+            font-size: 12px;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .patient-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .patient-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .patient-id {
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #e2e8f0;
+            color: #334155;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .email-value {
+            color: #334155;
+            word-break: break-all;
+        }
+
+        .empty-message,
+        .error-message,
+        .patient-loading,
+        .no-patient-data {
+            text-align: center;
+            padding: 35px;
+            color: #64748b;
+        }
+
+        .error-message {
+            color: #dc2626;
+        }
+
+        .no-patient-data {
+            background: #ffffff;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+        }
+
+        .panel-footer {
+            display: flex;
+            justify-content: center;
+            margin-top: 22px;
+        }
+
+        .cancel-data-btn {
+            min-width: 140px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 7px;
+            background: #dc2626;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* =====================================================
+           MODALS
+        ===================================================== */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.68);
+            z-index: 9999;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .edit-modal {
+            width: 100%;
+            max-width: 760px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 26px;
+            box-shadow: 0 25px 70px rgba(15, 23, 42, 0.28);
+        }
+
+        .edit-modal h2 {
+            margin: 0 0 7px;
+        }
+
+        .edit-description {
+            margin: 0 0 22px;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .edit-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .edit-field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .edit-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .edit-field label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .edit-field input,
+        .edit-field select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            background: #ffffff;
+            color: #0f172a;
+        }
+
+        .edit-field input:focus,
+        .edit-field select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+
+        .edit-field input:disabled {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .edit-message {
+            min-height: 20px;
+            margin-top: 18px;
+            font-size: 13px;
+        }
+
+        .edit-message.success {
+            color: #15803d;
+        }
+
+        .edit-message.error {
+            color: #dc2626;
+        }
+
+        .edit-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-cancel-btn,
+        .modal-save-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .modal-cancel-btn {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .modal-save-btn {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .modal-save-btn:disabled,
+        .modal-cancel-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .page {
+                padding: 15px;
+            }
+
+            .topbar {
+                padding: 14px 15px;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .topbar-actions {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .table-toolbar,
+            .toolbar-right {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .search-input {
+                min-width: 0;
+                width: 100%;
+            }
+
+            .patient-panel {
+                padding: 15px;
+            }
+
+            .patient-panel-header {
+                flex-direction: column;
+            }
+
+            .edit-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .edit-field.full-width {
+                grid-column: auto;
+            }
+
+            .edit-actions {
+                flex-direction: column-reverse;
+            }
+
+            .edit-actions button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
-
-<!-- ======================================================
-     TOP BAR
-====================================================== -->
-
 <header class="topbar">
-
-
     <div class="brand">
-
         Medical Camps Admin
-
     </div>
 
-
     <div class="topbar-actions">
-
-
         <span
             id="adminEmail"
             class="admin-email"
@@ -1216,18 +643,13 @@ input {
             Admin
         </span>
 
-
         <button
             type="button"
             class="back-btn"
-            onclick="
-                window.location.href =
-                    './admin-dashboard.html'
-            "
+            onclick="window.location.href='./admin-dashboard.html'"
         >
             Admin Dashboard
         </button>
-
 
         <button
             type="button"
@@ -1236,46 +658,23 @@ input {
         >
             Logout
         </button>
-
-
     </div>
-
-
 </header>
 
 
-
-<!-- ======================================================
-     PAGE
-====================================================== -->
-
 <div class="page">
 
-
     <div class="page-heading">
-
-        <h1>
-            Camp Data
-        </h1>
+        <h1>Camp Data</h1>
 
         <p>
-            All medical camps created from the
-            Admin Dashboard.
+            View and edit camp details and patient data.
         </p>
-
     </div>
 
 
-
-    <!-- ==================================================
-         STATISTICS
-    ================================================== -->
-
     <div class="stats">
-
-
         <div class="stat-card">
-
             <div class="stat-title">
                 Total Camps
             </div>
@@ -1286,12 +685,9 @@ input {
             >
                 0
             </div>
-
         </div>
 
-
         <div class="stat-card">
-
             <div class="stat-title">
                 Upcoming Camps
             </div>
@@ -1302,39 +698,23 @@ input {
             >
                 0
             </div>
-
         </div>
-
-
     </div>
 
 
-
-    <!-- ==================================================
-         CAMP TABLE
-    ================================================== -->
-
     <div class="card">
-
-
         <div class="table-toolbar">
-
-
             <h2>
                 Medical Camps
             </h2>
 
-
             <div class="toolbar-right">
-
-
                 <input
                     type="text"
                     id="searchInput"
                     class="search-input"
-                    placeholder="Search camp, city, doctor, campaigner or counsellor..."
+                    placeholder="Search camp, city, doctor, campaigner, counsellor or telesales..."
                 >
-
 
                 <button
                     type="button"
@@ -1343,173 +723,472 @@ input {
                 >
                     Refresh
                 </button>
-
-
             </div>
-
-
         </div>
 
 
-
         <div class="table-wrapper">
-
-
             <table class="camp-table">
-
-
                 <thead>
-
                     <tr>
-
-                        <th>
-                            Camp ID
-                        </th>
-
-                        <th>
-                            Created Date
-                        </th>
-
-                        <th>
-                            Created Time
-                        </th>
-
-                        <th>
-                            Camp Name
-                        </th>
-
-                        <th>
-                            Camp Date
-                        </th>
-
-                        <th>
-                            City
-                        </th>
-
-                        <th>
-                            Doctor Name
-                        </th>
-
-                        <th>
-                            Campaigner
-                        </th>
-
-                        <th>
-                            Counsellor
-                        </th>
-
-                        <th>
-                            Data
-                        </th>
-
+                        <th>Camp ID</th>
+                        <th>Created Date</th>
+                        <th>Created Time</th>
+                        <th>Camp Name</th>
+                        <th>Camp Date</th>
+                        <th>City</th>
+                        <th>Doctor Name</th>
+                        <th>Campaigner</th>
+                        <th>Counsellor</th>
+                        <th>Telesales Email</th>
+                        <th>Data / Edit</th>
                     </tr>
-
                 </thead>
 
-
                 <tbody id="campTableBody">
-
                     <tr>
-
                         <td
-                            colspan="10"
+                            colspan="11"
                             class="empty-message"
                         >
                             Loading camps...
                         </td>
-
                     </tr>
-
                 </tbody>
-
-
             </table>
-
-
         </div>
-
-
     </div>
-
 
 </div>
 
 
+<!-- =====================================================
+     EDIT CAMP MODAL
+===================================================== -->
+
+<div
+    id="editCampModal"
+    class="modal-overlay"
+>
+    <div class="edit-modal">
+        <h2>
+            Edit Camp Details
+        </h2>
+
+        <p class="edit-description">
+            Camp ID, Created Date and Created Time remain read-only.
+            The other camp fields can be updated.
+        </p>
+
+        <div class="edit-grid">
+            <div class="edit-field">
+                <label for="editCampId">
+                    Camp ID
+                </label>
+
+                <input
+                    type="text"
+                    id="editCampId"
+                    disabled
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editCampCreatedDate">
+                    Created Date
+                </label>
+
+                <input
+                    type="text"
+                    id="editCampCreatedDate"
+                    disabled
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editCampCreatedTime">
+                    Created Time
+                </label>
+
+                <input
+                    type="text"
+                    id="editCampCreatedTime"
+                    disabled
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editCampDate">
+                    Camp Date
+                </label>
+
+                <input
+                    type="date"
+                    id="editCampDate"
+                >
+            </div>
+
+            <div class="edit-field full-width">
+                <label for="editCampName">
+                    Camp Name
+                </label>
+
+                <input
+                    type="text"
+                    id="editCampName"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editCampCity">
+                    City
+                </label>
+
+                <input
+                    type="text"
+                    id="editCampCity"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editCampDoctor">
+                    Doctor Name
+                </label>
+
+                <input
+                    type="text"
+                    id="editCampDoctor"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editCampCampaigner">
+                    Campaigner Email
+                </label>
+
+                <input
+                    type="email"
+                    id="editCampCampaigner"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editCampCounsellor">
+                    Counsellor Email
+                </label>
+
+                <input
+                    type="email"
+                    id="editCampCounsellor"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editCampTelesales">
+                    Telesales Email
+                </label>
+
+                <input
+                    type="email"
+                    id="editCampTelesales"
+                    placeholder="Enter Telesales Email"
+                    autocomplete="off"
+                >
+            </div>
+        </div>
+
+        <div
+            id="editCampMessage"
+            class="edit-message"
+        ></div>
+
+        <div class="edit-actions">
+            <button
+                type="button"
+                id="cancelEditCampBtn"
+                class="modal-cancel-btn"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="saveEditCampBtn"
+                class="modal-save-btn"
+            >
+                Update Camp
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- =====================================================
+     EDIT PATIENT MODAL
+===================================================== -->
+
+<div
+    id="editPatientModal"
+    class="modal-overlay"
+>
+    <div class="edit-modal">
+        <h2>
+            Edit Patient Data
+        </h2>
+
+        <p class="edit-description">
+            Patient ID, Camp ID and Campaigner are read-only.
+            Patient and counselling details can be updated.
+        </p>
+
+        <div class="edit-grid">
+            <div class="edit-field">
+                <label for="editPatientId">
+                    Patient ID
+                </label>
+
+                <input
+                    type="text"
+                    id="editPatientId"
+                    disabled
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editPatientCampId">
+                    Camp ID
+                </label>
+
+                <input
+                    type="text"
+                    id="editPatientCampId"
+                    disabled
+                >
+            </div>
+
+            <div class="edit-field full-width">
+                <label for="editPatientDate">
+                    Date & Time
+                </label>
+
+                <input
+                    type="text"
+                    id="editPatientDate"
+                    placeholder="DD-MM-YYYY HH:MM:SS"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field full-width">
+                <label for="editPatientName">
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="editPatientName"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editPatientAge">
+                    Age
+                </label>
+
+                <input
+                    type="text"
+                    id="editPatientAge"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editPatientGender">
+                    Gender
+                </label>
+
+                <select id="editPatientGender">
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="edit-field">
+                <label for="editPatientMobile">
+                    Phone
+                </label>
+
+                <input
+                    type="text"
+                    id="editPatientMobile"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editPatientCity">
+                    City
+                </label>
+
+                <input
+                    type="text"
+                    id="editPatientCity"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editPatientSource">
+                    Source
+                </label>
+
+                <input
+                    type="text"
+                    id="editPatientSource"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editPatientDoctor">
+                    Doctor
+                </label>
+
+                <input
+                    type="text"
+                    id="editPatientDoctor"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editPatientTreatment">
+                    Treatment
+                </label>
+
+                <input
+                    type="text"
+                    id="editPatientTreatment"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editPatientStatus">
+                    Status
+                </label>
+
+                <input
+                    type="text"
+                    id="editPatientStatus"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editPatientCampaigner">
+                    Campaigner
+                </label>
+
+                <input
+                    type="text"
+                    id="editPatientCampaigner"
+                    disabled
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="editPatientCounsellor">
+                    Counsellor Email
+                </label>
+
+                <input
+                    type="email"
+                    id="editPatientCounsellor"
+                    autocomplete="off"
+                >
+            </div>
+        </div>
+
+        <div
+            id="editPatientMessage"
+            class="edit-message"
+        ></div>
+
+        <div class="edit-actions">
+            <button
+                type="button"
+                id="cancelEditPatientBtn"
+                class="modal-cancel-btn"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="saveEditPatientBtn"
+                class="modal-save-btn"
+            >
+                Update Patient
+            </button>
+        </div>
+    </div>
+</div>
+
 
 <script>
-
-/* ======================================================
+/* =========================================================
    API URLS
-====================================================== */
 
-/*
- * CAMP API
- */
+   These are preserved from the code you supplied.
+========================================================= */
 
 const CAMPS_API_URL =
-    "https://script.google.com/macros/s/AKfycbwdfXWbuvA9K8P5V76hFzGH9WrerBIkz2Uhm2T7OJRG1hmqJf0ElXcWmIvqn78neNSIZw/exec";
+    "https://script.google.com/macros/s/AKfycbw4w8S_nHPcdn3RWj-wm2XGT_6Il70lScUQFP71UooBPM7Npf0zedq_Vf2-4TdIBtTD1w/exec";
 
 const LEADS_API_URL =
-    "https://script.google.com/macros/s/AKfycbz1pRQuuOg8niURZ-oObllLAacDWSIXs20pUu19r6p8mtrRCeSXmtN9B7Bl6hd0D81V4Q/exec";
+    "https://script.google.com/macros/s/AKfycbw-nwjRZU93h_icjvdO7AJAHFfIJB7vpeVIqjY9B-V7Thd3bJ1pajRtjNYGXaYHoGGMfA/exec";
 
 
-
-/* ======================================================
-   ELEMENTS
-====================================================== */
+/* =========================================================
+   ELEMENTS / STATE
+========================================================= */
 
 const campTableBody =
     document.getElementById(
         "campTableBody"
     );
 
-
 const searchInput =
     document.getElementById(
         "searchInput"
     );
-
 
 const refreshBtn =
     document.getElementById(
         "refreshBtn"
     );
 
-
 const totalCampsElement =
     document.getElementById(
         "totalCamps"
     );
-
 
 const upcomingCampsElement =
     document.getElementById(
         "upcomingCamps"
     );
 
-
-
-/* ======================================================
-   DATA
-====================================================== */
-
-let allCamps = [];
-
-let allLeads = [];
-
-let leadsLoaded = false;
-
-let openCampId = null;
-
-
-
-/* ======================================================
-   ADMIN EMAIL
-====================================================== */
-
 const auth =
     getAuthData();
-
 
 document
     .getElementById(
@@ -1519,116 +1198,378 @@ document
         auth.email ||
         "Admin";
 
+let allCamps = [];
+let allLeads = [];
+let leadsLoaded = false;
+let openCampId = null;
+
+let campBeingEdited = null;
+let campUpdateInProgress = false;
+
+let patientBeingEdited = null;
+let patientUpdateInProgress = false;
 
 
-/* ======================================================
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function clean(
+    value
+) {
+    return String(
+        value == null
+            ? ""
+            : value
+    ).trim();
+}
+
+function normalizeKey(
+    value
+) {
+    return clean(
+        value
+    )
+    .toLowerCase()
+    .replace(
+        /\s+/g,
+        ""
+    );
+}
+
+function normalizeEmail(
+    value
+) {
+    return clean(
+        value
+    )
+    .toLowerCase();
+}
+
+function validateEmail(
+    value
+) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(
+            value
+        );
+}
+
+function displayValue(
+    value
+) {
+    const text =
+        clean(
+            value
+        );
+
+    if (
+        !text ||
+        text === "-"
+    ) {
+        return "-";
+    }
+
+    return escapeHtml(
+        text
+    );
+}
+
+function escapeHtml(
+    value
+) {
+    return String(
+        value == null
+            ? ""
+            : value
+    )
+    .replaceAll(
+        "&",
+        "&amp;"
+    )
+    .replaceAll(
+        "<",
+        "&lt;"
+    )
+    .replaceAll(
+        ">",
+        "&gt;"
+    )
+    .replaceAll(
+        '"',
+        "&quot;"
+    )
+    .replaceAll(
+        "'",
+        "&#039;"
+    );
+}
+
+function escapeJs(
+    value
+) {
+    return String(
+        value == null
+            ? ""
+            : value
+    )
+    .replaceAll(
+        "\\",
+        "\\\\"
+    )
+    .replaceAll(
+        "'",
+        "\\'"
+    )
+    .replaceAll(
+        "\n",
+        ""
+    )
+    .replaceAll(
+        "\r",
+        ""
+    );
+}
+
+function patientNumber(
+    id
+) {
+    const match =
+        clean(
+            id
+        )
+        .match(
+            /(\d+)$/
+        );
+
+    return match
+        ? Number(
+            match[1]
+        )
+        : 0;
+}
+
+
+/* =========================================================
+   SAFE API HELPERS
+========================================================= */
+
+async function fetchJson(
+    url,
+    errorMessage
+) {
+    const response =
+        await fetch(
+            url,
+            {
+                method:
+                    "GET",
+
+                cache:
+                    "no-store"
+            }
+        );
+
+    const rawText =
+        await response.text();
+
+    if (!response.ok) {
+        throw new Error(
+            errorMessage
+        );
+    }
+
+    if (
+        rawText
+            .trim()
+            .startsWith(
+                "<"
+            )
+    ) {
+        throw new Error(
+            "Google Apps Script returned HTML instead of JSON."
+        );
+    }
+
+    try {
+        return JSON.parse(
+            rawText
+        );
+    } catch (error) {
+        console.error(
+            "INVALID JSON:",
+            rawText
+        );
+
+        throw new Error(
+            "Invalid JSON returned by Google Apps Script."
+        );
+    }
+}
+
+
+async function postJson(
+    url,
+    payload,
+    errorMessage
+) {
+    const response =
+        await fetch(
+            url,
+            {
+                method:
+                    "POST",
+
+                headers: {
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+                },
+
+                body:
+                    JSON.stringify(
+                        payload
+                    )
+            }
+        );
+
+    const rawText =
+        await response.text();
+
+    if (!response.ok) {
+        throw new Error(
+            errorMessage
+        );
+    }
+
+    if (
+        rawText
+            .trim()
+            .startsWith(
+                "<"
+            )
+    ) {
+        throw new Error(
+            "Google Apps Script returned HTML instead of JSON."
+        );
+    }
+
+    try {
+        return JSON.parse(
+            rawText
+        );
+    } catch (error) {
+        console.error(
+            "INVALID JSON:",
+            rawText
+        );
+
+        throw new Error(
+            "Invalid JSON returned by Google Apps Script."
+        );
+    }
+}
+
+
+/* =========================================================
    LOAD CAMPS
-====================================================== */
+========================================================= */
 
 async function loadCamps() {
-
-
     campTableBody.innerHTML = `
-
         <tr>
-
             <td
-                colspan="10"
+                colspan="11"
                 class="empty-message"
             >
                 Loading camps...
             </td>
-
         </tr>
-
     `;
 
-
     try {
-
-
-        const response =
-            await fetch(
-
+        const result =
+            await fetchJson(
                 CAMPS_API_URL +
                 "?action=getCamps&t=" +
                 Date.now(),
 
-                {
-
-                    method:
-                        "GET",
-
-                    cache:
-                        "no-store"
-
-                }
-
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
                 "Unable to connect to camp database."
             );
-
-        }
-
-
-        const result =
-            await response.json();
-
 
         console.log(
             "GET CAMPS:",
             result
         );
 
-
         if (!result.success) {
-
             throw new Error(
-
                 result.message ||
                 "Unable to load camps."
-
             );
-
         }
 
+        const map =
+            new Map();
 
-        allCamps =
+        (
             Array.isArray(
                 result.camps
             )
                 ? result.camps
-                : [];
+                : []
+        )
+        .forEach(
+            function (
+                camp
+            ) {
+                const id =
+                    clean(
+                        camp.id ||
+                        camp.campId
+                    );
 
+                if (
+                    !/^CAMP/i.test(
+                        id
+                    )
+                ) {
+                    return;
+                }
+
+                map.set(
+                    normalizeKey(
+                        id
+                    ),
+                    {
+                        ...camp,
+                        id:
+                            id
+                    }
+                );
+            }
+        );
+
+        allCamps =
+            Array.from(
+                map.values()
+            );
 
         renderCamps(
             allCamps
         );
 
-
         updateStatistics();
 
-
     } catch (error) {
-
-
         console.error(
             "LOAD CAMPS ERROR:",
             error
         );
 
-
         campTableBody.innerHTML = `
-
             <tr>
-
                 <td
-                    colspan="10"
+                    colspan="11"
                     class="error-message"
                 >
                     ${escapeHtml(
@@ -1636,271 +1577,223 @@ async function loadCamps() {
                         "Unable to load camps."
                     )}
                 </td>
-
             </tr>
-
         `;
-
-
     }
-
-
 }
 
 
-
-/* ======================================================
-   LOAD ALL PATIENT / LEAD DATA
-====================================================== */
+/* =========================================================
+   LOAD PATIENTS
+========================================================= */
 
 async function loadAllLeads(
     forceReload = false
 ) {
-
-
-    /*
-     * Do not repeatedly request
-     * the same data unless Refresh
-     * is clicked.
-     */
-
     if (
         leadsLoaded &&
         !forceReload
     ) {
-
         return allLeads;
-
     }
-
-
-    const response =
-        await fetch(
-
-            LEADS_API_URL +
-            "?action=getLeads&t=" +
-            Date.now(),
-
-            {
-
-                method:
-                    "GET",
-
-                cache:
-                    "no-store"
-
-            }
-
-        );
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            "Unable to connect to patient database."
-        );
-
-    }
-
 
     const result =
-        await response.json();
+        await fetchJson(
+            LEADS_API_URL +
+                "?action=getLeads&t=" +
+                Date.now(),
 
+            "Unable to connect to patient database."
+        );
 
     console.log(
         "GET PATIENT DATA:",
         result
     );
 
-
     if (!result.success) {
-
         throw new Error(
-
             result.message ||
             "Unable to load patient data."
-
         );
-
     }
 
+    const patientMap =
+        new Map();
 
-    allLeads =
+    (
         Array.isArray(
             result.leads
         )
             ? result.leads
-            : [];
+            : []
+    )
+    .forEach(
+        function (
+            lead,
+            index
+        ) {
+            let key =
+                normalizeKey(
+                    lead.id
+                );
 
+            if (!key) {
+                key =
+                    normalizeKey(
+                        lead.mobile
+                    ) +
+                    "_" +
+                    normalizeKey(
+                        lead.date
+                    );
+            }
+
+            if (
+                !key ||
+                key === "_"
+            ) {
+                key =
+                    "row_" +
+                    index;
+            }
+
+            patientMap.set(
+                key,
+                lead
+            );
+        }
+    );
+
+    allLeads =
+        Array.from(
+            patientMap.values()
+        );
 
     leadsLoaded =
         true;
 
-
     return allLeads;
-
 }
 
 
-
-/* ======================================================
+/* =========================================================
    RENDER CAMPS
-====================================================== */
+========================================================= */
 
 function renderCamps(
     camps
 ) {
-
-
-    openCampId =
-        null;
-
+    closeAllPatientRows();
 
     if (
-        !Array.isArray(camps) ||
+        !Array.isArray(
+            camps
+        ) ||
         camps.length === 0
     ) {
-
-
         campTableBody.innerHTML = `
-
             <tr>
-
                 <td
-                    colspan="10"
+                    colspan="11"
                     class="empty-message"
                 >
                     No camps found.
                 </td>
-
             </tr>
-
         `;
 
-
         return;
-
     }
-
-
 
     campTableBody.innerHTML =
         camps
-            .map(
-                function (camp) {
+        .map(
+            function (
+                camp
+            ) {
+                const campId =
+                    clean(
+                        camp.id ||
+                        camp.campId
+                    );
 
+                const safeCampId =
+                    escapeHtml(
+                        campId
+                    );
 
-                    const safeCampId =
-                        escapeHtml(
-                            camp.id
-                        );
+                return `
+                    <tr
+                        class="camp-main-row"
+                        id="camp-row-${safeCampId}"
+                    >
+                        <td class="camp-id">
+                            ${safeCampId}
+                        </td>
 
+                        <td>
+                            ${displayValue(
+                                camp.createdDate
+                            )}
+                        </td>
 
-                    /*
-                     * IMPORTANT:
-                     *
-                     * We create TWO rows
-                     * for every camp.
-                     *
-                     * 1. Normal camp row
-                     * 2. Hidden patient data row
-                     */
+                        <td>
+                            ${displayValue(
+                                camp.createdTime
+                            )}
+                        </td>
 
+                        <td>
+                            ${displayValue(
+                                camp.campName
+                            )}
+                        </td>
 
-                    return `
+                        <td>
+                            ${formatDate(
+                                camp.campDate
+                            )}
+                        </td>
 
+                        <td>
+                            ${displayValue(
+                                camp.city
+                            )}
+                        </td>
 
-                        <!-- CAMP ROW -->
+                        <td>
+                            ${displayValue(
+                                camp.doctorName ||
+                                camp.doctor
+                            )}
+                        </td>
 
-                        <tr
-                            class="camp-main-row"
-                            id="camp-row-${safeCampId}"
-                        >
+                        <td>
+                            ${displayValue(
+                                camp.campaigner ||
+                                camp.campaignerEmail
+                            )}
+                        </td>
 
+                        <td>
+                            ${displayValue(
+                                camp.counsellor ||
+                                camp.counsellorEmail
+                            )}
+                        </td>
 
-                            <td
-                                class="camp-id"
-                            >
+                        <td class="email-value">
+                            ${displayValue(
+                                camp.telesales ||
+                                camp.telesalesEmail ||
+                                camp.teleSales ||
+                                camp.teleSalesEmail
+                            )}
+                        </td>
 
-                                ${safeCampId}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    camp.createdDate
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    camp.createdTime
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    camp.campName
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${formatDate(
-                                    camp.campDate
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    camp.city
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    camp.doctorName
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    camp.campaigner
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    camp.counsellor
-                                )}
-
-                            </td>
-
-
-                            <td>
-
+                        <td>
+                            <div class="camp-action-buttons">
                                 <button
                                     type="button"
                                     class="view-data-btn"
@@ -1909,125 +1802,110 @@ function renderCamps(
                                     View Data
                                 </button>
 
-                            </td>
-
-
-                        </tr>
-
-
-
-                        <!-- PATIENT DATA ROW -->
-
-                        <tr
-                            class="patient-expand-row"
-                            id="patient-row-${safeCampId}"
-                        >
-
-                            <td
-                                colspan="10"
-                                class="patient-expand-cell"
-                            >
-
-                                <div
-                                    id="patient-content-${safeCampId}"
-                                    class="patient-panel"
+                                <button
+                                    type="button"
+                                    class="edit-camp-btn"
+                                    data-camp-id="${safeCampId}"
                                 >
+                                    Edit Camp
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
 
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-
-                    `;
-
-
-                }
-            )
-            .join("");
-
+                    <tr
+                        class="patient-expand-row"
+                        id="patient-row-${safeCampId}"
+                    >
+                        <td
+                            colspan="11"
+                            class="patient-expand-cell"
+                        >
+                            <div
+                                id="patient-content-${safeCampId}"
+                                class="patient-panel"
+                            ></div>
+                        </td>
+                    </tr>
+                `;
+            }
+        )
+        .join("");
 
     attachViewDataButtons();
-
+    attachEditCampButtons();
 }
 
 
-
-/* ======================================================
-   VIEW DATA BUTTON EVENTS
-====================================================== */
+/* =========================================================
+   CAMP BUTTON EVENTS
+========================================================= */
 
 function attachViewDataButtons() {
-
-
     document
         .querySelectorAll(
             ".view-data-btn"
         )
         .forEach(
-            function (button) {
-
-
+            function (
+                button
+            ) {
                 button.addEventListener(
                     "click",
                     function () {
-
-
-                        const campId =
-                            this.dataset
-                                .campId;
-
-
                         viewCampData(
-                            campId,
+                            this.dataset.campId,
                             this
                         );
-
-
                     }
                 );
-
-
             }
         );
-
 }
 
 
+function attachEditCampButtons() {
+    document
+        .querySelectorAll(
+            ".edit-camp-btn"
+        )
+        .forEach(
+            function (
+                button
+            ) {
+                button.addEventListener(
+                    "click",
+                    function () {
+                        openEditCamp(
+                            this.dataset.campId
+                        );
+                    }
+                );
+            }
+        );
+}
 
-/* ======================================================
-   VIEW CAMP DATA
-====================================================== */
+
+/* =========================================================
+   VIEW CAMP PATIENT DATA
+========================================================= */
 
 async function viewCampData(
     campId,
     button
 ) {
-
-
-    /*
-     * If same camp is already open,
-     * do nothing.
-     */
-
     if (
-        String(openCampId) ===
-        String(campId)
+        normalizeKey(
+            openCampId
+        ) ===
+        normalizeKey(
+            campId
+        )
     ) {
-
         return;
-
     }
 
-
-    /*
-     * Close any previously
-     * expanded camp.
-     */
-
     closeAllPatientRows();
-
 
     const patientRow =
         document.getElementById(
@@ -2035,157 +1913,113 @@ async function viewCampData(
             campId
         );
 
-
     const content =
         document.getElementById(
             "patient-content-" +
             campId
         );
 
-
     if (
         !patientRow ||
         !content
     ) {
-
         return;
-
     }
-
 
     patientRow.classList.add(
         "active"
     );
 
-
     openCampId =
         campId;
 
-
     content.innerHTML = `
-
         <div class="patient-loading">
-
             Loading patient data...
-
         </div>
-
     `;
-
 
     const originalText =
         button.textContent;
 
-
     button.disabled =
         true;
-
 
     button.textContent =
         "Loading...";
 
-
     try {
-
-
-        /*
-         * Get latest campaigner +
-         * counsellor data.
-         */
-
         await loadAllLeads(
             true
         );
 
-
-        /*
-         * CRITICAL:
-         *
-         * Match the patient
-         * to this particular
-         * Camp ID.
-         */
-
-        const campPatients =
-            allLeads.filter(
-                function (lead) {
-
-
-                    return (
-
-                        String(
-                            lead.campId || ""
-                        )
-                        .trim()
-                        .toLowerCase()
-
-                        ===
-
-                        String(
-                            campId || ""
-                        )
-                        .trim()
-                        .toLowerCase()
-
-                    );
-
-
-                }
+        const campKey =
+            normalizeKey(
+                campId
             );
 
+        const campPatients =
+            allLeads
+            .filter(
+                function (
+                    lead
+                ) {
+                    return (
+                        normalizeKey(
+                            lead.campId
+                        )
+                        ===
+                        campKey
+                    );
+                }
+            )
+            .sort(
+                function (
+                    a,
+                    b
+                ) {
+                    return (
+                        patientNumber(
+                            b.id
+                        )
+                        -
+                        patientNumber(
+                            a.id
+                        )
+                    );
+                }
+            );
 
         const camp =
             allCamps.find(
-                function (item) {
-
-
+                function (
+                    item
+                ) {
                     return (
-
-                        String(
-                            item.id
+                        normalizeKey(
+                            item.id ||
+                            item.campId
                         )
-                        .trim()
-                        .toLowerCase()
-
                         ===
-
-                        String(
-                            campId
-                        )
-                        .trim()
-                        .toLowerCase()
-
+                        campKey
                     );
-
-
                 }
             );
 
-
         renderCampPatientData(
-
             campId,
-
             camp,
-
             campPatients
-
         );
 
-
     } catch (error) {
-
-
         console.error(
             "PATIENT LOAD ERROR:",
             error
         );
 
-
         content.innerHTML = `
-
             <div class="no-patient-data">
-
                 <strong>
                     Unable to load patient data.
                 </strong>
@@ -2196,120 +2030,100 @@ async function viewCampData(
                     error.message
                 )}
 
-
                 <div class="panel-footer">
-
                     <button
                         type="button"
                         class="cancel-data-btn"
-                        onclick="
-                            closeCampData(
-                                '${escapeJs(campId)}'
-                            )
-                        "
+                        onclick="closeCampData('${escapeJs(campId)}')"
                     >
                         Cancel
                     </button>
-
                 </div>
-
             </div>
-
         `;
-
-
     } finally {
-
-
         button.disabled =
             false;
 
-
         button.textContent =
             originalText;
-
-
     }
-
-
 }
 
 
-
-/* ======================================================
-   RENDER CAMP PATIENT DATA
-====================================================== */
+/* =========================================================
+   RENDER PATIENT DATA
+========================================================= */
 
 function renderCampPatientData(
     campId,
     camp,
     patients
 ) {
-
-
     const content =
         document.getElementById(
             "patient-content-" +
             campId
         );
 
-
     if (!content) {
-
         return;
-
     }
-
 
     const campName =
         camp
-            ? camp.campName
+            ? (
+                camp.campName ||
+                campId
+            )
             : campId;
-
 
     const campaigner =
         camp
-            ? camp.campaigner
+            ? (
+                camp.campaigner ||
+                camp.campaignerEmail ||
+                "-"
+            )
             : "-";
-
 
     const counsellor =
         camp
-            ? camp.counsellor
+            ? (
+                camp.counsellor ||
+                camp.counsellorEmail ||
+                "-"
+            )
             : "-";
 
-
-
-    /*
-     * NO DATA
-     */
+    const telesales =
+        camp
+            ? (
+                camp.telesales ||
+                camp.telesalesEmail ||
+                camp.teleSales ||
+                camp.teleSalesEmail ||
+                "-"
+            )
+            : "-";
 
     if (
-        !Array.isArray(patients) ||
+        !Array.isArray(
+            patients
+        ) ||
         patients.length === 0
     ) {
-
-
         content.innerHTML = `
-
-
             <div class="patient-panel-header">
-
-
                 <div>
-
                     <h3 class="patient-panel-title">
-
                         ${escapeHtml(
                             campName
                         )}
                         Patient Data
-
                     </h3>
 
-
                     <p class="patient-panel-subtitle">
-
                         Camp ID:
                         <strong>
                             ${escapeHtml(
@@ -2320,257 +2134,177 @@ function renderCampPatientData(
                         &nbsp; | &nbsp;
 
                         Campaigner:
-                        ${escapeHtml(
-                            campaigner
-                        )}
+                        <strong>
+                            ${escapeHtml(
+                                campaigner
+                            )}
+                        </strong>
 
                         &nbsp; | &nbsp;
 
                         Counsellor:
-                        ${escapeHtml(
-                            counsellor
-                        )}
+                        <strong>
+                            ${escapeHtml(
+                                counsellor
+                            )}
+                        </strong>
 
+                        &nbsp; | &nbsp;
+
+                        Telesales:
+                        <strong>
+                            ${escapeHtml(
+                                telesales
+                            )}
+                        </strong>
                     </p>
-
                 </div>
 
-
                 <span class="patient-count">
-
                     0 Patients
-
                 </span>
-
-
             </div>
-
-
 
             <div class="no-patient-data">
-
-                No patient data has been submitted
-                for this camp yet.
-
+                No patient records were found for this camp.
             </div>
 
-
-
             <div class="panel-footer">
-
                 <button
                     type="button"
                     class="cancel-data-btn"
-                    onclick="
-                        closeCampData(
-                            '${escapeJs(campId)}'
-                        )
-                    "
+                    onclick="closeCampData('${escapeJs(campId)}')"
                 >
                     Cancel
                 </button>
-
             </div>
-
-
         `;
 
-
         return;
-
     }
-
-
-
-    /*
-     * DATA EXISTS
-     */
 
     const rows =
         patients
-            .map(
-                function (lead) {
+        .map(
+            function (
+                lead
+            ) {
+                return `
+                    <tr>
+                        <td class="patient-id">
+                            ${displayValue(
+                                lead.id
+                            )}
+                        </td>
 
+                        <td>
+                            ${displayValue(
+                                lead.date
+                            )}
+                        </td>
 
-                    return `
+                        <td>
+                            ${displayValue(
+                                lead.name
+                            )}
+                        </td>
 
-                        <tr>
+                        <td>
+                            ${displayValue(
+                                lead.age
+                            )}
+                        </td>
 
+                        <td>
+                            ${displayValue(
+                                lead.gender
+                            )}
+                        </td>
 
-                            <td
-                                class="patient-id"
+                        <td>
+                            ${displayValue(
+                                lead.mobile ||
+                                lead.phone
+                            )}
+                        </td>
+
+                        <td>
+                            ${displayValue(
+                                lead.city
+                            )}
+                        </td>
+
+                        <td>
+                            ${displayValue(
+                                lead.source
+                            )}
+                        </td>
+
+                        <td>
+                            ${displayValue(
+                                lead.doctorName ||
+                                lead.doctor
+                            )}
+                        </td>
+
+                        <td>
+                            ${displayValue(
+                                lead.treatment
+                            )}
+                        </td>
+
+                        <td>
+                            <span class="status-badge">
+                                ${displayValue(
+                                    lead.status
+                                )}
+                            </span>
+                        </td>
+
+                        <td class="email-value">
+                            ${displayValue(
+                                lead.campaignerEmail ||
+                                campaigner
+                            )}
+                        </td>
+
+                        <td class="email-value">
+                            ${displayValue(
+                                lead.counsellorEmail ||
+                                counsellor
+                            )}
+                        </td>
+
+                        <td>
+                            <button
+                                type="button"
+                                class="edit-patient-btn"
+                                onclick="openEditPatient(
+                                    '${escapeJs(lead.id)}',
+                                    '${escapeJs(campId)}'
+                                )"
                             >
-
-                                ${escapeHtml(
-                                    lead.id ||
-                                    "-"
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    lead.date ||
-                                    "-"
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    lead.name ||
-                                    "-"
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    lead.age ||
-                                    "-"
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    lead.gender ||
-                                    "-"
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    lead.mobile ||
-                                    "-"
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${escapeHtml(
-                                    lead.city ||
-                                    "-"
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${displayValue(
-                                    lead.source
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${displayValue(
-                                    lead.doctorName
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                ${displayValue(
-                                    lead.treatment
-                                )}
-
-                            </td>
-
-
-                            <td>
-
-                                <span
-                                    class="status-badge"
-                                >
-
-                                    ${displayValue(
-                                        lead.status
-                                    )}
-
-                                </span>
-
-                            </td>
-
-
-                            <td
-                                class="email-value"
-                            >
-
-                                ${displayValue(
-                                    lead.campaignerEmail ||
-                                    campaigner
-                                )}
-
-                            </td>
-
-
-                            <td
-                                class="email-value"
-                            >
-
-                                ${escapeHtml(
-                                    counsellor ||
-                                    "-"
-                                )}
-
-                            </td>
-
-
-                        </tr>
-
-                    `;
-
-
-                }
-            )
-            .join("");
-
-
+                                Edit
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }
+        )
+        .join("");
 
     content.innerHTML = `
-
-
-        <!-- HEADER -->
-
         <div class="patient-panel-header">
-
-
             <div>
-
-
                 <h3 class="patient-panel-title">
-
                     ${escapeHtml(
                         campName
                     )}
                     Patient Data
-
                 </h3>
 
-
                 <p class="patient-panel-subtitle">
-
                     Camp ID:
-
                     <strong>
                         ${escapeHtml(
                             campId
@@ -2580,7 +2314,6 @@ function renderCampPatientData(
                     &nbsp; | &nbsp;
 
                     Campaigner:
-
                     <strong>
                         ${escapeHtml(
                             campaigner
@@ -2590,177 +2323,1374 @@ function renderCampPatientData(
                     &nbsp; | &nbsp;
 
                     Counsellor:
-
                     <strong>
                         ${escapeHtml(
                             counsellor
                         )}
                     </strong>
 
+                    &nbsp; | &nbsp;
+
+                    Telesales:
+                    <strong>
+                        ${escapeHtml(
+                            telesales
+                        )}
+                    </strong>
                 </p>
-
-
             </div>
 
-
             <span class="patient-count">
-
                 ${patients.length}
-
                 ${
                     patients.length === 1
                         ? "Patient"
                         : "Patients"
                 }
-
             </span>
-
-
         </div>
 
-
-
-        <!-- PATIENT TABLE -->
 
         <div class="patient-table-wrapper">
-
-
             <table class="patient-table">
-
-
                 <thead>
-
                     <tr>
-
-                        <th>
-                            Patient ID
-                        </th>
-
-                        <th>
-                            Date & Time
-                        </th>
-
-                        <th>
-                            Name
-                        </th>
-
-                        <th>
-                            Age
-                        </th>
-
-                        <th>
-                            Gender
-                        </th>
-
-                        <th>
-                            Phone
-                        </th>
-
-                        <th>
-                            City
-                        </th>
-
-                        <th>
-                            Source
-                        </th>
-
-                        <th>
-                            Doctor
-                        </th>
-
-                        <th>
-                            Treatment
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                        <th>
-                            Campaigner
-                        </th>
-
-                        <th>
-                            Counsellor
-                        </th>
-
+                        <th>Patient ID</th>
+                        <th>Date & Time</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Phone</th>
+                        <th>City</th>
+                        <th>Source</th>
+                        <th>Doctor</th>
+                        <th>Treatment</th>
+                        <th>Status</th>
+                        <th>Campaigner</th>
+                        <th>Counsellor</th>
+                        <th>Edit</th>
                     </tr>
-
                 </thead>
 
-
                 <tbody>
-
                     ${rows}
-
                 </tbody>
-
-
             </table>
-
-
         </div>
 
 
-
-        <!-- CANCEL -->
-
         <div class="panel-footer">
-
             <button
                 type="button"
                 class="cancel-data-btn"
-                onclick="
-                    closeCampData(
-                        '${escapeJs(campId)}'
-                    )
-                "
+                onclick="closeCampData('${escapeJs(campId)}')"
             >
                 Cancel
             </button>
-
         </div>
-
-
     `;
-
-
 }
 
 
+/* =========================================================
+   EDIT CAMP
+========================================================= */
 
-/* ======================================================
-   CLOSE / MINIMIZE CAMP DATA
-====================================================== */
+function openEditCamp(
+    campId
+) {
+    const camp =
+        allCamps.find(
+            function (
+                item
+            ) {
+                return (
+                    normalizeKey(
+                        item.id ||
+                        item.campId
+                    )
+                    ===
+                    normalizeKey(
+                        campId
+                    )
+                );
+            }
+        );
+
+    if (!camp) {
+        alert(
+            "Camp record could not be found."
+        );
+
+        return;
+    }
+
+    campBeingEdited =
+        camp;
+
+    document
+        .getElementById(
+            "editCampId"
+        )
+        .value =
+            camp.id ||
+            camp.campId ||
+            "";
+
+    document
+        .getElementById(
+            "editCampCreatedDate"
+        )
+        .value =
+            camp.createdDate ||
+            "";
+
+    document
+        .getElementById(
+            "editCampCreatedTime"
+        )
+        .value =
+            camp.createdTime ||
+            "";
+
+    document
+        .getElementById(
+            "editCampName"
+        )
+        .value =
+            camp.campName ||
+            "";
+
+    document
+        .getElementById(
+            "editCampDate"
+        )
+        .value =
+            toDateInputValue(
+                camp.campDate
+            );
+
+    document
+        .getElementById(
+            "editCampCity"
+        )
+        .value =
+            camp.city ||
+            "";
+
+    document
+        .getElementById(
+            "editCampDoctor"
+        )
+        .value =
+            camp.doctorName ||
+            camp.doctor ||
+            "";
+
+    document
+        .getElementById(
+            "editCampCampaigner"
+        )
+        .value =
+            camp.campaigner ||
+            camp.campaignerEmail ||
+            "";
+
+    document
+        .getElementById(
+            "editCampCounsellor"
+        )
+        .value =
+            camp.counsellor ||
+            camp.counsellorEmail ||
+            "";
+
+    document
+        .getElementById(
+            "editCampTelesales"
+        )
+        .value =
+            camp.telesales ||
+            camp.telesalesEmail ||
+            camp.teleSales ||
+            camp.teleSalesEmail ||
+            "";
+
+    setEditMessage(
+        "editCampMessage",
+        "",
+        ""
+    );
+
+    document
+        .getElementById(
+            "editCampModal"
+        )
+        .classList
+        .add(
+            "active"
+        );
+}
+
+
+function closeEditCamp() {
+    if (
+        campUpdateInProgress
+    ) {
+        return;
+    }
+
+    document
+        .getElementById(
+            "editCampModal"
+        )
+        .classList
+        .remove(
+            "active"
+        );
+
+    campBeingEdited =
+        null;
+
+    setEditMessage(
+        "editCampMessage",
+        "",
+        ""
+    );
+}
+
+
+async function updateCamp() {
+    if (
+        campUpdateInProgress
+    ) {
+        return;
+    }
+
+    if (!campBeingEdited) {
+        setEditMessage(
+            "editCampMessage",
+            "No camp selected.",
+            "error"
+        );
+
+        return;
+    }
+
+    const campId =
+        clean(
+            campBeingEdited.id ||
+            campBeingEdited.campId
+        );
+
+    const campName =
+        clean(
+            document
+                .getElementById(
+                    "editCampName"
+                )
+                .value
+        );
+
+    const campDate =
+        clean(
+            document
+                .getElementById(
+                    "editCampDate"
+                )
+                .value
+        );
+
+    const city =
+        clean(
+            document
+                .getElementById(
+                    "editCampCity"
+                )
+                .value
+        );
+
+    const doctorName =
+        clean(
+            document
+                .getElementById(
+                    "editCampDoctor"
+                )
+                .value
+        );
+
+    const campaigner =
+        normalizeEmail(
+            document
+                .getElementById(
+                    "editCampCampaigner"
+                )
+                .value
+        );
+
+    const counsellor =
+        normalizeEmail(
+            document
+                .getElementById(
+                    "editCampCounsellor"
+                )
+                .value
+        );
+
+    const telesales =
+        normalizeEmail(
+            document
+                .getElementById(
+                    "editCampTelesales"
+                )
+                .value
+        );
+
+    if (!campName) {
+        setEditMessage(
+            "editCampMessage",
+            "Camp Name is required.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (!campDate) {
+        setEditMessage(
+            "editCampMessage",
+            "Camp Date is required.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (!city) {
+        setEditMessage(
+            "editCampMessage",
+            "City is required.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (!doctorName) {
+        setEditMessage(
+            "editCampMessage",
+            "Doctor Name is required.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (
+        !validateEmail(
+            campaigner
+        )
+    ) {
+        setEditMessage(
+            "editCampMessage",
+            "Enter a valid Campaigner email.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (
+        !validateEmail(
+            counsellor
+        )
+    ) {
+        setEditMessage(
+            "editCampMessage",
+            "Enter a valid Counsellor email.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (
+        !validateEmail(
+            telesales
+        )
+    ) {
+        setEditMessage(
+            "editCampMessage",
+            "Enter a valid Telesales email.",
+            "error"
+        );
+
+        return;
+    }
+
+    const confirmed =
+        window.confirm(
+            "Update camp " +
+            campId +
+            "?"
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    const saveButton =
+        document.getElementById(
+            "saveEditCampBtn"
+        );
+
+    const cancelButton =
+        document.getElementById(
+            "cancelEditCampBtn"
+        );
+
+    campUpdateInProgress =
+        true;
+
+    saveButton.disabled =
+        true;
+
+    cancelButton.disabled =
+        true;
+
+    saveButton.textContent =
+        "Updating...";
+
+    setEditMessage(
+        "editCampMessage",
+        "Updating camp details...",
+        ""
+    );
+
+    try {
+        const result =
+            await postJson(
+                CAMPS_API_URL,
+                {
+                    action:
+                        "updateCamp",
+
+                    campId:
+                        campId,
+
+                    campName:
+                        campName,
+
+                    campDate:
+                        campDate,
+
+                    city:
+                        city,
+
+                    doctorName:
+                        doctorName,
+
+                    campaigner:
+                        campaigner,
+
+                    counsellor:
+                        counsellor,
+
+                    telesales:
+                        telesales,
+
+                    /*
+                     * Compatibility alias for
+                     * the updated Camps API.
+                     */
+                    telesalesEmail:
+                        telesales
+                },
+                "Unable to connect to Camp API."
+            );
+
+        console.log(
+            "UPDATE CAMP:",
+            result
+        );
+
+        if (!result.success) {
+
+            const apiMessage =
+                result.message ||
+                "Unable to update camp.";
+
+
+            /*
+             * A response of "Invalid action"
+             * means the browser is still calling
+             * an older Camps Apps Script deployment.
+             */
+            if (
+                /invalid\s+action/i.test(
+                    apiMessage
+                )
+            ) {
+
+                throw new Error(
+                    "The deployed Camps API is an older version and does not support updateCamp. " +
+                    "Deploy the latest Camps Apps Script as a NEW VERSION and keep the same Web App URL."
+                );
+
+            }
+
+
+            throw new Error(
+                apiMessage
+            );
+
+        }
+
+        setEditMessage(
+            "editCampMessage",
+            "Camp updated successfully.",
+            "success"
+        );
+
+        await loadCamps();
+
+        setTimeout(
+            function () {
+                closeEditCamp();
+            },
+            450
+        );
+
+    } catch (error) {
+        console.error(
+            "UPDATE CAMP ERROR:",
+            error
+        );
+
+        setEditMessage(
+            "editCampMessage",
+            error.message ||
+            "Unable to update camp.",
+            "error"
+        );
+
+    } finally {
+        campUpdateInProgress =
+            false;
+
+        saveButton.disabled =
+            false;
+
+        cancelButton.disabled =
+            false;
+
+        saveButton.textContent =
+            "Update Camp";
+    }
+}
+
+
+/* =========================================================
+   EDIT PATIENT
+========================================================= */
+
+function openEditPatient(
+    patientId,
+    campId
+) {
+    const patient =
+        allLeads.find(
+            function (
+                lead
+            ) {
+                return (
+                    normalizeKey(
+                        lead.id
+                    )
+                    ===
+                    normalizeKey(
+                        patientId
+                    )
+                );
+            }
+        );
+
+    if (!patient) {
+        alert(
+            "Patient record could not be found."
+        );
+
+        return;
+    }
+
+    const camp =
+        allCamps.find(
+            function (
+                item
+            ) {
+                return (
+                    normalizeKey(
+                        item.id ||
+                        item.campId
+                    )
+                    ===
+                    normalizeKey(
+                        campId
+                    )
+                );
+            }
+        );
+
+    patientBeingEdited = {
+        ...patient,
+        _campId:
+            campId
+    };
+
+    document
+        .getElementById(
+            "editPatientId"
+        )
+        .value =
+            patient.id ||
+            "";
+
+    document
+        .getElementById(
+            "editPatientCampId"
+        )
+        .value =
+            patient.campId ||
+            campId ||
+            "";
+
+    document
+        .getElementById(
+            "editPatientDate"
+        )
+        .value =
+            patient.date ||
+            "";
+
+    document
+        .getElementById(
+            "editPatientName"
+        )
+        .value =
+            patient.name ||
+            "";
+
+    document
+        .getElementById(
+            "editPatientAge"
+        )
+        .value =
+            patient.age ||
+            "";
+
+    setSelectValue(
+        "editPatientGender",
+        patient.gender
+    );
+
+    document
+        .getElementById(
+            "editPatientMobile"
+        )
+        .value =
+            patient.mobile ||
+            patient.phone ||
+            "";
+
+    document
+        .getElementById(
+            "editPatientCity"
+        )
+        .value =
+            patient.city ||
+            "";
+
+    document
+        .getElementById(
+            "editPatientSource"
+        )
+        .value =
+            patient.source ||
+            "";
+
+    document
+        .getElementById(
+            "editPatientDoctor"
+        )
+        .value =
+            patient.doctorName ||
+            patient.doctor ||
+            "";
+
+    document
+        .getElementById(
+            "editPatientTreatment"
+        )
+        .value =
+            patient.treatment &&
+            patient.treatment !== "-"
+                ? patient.treatment
+                : "";
+
+    document
+        .getElementById(
+            "editPatientStatus"
+        )
+        .value =
+            patient.status &&
+            patient.status !== "-"
+                ? patient.status
+                : "";
+
+    document
+        .getElementById(
+            "editPatientCampaigner"
+        )
+        .value =
+            patient.campaignerEmail ||
+            (
+                camp
+                    ? (
+                        camp.campaigner ||
+                        camp.campaignerEmail ||
+                        ""
+                    )
+                    : ""
+            );
+
+    document
+        .getElementById(
+            "editPatientCounsellor"
+        )
+        .value =
+            patient.counsellorEmail ||
+            (
+                camp
+                    ? (
+                        camp.counsellor ||
+                        camp.counsellorEmail ||
+                        ""
+                    )
+                    : ""
+            );
+
+    setEditMessage(
+        "editPatientMessage",
+        "",
+        ""
+    );
+
+    document
+        .getElementById(
+            "editPatientModal"
+        )
+        .classList
+        .add(
+            "active"
+        );
+}
+
+
+function closeEditPatient() {
+    if (
+        patientUpdateInProgress
+    ) {
+        return;
+    }
+
+    document
+        .getElementById(
+            "editPatientModal"
+        )
+        .classList
+        .remove(
+            "active"
+        );
+
+    patientBeingEdited =
+        null;
+
+    setEditMessage(
+        "editPatientMessage",
+        "",
+        ""
+    );
+}
+
+
+async function updatePatient() {
+    if (
+        patientUpdateInProgress
+    ) {
+        return;
+    }
+
+    if (!patientBeingEdited) {
+        setEditMessage(
+            "editPatientMessage",
+            "No patient selected.",
+            "error"
+        );
+
+        return;
+    }
+
+    const patientId =
+        clean(
+            patientBeingEdited.id
+        );
+
+    const date =
+        clean(
+            document
+                .getElementById(
+                    "editPatientDate"
+                )
+                .value
+        );
+
+    const name =
+        clean(
+            document
+                .getElementById(
+                    "editPatientName"
+                )
+                .value
+        );
+
+    const age =
+        clean(
+            document
+                .getElementById(
+                    "editPatientAge"
+                )
+                .value
+        );
+
+    const gender =
+        clean(
+            document
+                .getElementById(
+                    "editPatientGender"
+                )
+                .value
+        );
+
+    const mobile =
+        clean(
+            document
+                .getElementById(
+                    "editPatientMobile"
+                )
+                .value
+        );
+
+    const city =
+        clean(
+            document
+                .getElementById(
+                    "editPatientCity"
+                )
+                .value
+        );
+
+    const source =
+        clean(
+            document
+                .getElementById(
+                    "editPatientSource"
+                )
+                .value
+        );
+
+    const doctorName =
+        clean(
+            document
+                .getElementById(
+                    "editPatientDoctor"
+                )
+                .value
+        );
+
+    const treatment =
+        clean(
+            document
+                .getElementById(
+                    "editPatientTreatment"
+                )
+                .value
+        );
+
+    const status =
+        clean(
+            document
+                .getElementById(
+                    "editPatientStatus"
+                )
+                .value
+        );
+
+    const counsellorEmail =
+        normalizeEmail(
+            document
+                .getElementById(
+                    "editPatientCounsellor"
+                )
+                .value
+        );
+
+    if (!name) {
+        setEditMessage(
+            "editPatientMessage",
+            "Patient Name is required.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (
+        counsellorEmail &&
+        !validateEmail(
+            counsellorEmail
+        )
+    ) {
+        setEditMessage(
+            "editPatientMessage",
+            "Enter a valid Counsellor email.",
+            "error"
+        );
+
+        return;
+    }
+
+    const confirmed =
+        window.confirm(
+            "Update patient " +
+            patientId +
+            "?"
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    const saveButton =
+        document.getElementById(
+            "saveEditPatientBtn"
+        );
+
+    const cancelButton =
+        document.getElementById(
+            "cancelEditPatientBtn"
+        );
+
+    patientUpdateInProgress =
+        true;
+
+    saveButton.disabled =
+        true;
+
+    cancelButton.disabled =
+        true;
+
+    saveButton.textContent =
+        "Updating...";
+
+    setEditMessage(
+        "editPatientMessage",
+        "Updating patient data...",
+        ""
+    );
+
+    try {
+        /*
+         * updateCounsellorLead is used instead of updateLead
+         * because it supports the patient fields PLUS:
+         * Date, Doctor, Treatment, Status and Counsellor.
+         */
+        const result =
+            await postJson(
+                LEADS_API_URL,
+                {
+                    action:
+                        "updateCounsellorLead",
+
+                    id:
+                        patientId,
+
+                    patientId:
+                        patientId,
+
+                    date:
+                        date,
+
+                    name:
+                        name,
+
+                    age:
+                        age,
+
+                    gender:
+                        gender,
+
+                    mobile:
+                        mobile,
+
+                    city:
+                        city,
+
+                    source:
+                        source,
+
+                    doctorName:
+                        doctorName,
+
+                    treatment:
+                        treatment,
+
+                    status:
+                        status,
+
+                    counsellorEmail:
+                        counsellorEmail
+                },
+                "Unable to connect to Patient API."
+            );
+
+        console.log(
+            "UPDATE PATIENT:",
+            result
+        );
+
+        if (!result.success) {
+            throw new Error(
+                result.message ||
+                "Unable to update patient."
+            );
+        }
+
+        setEditMessage(
+            "editPatientMessage",
+            "Patient data updated successfully.",
+            "success"
+        );
+
+        /*
+         * Reload from Google Sheets so this page immediately
+         * reflects the stored values.
+         */
+        leadsLoaded =
+            false;
+
+        await loadAllLeads(
+            true
+        );
+
+        const currentCampId =
+            patientBeingEdited._campId ||
+            openCampId;
+
+        if (currentCampId) {
+            const campKey =
+                normalizeKey(
+                    currentCampId
+                );
+
+            const camp =
+                allCamps.find(
+                    function (
+                        item
+                    ) {
+                        return (
+                            normalizeKey(
+                                item.id ||
+                                item.campId
+                            )
+                            ===
+                            campKey
+                        );
+                    }
+                );
+
+            const patients =
+                allLeads
+                .filter(
+                    function (
+                        lead
+                    ) {
+                        return (
+                            normalizeKey(
+                                lead.campId
+                            )
+                            ===
+                            campKey
+                        );
+                    }
+                )
+                .sort(
+                    function (
+                        a,
+                        b
+                    ) {
+                        return (
+                            patientNumber(
+                                b.id
+                            )
+                            -
+                            patientNumber(
+                                a.id
+                            )
+                        );
+                    }
+                );
+
+            renderCampPatientData(
+                currentCampId,
+                camp,
+                patients
+            );
+        }
+
+        setTimeout(
+            function () {
+                closeEditPatient();
+            },
+            450
+        );
+
+    } catch (error) {
+        console.error(
+            "UPDATE PATIENT ERROR:",
+            error
+        );
+
+        setEditMessage(
+            "editPatientMessage",
+            error.message ||
+            "Unable to update patient.",
+            "error"
+        );
+
+    } finally {
+        patientUpdateInProgress =
+            false;
+
+        saveButton.disabled =
+            false;
+
+        cancelButton.disabled =
+            false;
+
+        saveButton.textContent =
+            "Update Patient";
+    }
+}
+
+
+/* =========================================================
+   MODAL HELPERS / EVENTS
+========================================================= */
+
+function setEditMessage(
+    elementId,
+    text,
+    type
+) {
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+    element.className =
+        "edit-message";
+
+    if (type) {
+        element.classList.add(
+            type
+        );
+    }
+
+    element.textContent =
+        text;
+}
+
+
+function setSelectValue(
+    elementId,
+    value
+) {
+    const select =
+        document.getElementById(
+            elementId
+        );
+
+    const target =
+        clean(
+            value
+        );
+
+    const exists =
+        Array.from(
+            select.options
+        )
+        .some(
+            function (
+                option
+            ) {
+                return (
+                    option.value
+                    .toLowerCase()
+                    ===
+                    target.toLowerCase()
+                );
+            }
+        );
+
+    if (
+        target &&
+        !exists
+    ) {
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            target;
+
+        option.textContent =
+            target;
+
+        select.appendChild(
+            option
+        );
+    }
+
+    select.value =
+        target;
+}
+
+
+document
+    .getElementById(
+        "cancelEditCampBtn"
+    )
+    .addEventListener(
+        "click",
+        closeEditCamp
+    );
+
+document
+    .getElementById(
+        "saveEditCampBtn"
+    )
+    .addEventListener(
+        "click",
+        updateCamp
+    );
+
+document
+    .getElementById(
+        "cancelEditPatientBtn"
+    )
+    .addEventListener(
+        "click",
+        closeEditPatient
+    );
+
+document
+    .getElementById(
+        "saveEditPatientBtn"
+    )
+    .addEventListener(
+        "click",
+        updatePatient
+    );
+
+
+document
+    .getElementById(
+        "editCampModal"
+    )
+    .addEventListener(
+        "click",
+        function (
+            event
+        ) {
+            if (
+                event.target ===
+                this
+            ) {
+                closeEditCamp();
+            }
+        }
+    );
+
+
+document
+    .getElementById(
+        "editPatientModal"
+    )
+    .addEventListener(
+        "click",
+        function (
+            event
+        ) {
+            if (
+                event.target ===
+                this
+            ) {
+                closeEditPatient();
+            }
+        }
+    );
+
+
+document.addEventListener(
+    "keydown",
+    function (
+        event
+    ) {
+        if (
+            event.key !==
+            "Escape"
+        ) {
+            return;
+        }
+
+        closeEditPatient();
+        closeEditCamp();
+    }
+);
+
+
+/* =========================================================
+   CLOSE CAMP DETAILS
+========================================================= */
 
 function closeCampData(
     campId
 ) {
-
-
     const row =
         document.getElementById(
             "patient-row-" +
             campId
         );
 
-
     if (row) {
-
         row.classList.remove(
             "active"
         );
-
     }
-
 
     openCampId =
         null;
-
-
-    /*
-     * Scroll back to camp row.
-     */
 
     const campRow =
         document.getElementById(
@@ -2768,149 +3698,110 @@ function closeCampData(
             campId
         );
 
-
     if (campRow) {
-
         campRow.scrollIntoView({
-
             behavior:
                 "smooth",
 
             block:
                 "center"
-
         });
-
     }
-
-
 }
 
 
-
-/* ======================================================
-   CLOSE ALL EXPANDED DATA
-====================================================== */
-
 function closeAllPatientRows() {
-
-
     document
         .querySelectorAll(
             ".patient-expand-row"
         )
         .forEach(
-            function (row) {
-
-
+            function (
+                row
+            ) {
                 row.classList.remove(
                     "active"
                 );
-
-
             }
         );
 
-
     openCampId =
         null;
-
 }
 
 
-
-/* ======================================================
-   SEARCH CAMPS
-====================================================== */
+/* =========================================================
+   SEARCH
+========================================================= */
 
 searchInput.addEventListener(
     "input",
     function () {
-
-
         const term =
-            this.value
-                .trim()
-                .toLowerCase();
-
+            clean(
+                this.value
+            )
+            .toLowerCase();
 
         if (!term) {
-
-
             renderCamps(
                 allCamps
             );
 
-
             return;
-
         }
-
 
         const filtered =
             allCamps.filter(
-                function (camp) {
-
-
+                function (
+                    camp
+                ) {
                     const searchable =
                         [
-
                             camp.id,
-
+                            camp.campId,
                             camp.campName,
-
                             camp.campDate,
-
                             camp.city,
-
                             camp.doctorName,
-
+                            camp.doctor,
                             camp.campaigner,
-
-                            camp.counsellor
-
+                            camp.campaignerEmail,
+                            camp.counsellor,
+                            camp.counsellorEmail,
+                            camp.telesales,
+                            camp.telesalesEmail,
+                            camp.teleSales,
+                            camp.teleSalesEmail
                         ]
                         .join(
                             " "
                         )
                         .toLowerCase();
 
-
-                    return searchable
-                        .includes(
-                            term
-                        );
-
-
+                    return searchable.includes(
+                        term
+                    );
                 }
             );
-
 
         renderCamps(
             filtered
         );
-
-
     }
 );
 
 
-
-/* ======================================================
+/* =========================================================
    STATISTICS
-====================================================== */
+========================================================= */
 
 function updateStatistics() {
-
-
-    totalCampsElement
-        .textContent =
-            allCamps.length;
-
+    totalCampsElement.textContent =
+        allCamps.length;
 
     const today =
         new Date();
-
 
     today.setHours(
         0,
@@ -2919,163 +3810,102 @@ function updateStatistics() {
         0
     );
 
-
     const upcoming =
         allCamps.filter(
-            function (camp) {
-
-
+            function (
+                camp
+            ) {
                 const date =
                     parseCampDate(
                         camp.campDate
                     );
 
-
                 if (!date) {
-
                     return false;
-
                 }
-
 
                 return (
                     date >= today
                 );
-
-
             }
         );
 
-
-    upcomingCampsElement
-        .textContent =
-            upcoming.length;
-
+    upcomingCampsElement.textContent =
+        upcoming.length;
 }
 
 
-
-/* ======================================================
-   PARSE CAMP DATE
-====================================================== */
+/* =========================================================
+   DATE HELPERS
+========================================================= */
 
 function parseCampDate(
     value
 ) {
-
-
-    if (!value) {
-
-        return null;
-
-    }
-
-
     const text =
-        String(
+        clean(
             value
-        )
-        .trim();
+        );
 
-
-    /*
-     * yyyy-mm-dd
-     */
+    if (!text) {
+        return null;
+    }
 
     let match =
         text.match(
             /^(\d{4})-(\d{2})-(\d{2})$/
         );
 
-
     if (match) {
-
-
         return new Date(
-
             Number(
                 match[1]
             ),
-
             Number(
                 match[2]
             ) - 1,
-
             Number(
                 match[3]
             )
-
         );
-
-
     }
-
-
-    /*
-     * dd-mm-yyyy
-     */
 
     match =
         text.match(
             /^(\d{2})-(\d{2})-(\d{4})$/
         );
 
-
     if (match) {
-
-
         return new Date(
-
             Number(
                 match[3]
             ),
-
             Number(
                 match[2]
             ) - 1,
-
             Number(
                 match[1]
             )
-
         );
-
-
     }
 
-
     return null;
-
 }
 
-
-
-/* ======================================================
-   FORMAT CAMP DATE
-====================================================== */
 
 function formatDate(
     value
 ) {
-
-
     const date =
         parseCampDate(
             value
         );
 
-
     if (!date) {
-
-
-        return escapeHtml(
-            value ||
-            "-"
+        return displayValue(
+            value
         );
-
-
     }
-
 
     const day =
         String(
@@ -3086,7 +3916,6 @@ function formatDate(
             "0"
         );
 
-
     const month =
         String(
             date.getMonth() + 1
@@ -3096,189 +3925,85 @@ function formatDate(
             "0"
         );
 
-
-    const year =
-        date.getFullYear();
-
-
     return (
         day +
         "-" +
         month +
         "-" +
-        year
+        date.getFullYear()
     );
-
 }
 
 
-
-/* ======================================================
-   DISPLAY EMPTY VALUES
-====================================================== */
-
-function displayValue(
+function toDateInputValue(
     value
 ) {
-
-
     const text =
-        String(
-            value == null
-                ? ""
-                : value
-        )
-        .trim();
+        clean(
+            value
+        );
 
-
-    if (
-        !text ||
-        text === "-"
-    ) {
-
-        return "-";
-
+    if (!text) {
+        return "";
     }
 
+    let match =
+        text.match(
+            /^(\d{4})-(\d{2})-(\d{2})$/
+        );
 
-    return escapeHtml(
-        text
-    );
+    if (match) {
+        return text;
+    }
 
+    match =
+        text.match(
+            /^(\d{2})-(\d{2})-(\d{4})$/
+        );
+
+    if (match) {
+        return (
+            match[3] +
+            "-" +
+            match[2] +
+            "-" +
+            match[1]
+        );
+    }
+
+    return "";
 }
 
 
-
-/* ======================================================
-   ESCAPE HTML
-====================================================== */
-
-function escapeHtml(
-    value
-) {
-
-
-    return String(
-        value == null
-            ? ""
-            : value
-    )
-
-    .replaceAll(
-        "&",
-        "&amp;"
-    )
-
-    .replaceAll(
-        "<",
-        "&lt;"
-    )
-
-    .replaceAll(
-        ">",
-        "&gt;"
-    )
-
-    .replaceAll(
-        '"',
-        "&quot;"
-    )
-
-    .replaceAll(
-        "'",
-        "&#039;"
-    );
-
-}
-
-
-
-/* ======================================================
-   ESCAPE JAVASCRIPT STRING
-====================================================== */
-
-function escapeJs(
-    value
-) {
-
-
-    return String(
-        value == null
-            ? ""
-            : value
-    )
-
-    .replaceAll(
-        "\\",
-        "\\\\"
-    )
-
-    .replaceAll(
-        "'",
-        "\\'"
-    )
-
-    .replaceAll(
-        "\n",
-        ""
-    )
-
-    .replaceAll(
-        "\r",
-        ""
-    );
-
-}
-
-
-
-/* ======================================================
+/* =========================================================
    REFRESH
-====================================================== */
+========================================================= */
 
 refreshBtn.addEventListener(
     "click",
     async function () {
-
-
         searchInput.value =
             "";
 
-
         closeAllPatientRows();
-
-
-        /*
-         * Force patient data
-         * to be fetched again.
-         */
 
         leadsLoaded =
             false;
 
-
         allLeads =
             [];
 
-
         await loadCamps();
-
-
     }
 );
 
 
-
-/* ======================================================
+/* =========================================================
    INITIAL LOAD
-====================================================== */
+========================================================= */
 
 loadCamps();
-
-
 </script>
 
-
 </body>
-
 </html>

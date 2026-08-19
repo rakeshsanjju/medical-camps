@@ -652,6 +652,29 @@
           >
             Campaigners
           </button>
+
+           <button
+            type="button"
+            class="sidebar-btn"
+            onclick="window.location.href = './op-data.html'"
+          >
+            OP Data
+          </button>
+
+           <button
+            type="button"
+            class="sidebar-btn"
+            onclick="window.location.href = './ip-data.html'"
+          >
+            IP Data
+          </button>
+           <button
+            type="button"
+            class="sidebar-btn"
+            onclick="window.location.href = './analytics.html'"
+          >
+            Analytics
+          </button>
         </div>
 
         <div class="sidebar-footer">
@@ -746,6 +769,33 @@
                 <h3>Campaigners</h3>
 
                 <p>Add and manage campaigners.</p>
+              </div>
+
+              <div
+                class="quick-card"
+                onclick="window.location.href = './op-data.html'"
+              >
+                <h3>OP Data</h3>
+
+                <p>View camp-wise OP patients and convert eligible leads to IP.</p>
+              </div>
+
+              <div
+                class="quick-card"
+                onclick="window.location.href = './ip-data.html'"
+              >
+                <h3>IP Data</h3>
+
+                <p>View converted IP patients and manage surgery and payment details.</p>
+              </div>
+
+              <div
+                class="quick-card"
+                onclick="window.location.href = './analytics.html'"
+              >
+                <h3>Analytics</h3>
+
+                <p>View camp, OP, IP, surgery, cash and insurance analytics.</p>
               </div>
             </div>
           </div>
@@ -849,6 +899,21 @@
                     required
                   />
                 </div>
+
+                <div class="form-group">
+                  <label for="campTelesales">
+                    Telesales (Follow-up)
+
+                    <span class="required"> * </span>
+                  </label>
+
+                  <input
+                    type="email"
+                    id="campTelesales"
+                    placeholder="Enter Telesales Email"
+                    required
+                  />
+                </div>
               </div>
 
               <button type="submit" class="submit-btn" id="createCampBtn">
@@ -870,7 +935,7 @@
 ========================================================= */
 
       const CAMPS_API_URL =
-        "https://script.google.com/macros/s/AKfycbwdfXWbuvA9K8P5V76hFzGH9WrerBIkz2Uhm2T7OJRG1hmqJf0ElXcWmIvqn78neNSIZw/exec";
+        "https://script.google.com/macros/s/AKfycbw4w8S_nHPcdn3RWj-wm2XGT_6Il70lScUQFP71UooBPM7Npf0zedq_Vf2-4TdIBtTD1w/exec";
 
       /* =========================================================
    ADMIN EMAIL
@@ -971,6 +1036,8 @@
 
       const counsellorInput = document.getElementById("campCounsellor");
 
+      const telesalesInput = document.getElementById("campTelesales");
+
       const createCampBtn = document.getElementById("createCampBtn");
 
       const campMessage = document.getElementById("campMessage");
@@ -995,6 +1062,8 @@
         const campaigner = campaignerInput.value.trim().toLowerCase();
 
         const counsellor = counsellorInput.value.trim().toLowerCase();
+
+        const telesales = telesalesInput.value.trim().toLowerCase();
 
         /* =================================================
            VALIDATION
@@ -1048,6 +1117,14 @@
           return;
         }
 
+        if (!telesales) {
+          showCampMessage("Please enter Telesales Email.", "error");
+
+          telesalesInput.focus();
+
+          return;
+        }
+
         if (!validateEmail(campaigner)) {
           showCampMessage(
             "Please enter a valid Campaigner email address.",
@@ -1070,6 +1147,17 @@
           return;
         }
 
+        if (!validateEmail(telesales)) {
+          showCampMessage(
+            "Please enter a valid Telesales email address.",
+            "error",
+          );
+
+          telesalesInput.focus();
+
+          return;
+        }
+
         /* =================================================
            PAYLOAD
         ================================================= */
@@ -1088,6 +1176,8 @@
           campaigner: campaigner,
 
           counsellor: counsellor,
+
+          telesales: telesales,
         };
 
         createCampBtn.disabled = true;
@@ -1169,6 +1259,15 @@
                 Counsellor:
                 ${escapeHtml(camp.counsellor || counsellor)}
 
+                <br>
+
+                Telesales:
+                ${escapeHtml(
+                  camp.telesales ||
+                  camp.telesalesEmail ||
+                  telesales
+                )}
+
             `;
 
           campSuccessBox.classList.add("active");
@@ -1219,214 +1318,624 @@
 
       /* =========================================================
    LOAD ALL DASHBOARD COUNTS
+   - Counts unique people, not raw duplicate rows
+   - Uses dedicated APIs when available
+   - Falls back to unique assignments from getCamps
 ========================================================= */
 
       async function loadDashboardCounts() {
-        /*
-        Show loading indicator.
-    */
-
         document.getElementById("totalCamps").textContent = "...";
-
         document.getElementById("totalCampaigners").textContent = "...";
-
         document.getElementById("totalCounsellors").textContent = "...";
 
-        /*
-        Load all three at the same time.
-    */
-
-        await Promise.all([
-          loadCampCount(),
-
-          loadCampaignerCount(),
-
-          loadCounsellorCount(),
-        ]);
-      }
-
-      /* =========================================================
-   LOAD CAMP COUNT
-========================================================= */
-
-      async function loadCampCount() {
         try {
-          const response = await fetch(
-            CAMPS_API_URL + "?action=getCamps&t=" + Date.now(),
+          const stamp = Date.now();
 
-            {
-              method: "GET",
+          const results = await Promise.allSettled([
+            fetchDashboardJson(
+              CAMPS_API_URL + "?action=getCamps&t=" + stamp
+            ),
+            fetchDashboardJson(
+              CAMPS_API_URL + "?action=getCampaigners&t=" + stamp
+            ),
+            fetchDashboardJson(
+              CAMPS_API_URL + "?action=getCounsellors&t=" + stamp
+            ),
+          ]);
 
-              cache: "no-store",
-            },
-          );
+          const campsResult =
+            results[0].status === "fulfilled"
+              ? results[0].value
+              : null;
 
-          if (!response.ok) {
-            throw new Error("Unable to load camps.");
-          }
+          const campaignersResult =
+            results[1].status === "fulfilled"
+              ? results[1].value
+              : null;
 
-          const result = await response.json();
+          const counsellorsResult =
+            results[2].status === "fulfilled"
+              ? results[2].value
+              : null;
 
-          console.log("CAMPS RESPONSE:", result);
+          const camps =
+            campsResult &&
+            campsResult.success &&
+            Array.isArray(campsResult.camps)
+              ? campsResult.camps
+              : [];
 
-          if (result.success && Array.isArray(result.camps)) {
-            document.getElementById("totalCamps").textContent =
-              result.camps.length;
-          } else {
-            document.getElementById("totalCamps").textContent = "0";
-          }
+          /* ---------------------------------------------
+             TOTAL CAMPS
+             De-duplicate by Camp ID. If ID is missing,
+             use Camp Name + Date + City.
+          --------------------------------------------- */
+
+          const uniqueCampKeys = new Set();
+
+          camps.forEach(function (camp) {
+            const campId = normalizeCountValue(
+              camp.id ||
+              camp.campId ||
+              camp.campID ||
+              ""
+            );
+
+            let key = "";
+
+            if (campId) {
+              key = "id:" + campId;
+            } else {
+              key =
+                "fallback:" +
+                [
+                  camp.campName || camp.name || "",
+                  camp.campDate || camp.date || "",
+                  camp.city || "",
+                ]
+                  .map(normalizeCountValue)
+                  .join("|");
+            }
+
+            if (key !== "fallback:||") {
+              uniqueCampKeys.add(key);
+            }
+          });
+
+          document.getElementById("totalCamps").textContent =
+            uniqueCampKeys.size;
+
+
+          /* ---------------------------------------------
+             UNIQUE STAFF ASSIGNED TO CAMPS
+          --------------------------------------------- */
+
+          const assignedCampaigners =
+            getUniquePeopleFromCamps(
+              camps,
+              "campaigner"
+            );
+
+          const assignedCounsellors =
+            getUniquePeopleFromCamps(
+              camps,
+              "counsellor"
+            );
+
+
+          /* ---------------------------------------------
+             UNIQUE REGISTERED STAFF FROM API
+          --------------------------------------------- */
+
+          const registeredCampaigners =
+            extractUniqueUsers(
+              campaignersResult,
+              "campaigner"
+            );
+
+          const registeredCounsellors =
+            extractUniqueUsers(
+              counsellorsResult,
+              "counsellor"
+            );
+
+
+          /*
+             Merge both sources so:
+             - duplicate rows are counted once
+             - assigned users are still counted even if
+               the dedicated endpoint is empty/stale
+          */
+
+          /*
+             Prefer the dedicated registered-user lists when
+             they contain actual user records.
+
+             If the dedicated endpoint is unavailable/empty,
+             fall back to unique staff assigned in Camps.
+
+             Only use a numeric backend count when neither
+             source gives us identifiable users.
+          */
+
+          const campaignerKeys =
+            registeredCampaigners.keys.size > 0
+              ? registeredCampaigners.keys
+              : assignedCampaigners;
+
+          const counsellorKeys =
+            registeredCounsellors.keys.size > 0
+              ? registeredCounsellors.keys
+              : assignedCounsellors;
+
+
+          const totalCampaigners =
+            campaignerKeys.size > 0
+              ? campaignerKeys.size
+              : registeredCampaigners.numericCount;
+
+          const totalCounsellors =
+            counsellorKeys.size > 0
+              ? counsellorKeys.size
+              : registeredCounsellors.numericCount;
+
+
+          document.getElementById("totalCampaigners").textContent =
+            totalCampaigners;
+
+          document.getElementById("totalCounsellors").textContent =
+            totalCounsellors;
+
+
+          console.log("DASHBOARD COUNT DEBUG:", {
+            totalCamps: uniqueCampKeys.size,
+
+            assignedCampaigners:
+              assignedCampaigners.size,
+
+            registeredCampaigners:
+              registeredCampaigners.keys.size,
+
+            campaignerNumericCount:
+              registeredCampaigners.numericCount,
+
+            totalCampaigners:
+              totalCampaigners,
+
+            assignedCounsellors:
+              assignedCounsellors.size,
+
+            registeredCounsellors:
+              registeredCounsellors.keys.size,
+
+            counsellorNumericCount:
+              registeredCounsellors.numericCount,
+
+            totalCounsellors:
+              totalCounsellors,
+          });
+
         } catch (error) {
-          console.error("CAMP COUNT ERROR:", error);
+          console.error(
+            "DASHBOARD COUNT ERROR:",
+            error
+          );
 
           document.getElementById("totalCamps").textContent = "0";
-        }
-      }
-
-      /* =========================================================
-   LOAD CAMPAIGNER COUNT
-========================================================= */
-
-      async function loadCampaignerCount() {
-        try {
-          const response = await fetch(
-            CAMPS_API_URL + "?action=getCampaigners&t=" + Date.now(),
-
-            {
-              method: "GET",
-
-              cache: "no-store",
-            },
-          );
-
-          if (!response.ok) {
-            throw new Error("Unable to load campaigners.");
-          }
-
-          const result = await response.json();
-
-          console.log("CAMPAIGNERS RESPONSE:", result);
-
-          let total = 0;
-
-          /*
-            Standard expected response:
-
-            {
-                success: true,
-                campaigners: [...]
-            }
-        */
-
-          if (result.success && Array.isArray(result.campaigners)) {
-            total = result.campaigners.length;
-          } else if (result.success && Array.isArray(result.users)) {
-
-          /*
-            Also support:
-
-            {
-                users: [...]
-            }
-        */
-            total = result.users.filter(function (user) {
-              return String(user.role || "").toLowerCase() === "campaigner";
-            }).length;
-          } else if (Array.isArray(result)) {
-
-          /*
-            Also support direct array.
-        */
-            total = result.length;
-          } else if (typeof result.campaignerCount === "number") {
-
-          /*
-            Also support backend count:
-            { campaignerCount: 10 }
-        */
-            total = result.campaignerCount;
-          }
-
-          document.getElementById("totalCampaigners").textContent = total;
-        } catch (error) {
-          console.error("CAMPAIGNER COUNT ERROR:", error);
-
           document.getElementById("totalCampaigners").textContent = "0";
-        }
-      }
-
-      /* =========================================================
-   LOAD COUNSELLOR COUNT
-========================================================= */
-
-      async function loadCounsellorCount() {
-        try {
-          const response = await fetch(
-            CAMPS_API_URL + "?action=getCounsellors&t=" + Date.now(),
-
-            {
-              method: "GET",
-
-              cache: "no-store",
-            },
-          );
-
-          if (!response.ok) {
-            throw new Error("Unable to load counsellors.");
-          }
-
-          const result = await response.json();
-
-          console.log("COUNSELLORS RESPONSE:", result);
-
-          let total = 0;
-
-          /*
-            Standard expected response:
-
-            {
-                success: true,
-                counsellors: [...]
-            }
-        */
-
-          if (result.success && Array.isArray(result.counsellors)) {
-            total = result.counsellors.length;
-          } else if (result.success && Array.isArray(result.users)) {
-
-          /*
-            Also support:
-
-            {
-                users: [...]
-            }
-        */
-            total = result.users.filter(function (user) {
-              return String(user.role || "").toLowerCase() === "counsellor";
-            }).length;
-          } else if (Array.isArray(result)) {
-
-          /*
-            Also support direct array.
-        */
-            total = result.length;
-          } else if (typeof result.counsellorCount === "number") {
-
-          /*
-            Also support backend count:
-            { counsellorCount: 10 }
-        */
-            total = result.counsellorCount;
-          }
-
-          document.getElementById("totalCounsellors").textContent = total;
-        } catch (error) {
-          console.error("COUNSELLOR COUNT ERROR:", error);
-
           document.getElementById("totalCounsellors").textContent = "0";
         }
       }
 
+
       /* =========================================================
+         FETCH DASHBOARD JSON
+      ========================================================= */
+
+      async function fetchDashboardJson(url) {
+        const separator =
+          url.includes("?")
+            ? "&"
+            : "?";
+
+        const freshUrl =
+          url +
+          separator +
+          "_fresh=" +
+          Date.now() +
+          "_" +
+          Math.random().toString(36).slice(2);
+
+        const response = await fetch(
+          freshUrl,
+          {
+            method: "GET",
+            cache: "no-store",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "HTTP " + response.status
+          );
+        }
+
+        const rawText =
+          await response.text();
+
+        if (
+          rawText
+            .trim()
+            .startsWith("<")
+        ) {
+          throw new Error(
+            "API returned HTML instead of JSON."
+          );
+        }
+
+        try {
+          return JSON.parse(rawText);
+        } catch (error) {
+          throw new Error(
+            "Invalid JSON returned by API."
+          );
+        }
+      }
+
+
+      /* =========================================================
+         UNIQUE PEOPLE FROM CAMPS
+      ========================================================= */
+
+      function getUniquePeopleFromCamps(
+        camps,
+        role
+      ) {
+        const keys =
+          new Set();
+
+        camps.forEach(function (camp) {
+          let value = "";
+
+          if (role === "campaigner") {
+            value =
+              camp.campaignerEmail ||
+              camp.campaigner ||
+              camp.campaignerMail ||
+              camp.campaignerId ||
+              "";
+          }
+
+          if (role === "counsellor") {
+            value =
+              camp.counsellorEmail ||
+              camp.counsellor ||
+              camp.counsellorMail ||
+              camp.counsellorId ||
+              "";
+          }
+
+          const normalized =
+            normalizePersonKey(
+              value
+            );
+
+          if (normalized) {
+            /*
+               Use the same key format as registered users
+               so duplicate email values compare correctly.
+            */
+            keys.add(
+              normalized.includes("@")
+                ? "email:" + normalized
+                : "id:" + normalized
+            );
+          }
+        });
+
+        return keys;
+      }
+
+
+      /* =========================================================
+         EXTRACT UNIQUE USERS FROM API RESPONSE
+      ========================================================= */
+
+      function extractUniqueUsers(
+        result,
+        expectedRole
+      ) {
+        const keys =
+          new Set();
+
+        let numericCount =
+          0;
+
+        if (!result) {
+          return {
+            keys: keys,
+            numericCount: 0,
+          };
+        }
+
+        let users =
+          [];
+
+        if (
+          expectedRole === "campaigner" &&
+          Array.isArray(result.campaigners)
+        ) {
+          users =
+            result.campaigners;
+        } else if (
+          expectedRole === "counsellor" &&
+          Array.isArray(result.counsellors)
+        ) {
+          users =
+            result.counsellors;
+        } else if (
+          Array.isArray(result.users)
+        ) {
+          users =
+            result.users.filter(
+              function (user) {
+                const role =
+                  normalizeCountValue(
+                    user &&
+                    (
+                      user.role ||
+                      user.userRole ||
+                      user.type ||
+                      ""
+                    )
+                  );
+
+                return (
+                  !role ||
+                  role === expectedRole
+                );
+              }
+            );
+        } else if (
+          Array.isArray(result.data)
+        ) {
+          users =
+            result.data;
+        } else if (
+          Array.isArray(result)
+        ) {
+          users =
+            result;
+        }
+
+
+        users.forEach(
+          function (user) {
+            const key =
+              getUserUniqueKey(
+                user,
+                expectedRole
+              );
+
+            if (key) {
+              keys.add(key);
+            }
+          }
+        );
+
+
+        if (
+          expectedRole === "campaigner"
+        ) {
+          numericCount =
+            getSafeCount(
+              result.campaignerCount
+            );
+        }
+
+        if (
+          expectedRole === "counsellor"
+        ) {
+          numericCount =
+            getSafeCount(
+              result.counsellorCount
+            );
+        }
+
+        if (
+          numericCount === 0
+        ) {
+          numericCount =
+            getSafeCount(
+              result.count
+            );
+        }
+
+
+        return {
+          keys: keys,
+          numericCount:
+            numericCount,
+        };
+      }
+
+
+      /* =========================================================
+         BUILD UNIQUE USER KEY
+      ========================================================= */
+
+      function getUserUniqueKey(
+        user,
+        expectedRole
+      ) {
+        if (
+          user == null
+        ) {
+          return "";
+        }
+
+        if (
+          typeof user === "string" ||
+          typeof user === "number"
+        ) {
+          const normalized =
+            normalizePersonKey(
+              user
+            );
+
+          if (!normalized) {
+            return "";
+          }
+
+          return normalized.includes("@")
+            ? "email:" + normalized
+            : "id:" + normalized;
+        }
+
+        const email =
+          user.email ||
+          user.userEmail ||
+          user.mail ||
+          (
+            expectedRole === "campaigner"
+              ? user.campaignerEmail ||
+                user.campaigner
+              : user.counsellorEmail ||
+                user.counsellor
+          ) ||
+          "";
+
+        const normalizedEmail =
+          normalizePersonKey(
+            email
+          );
+
+        if (
+          normalizedEmail
+        ) {
+          return (
+            "email:" +
+            normalizedEmail
+          );
+        }
+
+        const id =
+          user.id ||
+          user.userId ||
+          user.uid ||
+          (
+            expectedRole === "campaigner"
+              ? user.campaignerId
+              : user.counsellorId
+          ) ||
+          "";
+
+        const normalizedId =
+          normalizeCountValue(
+            id
+          );
+
+        if (
+          normalizedId
+        ) {
+          return (
+            "id:" +
+            normalizedId
+          );
+        }
+
+        const name =
+          user.name ||
+          user.fullName ||
+          user.displayName ||
+          "";
+
+        const normalizedName =
+          normalizeCountValue(
+            name
+          );
+
+        if (
+          normalizedName
+        ) {
+          return (
+            "name:" +
+            normalizedName
+          );
+        }
+
+        return "";
+      }
+
+
+      /* =========================================================
+         NORMALIZE PERSON KEY
+      ========================================================= */
+
+      function normalizePersonKey(
+        value
+      ) {
+        const text =
+          String(
+            value == null
+              ? ""
+              : value
+          )
+            .trim()
+            .toLowerCase();
+
+        if (!text) {
+          return "";
+        }
+
+        return text.replace(
+          /\s+/g,
+          ""
+        );
+      }
+
+
+      /* =========================================================
+         NORMALIZE GENERAL COUNT VALUE
+      ========================================================= */
+
+      function normalizeCountValue(
+        value
+      ) {
+        return String(
+          value == null
+            ? ""
+            : value
+        )
+          .trim()
+          .toLowerCase();
+      }
+
+
+      /* =========================================================
+         SAFE NUMERIC COUNT
+      ========================================================= */
+
+      function getSafeCount(
+        value
+      ) {
+        const number =
+          Number(value);
+
+        if (
+          !Number.isFinite(number) ||
+          number < 0
+        ) {
+          return 0;
+        }
+
+        return Math.floor(
+          number
+        );
+      }
+
+
+/* =========================================================
    ESCAPE HTML
 ========================================================= */
 

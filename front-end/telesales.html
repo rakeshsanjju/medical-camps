@@ -1,0 +1,5794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Telesales OP Follow-up</title>
+
+<script>
+function getAuthData(){
+    return{
+        loggedIn:
+            sessionStorage.getItem(
+                "medical_logged_in"
+            ),
+
+        email:
+            sessionStorage.getItem(
+                "medical_user_email"
+            ),
+
+        role:
+            sessionStorage.getItem(
+                "medical_user_role"
+            )
+    };
+}
+
+
+function clearMedicalLogin(){
+
+    sessionStorage.removeItem(
+        "medical_logged_in"
+    );
+
+    sessionStorage.removeItem(
+        "medical_user_email"
+    );
+
+    sessionStorage.removeItem(
+        "medical_user_role"
+    );
+
+    sessionStorage.removeItem(
+        "medical_user_dashboard"
+    );
+}
+
+
+function requireTelesales(){
+
+    const auth =
+        getAuthData();
+
+
+    if(
+        auth.loggedIn !== "true" ||
+
+        String(
+            auth.role || ""
+        )
+        .trim()
+        .toLowerCase() !== "telesales"
+    ){
+
+        clearMedicalLogin();
+
+        window.location.replace(
+            "./login.html"
+        );
+
+        return false;
+    }
+
+
+    return true;
+}
+
+
+function logoutMedicalUser(){
+
+    clearMedicalLogin();
+
+    window.location.replace(
+        "./login.html"
+    );
+}
+
+
+requireTelesales();
+</script>
+
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+
+html,
+body{
+    margin:0;
+    padding:0;
+}
+
+
+body{
+
+    min-height:100vh;
+
+    background:#f5f7fb;
+
+    color:#0f172a;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar{
+
+    background:#0f172a;
+
+    color:#fff;
+
+    padding:
+        16px
+        28px;
+
+    display:flex;
+
+    justify-content:
+        space-between;
+
+    align-items:center;
+
+    gap:15px;
+}
+
+
+.brand{
+
+    font-size:20px;
+
+    font-weight:700;
+}
+
+
+.topbar-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+}
+
+
+.user-email{
+
+    color:#cbd5e1;
+
+    font-size:13px;
+}
+
+
+button{
+
+    border:0;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-weight:700;
+}
+
+
+.nav-btn,
+.refresh-btn,
+.view-btn{
+
+    background:#2563eb;
+
+    color:#fff;
+}
+
+
+.logout-btn,
+.close-btn{
+
+    background:#dc2626;
+
+    color:#fff;
+}
+
+
+.save-btn{
+
+    background:#16a34a;
+
+    color:#fff;
+}
+
+
+.convert-btn{
+
+    background:#7c3aed;
+
+    color:#fff;
+
+    padding:
+        8px
+        14px;
+
+    white-space:nowrap;
+}
+
+
+.convert-btn:hover{
+
+    background:#6d28d9;
+}
+
+
+.convert-btn:disabled{
+
+    opacity:.6;
+
+    cursor:not-allowed;
+}
+
+
+.nav-btn,
+.logout-btn{
+
+    padding:
+        10px
+        15px;
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.page{
+
+    max-width:1800px;
+
+    margin:auto;
+
+    padding:30px;
+}
+
+
+.page-heading{
+
+    display:flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-end;
+
+    gap:20px;
+
+    margin-bottom:25px;
+}
+
+
+.page-heading h1{
+
+    margin:
+        0
+        0
+        7px;
+
+    font-size:32px;
+}
+
+
+.page-heading p{
+
+    margin:0;
+
+    color:#64748b;
+}
+
+
+.refresh-btn{
+
+    padding:
+        11px
+        18px;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(
+                180px,
+                1fr
+            )
+        );
+
+    gap:18px;
+
+    margin-bottom:25px;
+}
+
+
+.stat-card,
+.card{
+
+    background:#fff;
+
+    border-radius:14px;
+
+    box-shadow:
+        0
+        2px
+        12px
+        rgba(
+            15,
+            23,
+            42,
+            .05
+        );
+}
+
+
+.stat-card{
+
+    padding:22px;
+}
+
+
+.stat-label{
+
+    color:#64748b;
+
+    font-size:12px;
+
+    margin-bottom:8px;
+}
+
+
+.stat-value{
+
+    font-size:30px;
+
+    font-weight:800;
+}
+
+
+.stat-sub{
+
+    color:#94a3b8;
+
+    font-size:11px;
+
+    margin-top:7px;
+}
+
+
+/* =========================================================
+   MAIN CARD
+========================================================= */
+
+.card{
+
+    padding:24px;
+}
+
+
+.toolbar{
+
+    display:flex;
+
+    justify-content:
+        space-between;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin-bottom:18px;
+}
+
+
+.toolbar h2{
+
+    margin:0;
+}
+
+
+.search-input{
+
+    width:390px;
+
+    padding:
+        10px
+        12px;
+
+    border:
+        1px solid
+        #cbd5e1;
+
+    border-radius:8px;
+
+    outline:0;
+}
+
+
+.search-input:focus{
+
+    border-color:#2563eb;
+}
+
+
+/* =========================================================
+   CAMP TABLE
+========================================================= */
+
+.table-wrapper{
+
+    overflow-x:auto;
+}
+
+
+.camp-table{
+
+    width:100%;
+
+    min-width:1050px;
+
+    border-collapse:collapse;
+}
+
+
+.camp-table th{
+
+    padding:13px;
+
+    background:#f1f5f9;
+
+    text-align:left;
+
+    font-size:12px;
+
+    white-space:nowrap;
+}
+
+
+.camp-table td{
+
+    padding:
+        14px
+        13px;
+
+    border-bottom:
+        1px solid
+        #e2e8f0;
+
+    font-size:13px;
+
+    vertical-align:top;
+}
+
+
+.camp-id{
+
+    color:#2563eb;
+
+    font-weight:700;
+
+    white-space:nowrap;
+}
+
+
+.camp-details{
+
+    min-width:300px;
+}
+
+
+.camp-details strong{
+
+    display:block;
+
+    margin-bottom:5px;
+
+    font-size:14px;
+}
+
+
+.camp-details span{
+
+    display:block;
+
+    color:#64748b;
+
+    line-height:1.55;
+
+    font-size:12px;
+}
+
+
+.patient-count{
+
+    font-weight:800;
+}
+
+
+.view-btn{
+
+    padding:
+        8px
+        14px;
+
+    white-space:nowrap;
+}
+
+
+/* =========================================================
+   EXPANDED CAMP
+========================================================= */
+
+.expand-row{
+
+    display:none;
+}
+
+
+.expand-row.active{
+
+    display:table-row;
+}
+
+
+.expand-cell{
+
+    padding:0!important;
+
+    background:#f8fafc;
+}
+
+
+.panel{
+
+    padding:24px;
+
+    border-top:
+        3px solid
+        #2563eb;
+}
+
+
+.panel-header{
+
+    display:flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    gap:15px;
+
+    margin-bottom:18px;
+}
+
+
+.panel-header h3{
+
+    margin:
+        0
+        0
+        6px;
+}
+
+
+.panel-header p{
+
+    margin:0;
+
+    color:#64748b;
+}
+
+
+.badge{
+
+    display:inline-block;
+
+    padding:
+        6px
+        11px;
+
+    border-radius:20px;
+
+    background:#dbeafe;
+
+    color:#1d4ed8;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    white-space:nowrap;
+}
+
+
+.camp-summary{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            5,
+            minmax(
+                150px,
+                1fr
+            )
+        );
+
+    gap:12px;
+
+    margin-bottom:20px;
+}
+
+
+.summary-box{
+
+    background:#fff;
+
+    border:
+        1px solid
+        #e2e8f0;
+
+    border-radius:9px;
+
+    padding:14px;
+}
+
+
+.summary-label{
+
+    color:#64748b;
+
+    font-size:11px;
+
+    text-transform:uppercase;
+
+    margin-bottom:5px;
+}
+
+
+.summary-value{
+
+    font-size:13px;
+
+    font-weight:700;
+
+    word-break:break-word;
+}
+
+
+/* =========================================================
+   PATIENT TABLE
+========================================================= */
+
+.patient-wrapper{
+
+    overflow-x:auto;
+
+    border:
+        1px solid
+        #e2e8f0;
+
+    border-radius:10px;
+
+    background:#fff;
+}
+
+
+.patient-table{
+
+    width:100%;
+
+    min-width:3050px;
+
+    border-collapse:collapse;
+}
+
+
+.patient-table th{
+
+    background:#eaf1f8;
+
+    padding:12px;
+
+    text-align:left;
+
+    font-size:11px;
+
+    white-space:nowrap;
+}
+
+
+.patient-table td{
+
+    padding:11px;
+
+    border-bottom:
+        1px solid
+        #e2e8f0;
+
+    font-size:12px;
+
+    vertical-align:middle;
+}
+
+
+.patient-id,
+.phone-link{
+
+    color:#2563eb;
+
+    font-weight:700;
+
+    white-space:nowrap;
+}
+
+
+.phone-link{
+
+    text-decoration:none;
+}
+
+
+.field-input,
+.field-select,
+.field-textarea{
+
+    border:
+        1px solid
+        #cbd5e1;
+
+    border-radius:7px;
+
+    padding:8px;
+
+    font-size:12px;
+
+    background:#fff;
+
+    color:#0f172a;
+}
+
+
+.field-select,
+.field-input{
+
+    width:150px;
+}
+
+
+.field-textarea{
+
+    width:220px;
+
+    min-height:65px;
+
+    resize:vertical;
+}
+
+
+.save-btn{
+
+    padding:
+        8px
+        14px;
+
+    white-space:nowrap;
+}
+
+
+.save-btn:disabled{
+
+    opacity:.6;
+
+    cursor:not-allowed;
+}
+
+
+.saved-message{
+
+    display:block;
+
+    min-height:13px;
+
+    margin-top:5px;
+
+    color:#15803d;
+
+    font-size:10px;
+
+    white-space:nowrap;
+}
+
+
+.last-followup{
+
+    color:#475569;
+
+    white-space:nowrap;
+}
+
+
+.followup-history-cell{
+
+    min-width:320px;
+
+    max-width:420px;
+}
+
+
+.followup-history{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    max-height:230px;
+
+    overflow-y:auto;
+}
+
+
+.history-item{
+
+    border:1px solid #e2e8f0;
+
+    border-radius:8px;
+
+    padding:9px;
+
+    background:#f8fafc;
+}
+
+
+.history-head{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:8px;
+
+    align-items:flex-start;
+
+    margin-bottom:5px;
+}
+
+
+.history-status{
+
+    font-weight:700;
+
+    color:#0f172a;
+}
+
+
+.history-time{
+
+    color:#64748b;
+
+    font-size:10px;
+
+    white-space:nowrap;
+}
+
+
+.history-meta{
+
+    color:#475569;
+
+    font-size:10px;
+
+    line-height:1.5;
+}
+
+
+.history-remarks{
+
+    margin-top:4px;
+
+    color:#334155;
+
+    font-size:11px;
+
+    white-space:normal;
+
+    word-break:break-word;
+}
+
+
+.history-empty{
+
+    color:#94a3b8;
+
+    font-size:11px;
+
+    font-style:italic;
+}
+
+
+.panel-footer{
+
+    display:flex;
+
+    justify-content:center;
+
+    margin-top:20px;
+}
+
+
+.close-btn{
+
+    min-width:140px;
+
+    padding:
+        10px
+        20px;
+}
+
+
+.empty,
+.error{
+
+    padding:35px;
+
+    text-align:center;
+}
+
+
+.empty{
+
+    color:#64748b;
+}
+
+
+.error{
+
+    color:#dc2626;
+}
+
+
+.note{
+
+    margin-top:12px;
+
+    color:#64748b;
+
+    font-size:12px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1100px){
+
+    .stats{
+
+        grid-template-columns:
+            repeat(
+                2,
+                1fr
+            );
+    }
+
+
+    .camp-summary{
+
+        grid-template-columns:
+            repeat(
+                2,
+                1fr
+            );
+    }
+}
+
+
+@media(max-width:768px){
+
+    .topbar{
+
+        padding:
+            14px
+            15px;
+
+        align-items:flex-start;
+    }
+
+
+    .page{
+
+        padding:15px;
+    }
+
+
+    .page-heading,
+    .toolbar,
+    .panel-header{
+
+        flex-direction:column;
+
+        align-items:stretch;
+    }
+
+
+    .stats,
+    .camp-summary{
+
+        grid-template-columns:1fr;
+    }
+
+
+    .search-input{
+
+        width:100%;
+    }
+}
+
+
+/* =========================================================
+   SALES SIDE NAVIGATION
+========================================================= */
+
+.app-shell{
+    min-height:100vh;
+    display:flex;
+}
+
+.sales-sidebar{
+    width:240px;
+    min-width:240px;
+    min-height:100vh;
+    background:#0f172a;
+    color:#fff;
+    padding:24px 16px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    z-index:30;
+}
+
+.sidebar-brand{
+    font-size:20px;
+    font-weight:800;
+    padding:4px 10px 18px;
+    border-bottom:1px solid rgba(255,255,255,.12);
+    margin-bottom:18px;
+}
+
+.sidebar-user{
+    padding:0 10px 18px;
+    color:#cbd5e1;
+    font-size:12px;
+    line-height:1.45;
+    word-break:break-word;
+}
+
+.sidebar-label{
+    padding:0 10px 8px;
+    color:#94a3b8;
+    font-size:10px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+}
+
+.sidebar-nav{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.sidebar-nav-btn{
+    width:100%;
+    border:0;
+    border-radius:9px;
+    padding:12px 13px;
+    text-align:left;
+    background:transparent;
+    color:#cbd5e1;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.sidebar-nav-btn:hover{
+    background:#1e293b;
+    color:#fff;
+}
+
+.sidebar-nav-btn.active{
+    background:#2563eb;
+    color:#fff;
+}
+
+.sidebar-spacer{
+    flex:1;
+}
+
+.sidebar-logout{
+    width:100%;
+    padding:12px 13px;
+    background:#dc2626;
+    color:#fff;
+    border:0;
+    border-radius:9px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.content-shell{
+    flex:1;
+    min-width:0;
+}
+
+.view-hidden{
+    display:none!important;
+}
+
+/* The navigation now lives in the sidebar. */
+.topbar .nav-btn{
+    display:none;
+}
+
+/* =========================================================
+   SALES IP VIEW
+========================================================= */
+
+.ip-stats{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(180px,1fr));
+    gap:18px;
+    margin-bottom:25px;
+}
+
+.ip-table-wrapper{
+    overflow-x:auto;
+}
+
+.ip-table{
+    width:100%;
+    min-width:1800px;
+    border-collapse:collapse;
+}
+
+.ip-table th{
+    padding:12px;
+    background:#f1f5f9;
+    text-align:left;
+    font-size:11px;
+    white-space:nowrap;
+}
+
+.ip-table td{
+    padding:12px;
+    border-bottom:1px solid #e2e8f0;
+    font-size:12px;
+    vertical-align:top;
+}
+
+.ip-status-badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:999px;
+    font-size:10px;
+    font-weight:800;
+    background:#dbeafe;
+    color:#1d4ed8;
+    white-space:nowrap;
+}
+
+.ip-status-badge.completed{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.ip-status-badge.pending{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+@media(max-width:1100px){
+    .ip-stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:768px){
+    .app-shell{
+        display:block;
+    }
+
+    .sales-sidebar{
+        width:100%;
+        min-width:0;
+        min-height:0;
+        height:auto;
+        position:relative;
+        padding:12px;
+    }
+
+    .sidebar-brand{
+        margin-bottom:10px;
+        padding-bottom:10px;
+    }
+
+    .sidebar-user,
+    .sidebar-label{
+        display:none;
+    }
+
+    .sidebar-nav{
+        flex-direction:row;
+    }
+
+    .sidebar-nav-btn{
+        flex:1;
+        text-align:center;
+    }
+
+    .sidebar-spacer{
+        display:none;
+    }
+
+    .sidebar-logout{
+        margin-top:10px;
+    }
+
+    .ip-stats{
+        grid-template-columns:1fr;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app-shell">
+
+    <aside class="sales-sidebar">
+
+        <div class="sidebar-brand">
+            Telesales
+        </div>
+
+        <div
+            id="sidebarUserEmail"
+            class="sidebar-user"
+        >
+            Telesales
+        </div>
+
+        <div class="sidebar-label">
+            Sales
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <button
+                id="salesOpNav"
+                class="sidebar-nav-btn active"
+                type="button"
+                onclick="switchSalesView('op')"
+            >
+                Sales OP
+            </button>
+
+            <button
+                id="salesIpNav"
+                class="sidebar-nav-btn"
+                type="button"
+                onclick="switchSalesView('ip')"
+            >
+                Sales IP
+            </button>
+
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+
+        <button
+            type="button"
+            class="sidebar-logout"
+            onclick="logoutMedicalUser()"
+        >
+            Logout
+        </button>
+
+    </aside>
+
+    <div class="content-shell">
+
+
+
+<header class="topbar">
+
+    <div class="brand">
+        Telesales Follow-up
+    </div>
+
+
+    <div class="topbar-actions">
+
+        <span
+            id="userEmail"
+            class="user-email"
+        >
+            Telesales
+        </span>
+
+
+        <button
+            class="nav-btn"
+            onclick="
+                window.location.href='./telesales.html'
+            "
+        >
+            OP Follow-up
+        </button>
+
+
+        <button
+            class="logout-btn"
+            onclick="logoutMedicalUser()"
+        >
+            Logout
+        </button>
+
+    </div>
+
+</header>
+
+
+<main id="opView" class="page">
+
+
+    <div class="page-heading">
+
+        <div>
+
+            <h1>
+                Sales OP Data
+            </h1>
+
+            <p>
+                OP patients from camps assigned to you for Telesales follow-up.
+            </p>
+
+        </div>
+
+
+        <button
+            id="refreshBtn"
+            class="refresh-btn"
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+
+    <div class="stats">
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Assigned Camps
+            </div>
+
+            <div
+                id="assignedCampsCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                Camps assigned to this Telesales user
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Total OP Patients
+            </div>
+
+            <div
+                id="opPatientsCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                Patients not converted to IP
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Follow-up Pending
+            </div>
+
+            <div
+                id="pendingFollowupCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                Pending / No Answer / Callback
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Follow-up Today
+            </div>
+
+            <div
+                id="todayFollowupCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                Next follow-up date is today
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         OP FOLLOW-UP
+    ====================================================== -->
+
+    <section class="card">
+
+
+        <div class="toolbar">
+
+            <h2>
+                OP Follow-up Data
+            </h2>
+
+
+            <input
+                id="searchInput"
+                class="search-input"
+                type="search"
+                placeholder="Search camp, patient, phone, city, doctor..."
+            >
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="camp-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Camp ID
+                        </th>
+
+                        <th>
+                            Camp Details
+                        </th>
+
+                        <th>
+                            OP Patients
+                        </th>
+
+                        <th>
+                            Follow-up Pending
+                        </th>
+
+                        <th>
+                            Data
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="campTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="empty"
+                        >
+                            Loading assigned OP data...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="note">
+
+            Only camps assigned to the logged-in Telesales email are shown.
+            Patients already converted to IP are excluded.
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<main
+    id="ipView"
+    class="page view-hidden"
+>
+
+    <div class="page-heading">
+
+        <div>
+
+            <h1>
+                Sales IP Data
+            </h1>
+
+            <p>
+                Converted IP patients from camps assigned to you.
+            </p>
+
+        </div>
+
+        <button
+            id="ipRefreshBtn"
+            class="refresh-btn"
+            type="button"
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <div class="ip-stats">
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Assigned Camps
+            </div>
+
+            <div
+                id="ipAssignedCampsCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                Camps assigned to this Telesales user
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Total IP Patients
+            </div>
+
+            <div
+                id="ipPatientsCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                Patients converted from OP to IP
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Surgery Completed
+            </div>
+
+            <div
+                id="ipCompletedCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                Completed surgery records
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                Surgery Pending
+            </div>
+
+            <div
+                id="ipPendingCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                Pending / not completed surgery
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <section class="card">
+
+        <div class="toolbar">
+
+            <h2>
+                IP Patient Data
+            </h2>
+
+            <input
+                id="ipSearchInput"
+                class="search-input"
+                type="search"
+                placeholder="Search patient, phone, camp, doctor, status..."
+            >
+
+        </div>
+
+
+        <div class="ip-table-wrapper">
+
+            <table class="ip-table">
+
+                <thead>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Phone</th>
+                        <th>Camp ID</th>
+                        <th>Camp Name</th>
+                        <th>City</th>
+                        <th>Doctor</th>
+                        <th>Treatment</th>
+                        <th>Clinical Status</th>
+                        <th>Converted Time</th>
+                        <th>Surgery Date</th>
+                        <th>Surgery Status</th>
+                        <th>Surgery Location</th>
+                        <th>Surgery Doctor</th>
+                        <th>Payment Mode</th>
+                        <th>Amount Paid</th>
+                        <th>IP Updated At</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="ipTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="17"
+                            class="empty"
+                        >
+                            Open Sales IP to load converted patients.
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="note">
+            Only converted IP patients from camps assigned to the logged-in Telesales email are shown.
+        </div>
+
+    </section>
+
+</main>
+
+    </div>
+</div>
+
+
+<script>
+
+
+/* =========================================================
+   GOOGLE APIs
+========================================================= */
+
+const CAMPS_API_URL =
+    "https://script.google.com/macros/s/AKfycbw4w8S_nHPcdn3RWj-wm2XGT_6Il70lScUQFP71UooBPM7Npf0zedq_Vf2-4TdIBtTD1w/exec";
+
+const LEADS_API_URL =
+    "https://script.google.com/macros/s/AKfycbwaY7WhanDFXtLn4PkSym_BmT_oGnea4-Ckm30wyJDkO6odi4f2HP-4YB07aPQEGd3t0Q/exec";
+
+
+const ADD_FOLLOWUP_ACTION =
+    "addTelesalesFollowup";
+
+
+const CONVERT_TO_IP_ACTION =
+    "convertToIp";
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let assignedCamps =
+    [];
+
+
+let allAssignedOpLeads =
+    [];
+
+
+let visibleCampGroups =
+    [];
+
+
+let followupsByLeadId =
+    new Map();
+
+
+const auth =
+    getAuthData();
+
+
+const telesalesEmail =
+    normalizeEmail(
+        auth.email
+    );
+
+
+document
+    .getElementById(
+        "userEmail"
+    )
+    .textContent =
+        telesalesEmail ||
+        "Telesales";
+
+
+document
+    .getElementById(
+        "sidebarUserEmail"
+    )
+    .textContent =
+        telesalesEmail ||
+        "Telesales";
+
+
+let salesIpRecords =
+    [];
+
+
+let filteredSalesIpRecords =
+    [];
+
+
+let salesIpLoaded =
+    false;
+
+
+/* =========================================================
+   SIDE NAVIGATION
+========================================================= */
+
+function switchSalesView(
+    view
+){
+
+    const isIp =
+        view ===
+        "ip";
+
+
+    document
+        .getElementById(
+            "opView"
+        )
+        .classList
+        .toggle(
+            "view-hidden",
+            isIp
+        );
+
+
+    document
+        .getElementById(
+            "ipView"
+        )
+        .classList
+        .toggle(
+            "view-hidden",
+            !isIp
+        );
+
+
+    document
+        .getElementById(
+            "salesOpNav"
+        )
+        .classList
+        .toggle(
+            "active",
+            !isIp
+        );
+
+
+    document
+        .getElementById(
+            "salesIpNav"
+        )
+        .classList
+        .toggle(
+            "active",
+            isIp
+        );
+
+
+    if(
+        isIp &&
+        !salesIpLoaded
+    ){
+
+        loadSalesIpData();
+
+    }
+
+}
+
+
+/* =========================================================
+   FETCH JSON
+========================================================= */
+
+async function fetchJson(
+    url,
+    options = {}
+){
+
+    const separator =
+        url.includes("?")
+            ? "&"
+            : "?";
+
+
+    const freshUrl =
+
+        url +
+
+        separator +
+
+        "_fresh=" +
+
+        Date.now() +
+
+        "_" +
+
+        Math.random()
+            .toString(36)
+            .slice(2);
+
+
+    const response =
+        await fetch(
+            freshUrl,
+            {
+                cache:
+                    "no-store",
+
+                ...options
+            }
+        );
+
+
+    const text =
+        await response.text();
+
+
+    if(
+        !response.ok
+    ){
+
+        throw new Error(
+            "HTTP " +
+            response.status
+        );
+    }
+
+
+    if(
+        text
+            .trim()
+            .startsWith("<")
+    ){
+
+        throw new Error(
+            "API returned HTML instead of JSON."
+        );
+    }
+
+
+    try{
+
+        return JSON.parse(
+            text
+        );
+
+    }catch(error){
+
+        throw new Error(
+            "API returned invalid JSON."
+        );
+    }
+}
+
+
+/* =========================================================
+   LOAD CAMPS + OP DATA
+========================================================= */
+
+async function loadData(){
+
+    const body =
+        document.getElementById(
+            "campTableBody"
+        );
+
+
+    body.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="5"
+                class="empty"
+            >
+                Loading assigned camps and OP patients...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    closeAll();
+
+
+    try{
+
+
+        const [
+            campResult,
+            leadResult,
+            followupResult
+        ] =
+            await Promise.all([
+
+                fetchJson(
+
+                    CAMPS_API_URL +
+
+                    "?action=getCamps"
+
+                ),
+
+                fetchJson(
+
+                    LEADS_API_URL +
+
+                    "?action=getLeads"
+
+                ),
+
+                fetchJson(
+
+                    LEADS_API_URL +
+
+                    "?action=getTelesalesFollowups" +
+
+                    "&telesalesEmail=" +
+
+                    encodeURIComponent(
+                        telesalesEmail
+                    )
+
+                )
+
+            ]);
+
+
+        if(
+            !campResult.success
+        ){
+
+            throw new Error(
+
+                campResult.message ||
+
+                "Unable to load camps."
+
+            );
+        }
+
+
+        if(
+            !leadResult.success
+        ){
+
+            throw new Error(
+
+                leadResult.message ||
+
+                "Unable to load OP data."
+
+            );
+        }
+
+
+        if(
+            !followupResult.success
+        ){
+
+            throw new Error(
+
+                followupResult.message ||
+
+                "Unable to load Telesales follow-up history."
+
+            );
+        }
+
+
+        const camps =
+            Array.isArray(
+                campResult.camps
+            )
+
+                ? campResult.camps
+
+                : [];
+
+
+        const leads =
+            Array.isArray(
+                leadResult.leads
+            )
+
+                ? leadResult.leads
+
+                : [];
+
+
+        const followups =
+            Array.isArray(
+                followupResult.followups
+            )
+
+                ? followupResult.followups
+
+                : [];
+
+
+        buildFollowupMap(
+            followups
+        );
+
+
+/* =========================================================
+   FILTER CAMPS ASSIGNED TO TELESALES
+========================================================= */
+
+        assignedCamps =
+            camps.filter(
+                function(
+                    camp
+                ){
+
+                    const assignedEmail =
+                        normalizeEmail(
+
+                            camp.telesales ||
+
+                            camp.telesalesEmail ||
+
+                            camp.teleSales ||
+
+                            camp.teleSalesEmail
+
+                        );
+
+
+                    return(
+
+                        assignedEmail ===
+                        telesalesEmail
+
+                    );
+                }
+            );
+
+
+        const assignedCampIds =
+            new Set(
+
+                assignedCamps
+
+                    .map(
+                        function(
+                            camp
+                        ){
+
+                            return normalizeKey(
+
+                                camp.id ||
+
+                                camp.campId
+
+                            );
+                        }
+                    )
+
+                    .filter(
+                        Boolean
+                    )
+
+            );
+
+
+/* =========================================================
+   FILTER ONLY OP RECORDS
+========================================================= */
+
+        allAssignedOpLeads =
+            leads.filter(
+                function(
+                    lead
+                ){
+
+                    return(
+
+                        assignedCampIds.has(
+
+                            normalizeKey(
+                                lead.campId
+                            )
+
+                        )
+
+                        &&
+
+                        !isConvertedLead(
+                            lead
+                        )
+
+                    );
+                }
+            );
+
+
+        renderCampGroups(
+
+            buildCampGroups(
+
+                assignedCamps,
+
+                allAssignedOpLeads
+
+            )
+
+        );
+
+
+        updateStats();
+
+
+    }catch(error){
+
+
+        console.error(
+            "TELESALES LOAD ERROR:",
+            error
+        );
+
+
+        assignedCamps =
+            [];
+
+
+        allAssignedOpLeads =
+            [];
+
+
+        visibleCampGroups =
+            [];
+
+
+        followupsByLeadId =
+            new Map();
+
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="5"
+                    class="error"
+                >
+
+                    ${escapeHtml(
+                        error.message
+                    )}
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        updateStats();
+    }
+}
+
+
+/* =========================================================
+   BUILD CAMP GROUPS
+========================================================= */
+
+function buildCampGroups(
+    camps,
+    leads
+){
+
+    const leadMap =
+        new Map();
+
+
+    leads.forEach(
+        function(
+            lead
+        ){
+
+            const campId =
+                normalizeKey(
+                    lead.campId
+                );
+
+
+            if(
+                !leadMap.has(
+                    campId
+                )
+            ){
+
+                leadMap.set(
+                    campId,
+                    []
+                );
+            }
+
+
+            leadMap
+                .get(
+                    campId
+                )
+                .push(
+                    lead
+                );
+        }
+    );
+
+
+    return camps
+
+        .map(
+            function(
+                camp
+            ){
+
+                const campId =
+                    String(
+
+                        camp.id ||
+
+                        camp.campId ||
+
+                        ""
+
+                    )
+                    .trim();
+
+
+                return{
+
+                    campId:
+                        campId,
+
+                    campName:
+                        camp.campName ||
+                        "",
+
+                    campDate:
+                        camp.campDate ||
+                        "",
+
+                    city:
+                        camp.city ||
+                        "",
+
+                    doctorName:
+
+                        camp.doctorName ||
+
+                        camp.doctor ||
+
+                        "",
+
+                    campaigner:
+
+                        camp.campaigner ||
+
+                        camp.campaignerEmail ||
+
+                        "",
+
+                    counsellor:
+
+                        camp.counsellor ||
+
+                        camp.counsellorEmail ||
+
+                        "",
+
+                    telesales:
+                        telesalesEmail,
+
+                    records:
+
+                        leadMap.get(
+
+                            normalizeKey(
+                                campId
+                            )
+
+                        ) ||
+
+                        []
+
+                };
+            }
+        )
+
+        .filter(
+            function(
+                group
+            ){
+
+                return Boolean(
+                    group.campId
+                );
+            }
+        );
+}
+
+
+/* =========================================================
+   RENDER CAMP TABLE
+========================================================= */
+
+function renderCampGroups(
+    groups
+){
+
+    visibleCampGroups =
+        groups;
+
+
+    const body =
+        document.getElementById(
+            "campTableBody"
+        );
+
+
+    if(
+        !groups.length
+    ){
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="5"
+                    class="empty"
+                >
+
+                    No camps are assigned to
+
+                    ${escapeHtml(
+                        telesalesEmail
+                    )}.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+    }
+
+
+    body.innerHTML =
+        groups
+
+            .map(
+                function(
+                    group,
+                    index
+                ){
+
+                    const rowId =
+                        "telesales_camp_" +
+                        index;
+
+
+                    const pending =
+                        countPendingFollowups(
+                            group.records
+                        );
+
+
+                    return `
+
+                        <tr>
+
+                            <td class="camp-id">
+
+                                ${display(
+                                    group.campId
+                                )}
+
+                            </td>
+
+
+                            <td class="camp-details">
+
+                                <strong>
+
+                                    ${display(
+                                        group.campName
+                                    )}
+
+                                </strong>
+
+
+                                <span>
+
+                                    Date:
+                                    ${display(
+                                        group.campDate
+                                    )}
+
+                                </span>
+
+
+                                <span>
+
+                                    City:
+                                    ${display(
+                                        group.city
+                                    )}
+
+                                </span>
+
+
+                                <span>
+
+                                    Doctor:
+                                    ${display(
+                                        group.doctorName
+                                    )}
+
+                                </span>
+
+                            </td>
+
+
+                            <td class="patient-count">
+
+                                ${group.records.length}
+
+                            </td>
+
+
+                            <td class="patient-count">
+
+                                ${pending}
+
+                            </td>
+
+
+                            <td>
+
+                                <button
+                                    class="view-btn"
+                                    data-row-id="${escapeAttribute(
+                                        rowId
+                                    )}"
+                                    data-group-index="${index}"
+                                    onclick="showCampDetails(this)"
+                                    ${group.records.length
+                                        ? ""
+                                        : "disabled"
+                                    }
+                                >
+
+                                    ${group.records.length
+                                        ? "View Details"
+                                        : "No OP Data"
+                                    }
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr
+                            id="${escapeAttribute(
+                                rowId
+                            )}"
+                            class="expand-row"
+                        >
+
+                            <td
+                                colspan="5"
+                                class="expand-cell"
+                            >
+
+                                <div
+                                    id="${escapeAttribute(
+                                        rowId
+                                    )}_content"
+                                    class="panel"
+                                ></div>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+                }
+            )
+
+            .join("");
+}
+
+
+/* =========================================================
+   VIEW DETAILS
+========================================================= */
+
+function showCampDetails(
+    button
+){
+
+    const rowId =
+        String(
+            button.dataset.rowId ||
+            ""
+        );
+
+
+    const index =
+        Number(
+            button.dataset.groupIndex
+        );
+
+
+    const group =
+        visibleCampGroups[
+            index
+        ];
+
+
+    const row =
+        document.getElementById(
+            rowId
+        );
+
+
+    if(
+        !group ||
+        !row ||
+        Number.isNaN(
+            index
+        )
+    ){
+
+        return;
+    }
+
+
+    const wasOpen =
+        row.classList.contains(
+            "active"
+        );
+
+
+    closeAll();
+
+
+    if(
+        wasOpen
+    ){
+
+        return;
+    }
+
+
+    document
+        .getElementById(
+            rowId +
+            "_content"
+        )
+        .innerHTML =
+
+            buildCampDetailHtml(
+
+                group,
+
+                rowId
+
+            );
+
+
+    row.classList.add(
+        "active"
+    );
+}
+
+
+/* =========================================================
+   BUILD PATIENT TABLE
+========================================================= */
+
+function buildCampDetailHtml(
+    group,
+    rowId
+){
+
+    const rows =
+        group.records
+
+            .map(
+                function(
+                    lead,
+                    index
+                ){
+
+                    const recordKey =
+                        getLeadKey(
+                            lead,
+                            index
+                        );
+
+
+                    const followupStatus =
+                        getFollowupStatus(
+                            lead
+                        );
+
+
+                    const nextDate =
+                        normalizeDateInput(
+
+                            lead.telesalesNextFollowupDate ||
+
+                            lead.nextFollowupDate ||
+
+                            lead.followupDate ||
+
+                            ""
+
+                        );
+
+
+                    const remarks =
+
+                        lead.telesalesRemarks ||
+
+                        lead.followupRemarks ||
+
+                        lead.remarks ||
+
+                        "";
+
+
+                    const lastFollowup =
+
+                        lead.telesalesFollowupAt ||
+
+                        lead.followupUpdatedAt ||
+
+                        lead.lastFollowupAt ||
+
+                        "";
+
+
+                    const historyHtml =
+                        buildFollowupHistoryHtml(
+                            lead.id ||
+                            lead.leadId ||
+                            ""
+                        );
+
+
+                    return `
+
+                        <tr
+                            data-record-key="${escapeAttribute(
+                                recordKey
+                            )}"
+                        >
+
+                            <td class="patient-id">
+
+                                ${display(
+                                    lead.id
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${display(
+                                    lead.date
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${display(
+                                    lead.name
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${display(
+                                    lead.age
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${display(
+                                    lead.gender
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                <a
+                                    class="phone-link"
+                                    href="tel:${escapeAttribute(
+                                        lead.mobile ||
+                                        ""
+                                    )}"
+                                >
+
+                                    ${display(
+                                        lead.mobile
+                                    )}
+
+                                </a>
+
+                            </td>
+
+
+                            <td>
+
+                                ${display(
+                                    lead.city
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${display(
+                                    lead.source
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${display(
+                                    lead.doctorName
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${display(
+                                    lead.treatment
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${display(
+                                    lead.status
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                <select
+                                    class="field-select followup-status"
+                                >
+
+                                    ${followupStatusOptions(
+                                        followupStatus
+                                    )}
+
+                                </select>
+
+                            </td>
+
+
+                            <td>
+
+                                <input
+                                    type="date"
+                                    class="field-input next-followup-date"
+                                    value="${escapeAttribute(
+                                        nextDate
+                                    )}"
+                                >
+
+                            </td>
+
+
+                            <td>
+
+                                <textarea
+                                    class="field-textarea followup-remarks"
+                                    placeholder="Enter follow-up remarks"
+                                >${escapeHtml(
+                                    remarks
+                                )}</textarea>
+
+                            </td>
+
+
+                            <td class="last-followup">
+
+                                ${display(
+                                    lastFollowup
+                                )}
+
+                            </td>
+
+
+                            <td
+                                class="followup-history-cell"
+                            >
+
+                                <div
+                                    class="followup-history"
+                                >
+                                    ${historyHtml}
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <button
+                                    class="save-btn"
+                                    data-record-key="${escapeAttribute(
+                                        recordKey
+                                    )}"
+                                    onclick="saveFollowup(this)"
+                                >
+                                    Add Follow-up
+                                </button>
+
+
+                                <span
+                                    class="saved-message"
+                                ></span>
+
+                            </td>
+
+
+                            <td>
+
+                                <button
+                                    class="convert-btn"
+                                    data-record-key="${escapeAttribute(
+                                        recordKey
+                                    )}"
+                                    onclick="convertLeadToIp(this)"
+                                >
+                                    Convert
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+                }
+            )
+
+            .join("");
+
+
+    return `
+
+        <div class="panel-header">
+
+            <div>
+
+                <h3>
+
+                    ${display(
+                        group.campName
+                    )}
+
+                </h3>
+
+
+                <p>
+
+                    Telesales follow-up for
+
+                    ${display(
+                        group.campId
+                    )}.
+
+                </p>
+
+            </div>
+
+
+            <span class="badge">
+
+                ${group.records.length}
+                OP Patients
+
+            </span>
+
+        </div>
+
+
+        <div class="camp-summary">
+
+
+            <div class="summary-box">
+
+                <div class="summary-label">
+                    Camp ID
+                </div>
+
+                <div class="summary-value">
+
+                    ${display(
+                        group.campId
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-box">
+
+                <div class="summary-label">
+                    Camp Name
+                </div>
+
+                <div class="summary-value">
+
+                    ${display(
+                        group.campName
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-box">
+
+                <div class="summary-label">
+                    Doctor
+                </div>
+
+                <div class="summary-value">
+
+                    ${display(
+                        group.doctorName
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-box">
+
+                <div class="summary-label">
+                    City
+                </div>
+
+                <div class="summary-value">
+
+                    ${display(
+                        group.city
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-box">
+
+                <div class="summary-label">
+                    Telesales
+                </div>
+
+                <div class="summary-value">
+
+                    ${display(
+                        group.telesales
+                    )}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="patient-wrapper">
+
+            <table class="patient-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Date</th>
+
+                        <th>Patient</th>
+
+                        <th>Age</th>
+
+                        <th>Gender</th>
+
+                        <th>Phone</th>
+
+                        <th>City</th>
+
+                        <th>Source</th>
+
+                        <th>Doctor</th>
+
+                        <th>Treatment</th>
+
+                        <th>Clinical Status</th>
+
+                        <th>Follow-up Status</th>
+
+                        <th>Next Follow-up</th>
+
+                        <th>Remarks</th>
+
+                        <th>Last Follow-up</th>
+
+                        <th>Follow-up History</th>
+
+                        <th>Follow-up Action</th>
+
+                        <th>Convert to IP</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    ${rows}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="panel-footer">
+
+            <button
+                class="close-btn"
+                onclick="
+                    closeCamp(
+                        '${escapeJsString(
+                            rowId
+                        )}'
+                    )
+                "
+            >
+                Close
+            </button>
+
+        </div>
+
+    `;
+}
+
+
+/* =========================================================
+   SAVE FOLLOW-UP TO GOOGLE
+========================================================= */
+
+async function saveFollowup(
+    button
+){
+
+    const recordKey =
+        String(
+            button.dataset.recordKey ||
+            ""
+        );
+
+
+    const row =
+        button.closest(
+            "tr"
+        );
+
+
+    if(
+        !row ||
+        !recordKey
+    ){
+
+        alert(
+            "Patient record not found."
+        );
+
+        return;
+    }
+
+
+    const index =
+        allAssignedOpLeads
+            .findIndex(
+                function(
+                    lead,
+                    i
+                ){
+
+                    return(
+
+                        getLeadKey(
+                            lead,
+                            i
+                        ) ===
+                        recordKey
+
+                    );
+                }
+            );
+
+
+    if(
+        index <
+        0
+    ){
+
+        alert(
+            "Patient record not found."
+        );
+
+        return;
+    }
+
+
+    const lead =
+        allAssignedOpLeads[
+            index
+        ];
+
+
+    const leadId =
+        String(
+
+            lead.id ||
+
+            lead.leadId ||
+
+            ""
+
+        )
+        .trim();
+
+
+    if(
+        !leadId
+    ){
+
+        alert(
+            "Patient ID is missing."
+        );
+
+        return;
+    }
+
+
+    const followupStatus =
+        row
+            .querySelector(
+                ".followup-status"
+            )
+            .value;
+
+
+    const nextFollowupDate =
+        row
+            .querySelector(
+                ".next-followup-date"
+            )
+            .value;
+
+
+    const remarks =
+        row
+            .querySelector(
+                ".followup-remarks"
+            )
+            .value
+            .trim();
+
+
+    const savedMessage =
+        row.querySelector(
+            ".saved-message"
+        );
+
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "Saving...";
+
+
+    if(
+        savedMessage
+    ){
+
+        savedMessage.textContent =
+            "";
+    }
+
+
+    try{
+
+
+        const response =
+            await fetch(
+
+                LEADS_API_URL,
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers:{
+
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            action:
+                                ADD_FOLLOWUP_ACTION,
+
+                            id:
+                                leadId,
+
+                            leadId:
+                                leadId,
+
+                            campId:
+                                lead.campId ||
+                                "",
+
+                            telesalesEmail:
+                                telesalesEmail,
+
+                            followupStatus:
+                                followupStatus,
+
+                            nextFollowupDate:
+                                nextFollowupDate,
+
+                            remarks:
+                                remarks
+
+                        })
+
+                }
+
+            );
+
+
+        const text =
+            await response.text();
+
+
+        let result;
+
+
+        try{
+
+            result =
+                JSON.parse(
+                    text
+                );
+
+        }catch(error){
+
+            throw new Error(
+                "Google Leads API returned invalid JSON."
+            );
+        }
+
+
+        if(
+            !result.success
+        ){
+
+            const apiMessage =
+                result.message ||
+
+                "Unable to save follow-up.";
+
+
+            if(
+                /invalid\s+action/i.test(
+                    apiMessage
+                )
+            ){
+
+                throw new Error(
+
+                    "The Leads Apps Script does not yet support " +
+
+                    "addTelesalesFollowup. " +
+
+                    "Update and redeploy the Leads Apps Script."
+
+                );
+            }
+
+
+            if(
+                /parsePostData\s+is\s+not\s+defined/i.test(
+                    apiMessage
+                )
+            ){
+                throw new Error(
+                    "The deployed Leads Apps Script is incomplete: parsePostData() is missing. " +
+                    "Replace Code.gs with the corrected single-layout Apps Script and redeploy it as a new version."
+                );
+            }
+
+
+            throw new Error(
+                apiMessage
+            );
+        }
+
+
+        const updatedAt =
+
+            result.telesalesFollowupAt ||
+
+            result.followupUpdatedAt ||
+
+            result.updatedAt ||
+
+            "";
+
+
+        const savedFollowup =
+            result.followup ||
+            {
+
+                followupId:
+                    result.followupId ||
+                    "",
+
+                leadId:
+                    leadId,
+
+                campId:
+                    lead.campId ||
+                    "",
+
+                campName:
+                    lead.campName ||
+                    "",
+
+                patientName:
+                    lead.name ||
+                    "",
+
+                mobile:
+                    lead.mobile ||
+                    "",
+
+                telesalesEmail:
+                    telesalesEmail,
+
+                followupStatus:
+                    followupStatus,
+
+                nextFollowupDate:
+                    nextFollowupDate,
+
+                remarks:
+                    remarks,
+
+                followupAt:
+                    updatedAt
+
+            };
+
+
+        addFollowupToMap(
+            savedFollowup
+        );
+
+
+        Object.assign(
+            lead,
+            {
+
+                telesalesEmail:
+                    telesalesEmail,
+
+                telesalesFollowupStatus:
+                    followupStatus,
+
+                followupStatus:
+                    followupStatus,
+
+                telesalesNextFollowupDate:
+                    nextFollowupDate,
+
+                nextFollowupDate:
+                    nextFollowupDate,
+
+                telesalesRemarks:
+                    remarks,
+
+                followupRemarks:
+                    remarks,
+
+                telesalesFollowupAt:
+                    updatedAt,
+
+                followupUpdatedAt:
+                    updatedAt
+
+            }
+        );
+
+
+        const lastCell =
+            row.querySelector(
+                ".last-followup"
+            );
+
+
+        if(
+            lastCell
+        ){
+
+            lastCell.innerHTML =
+                display(
+                    updatedAt
+                );
+        }
+
+
+        const historyContainer =
+            row.querySelector(
+                ".followup-history"
+            );
+
+
+        if(
+            historyContainer
+        ){
+
+            historyContainer.innerHTML =
+                buildFollowupHistoryHtml(
+                    leadId
+                );
+        }
+
+
+        button.textContent =
+            "Added";
+
+
+        if(
+            savedMessage
+        ){
+
+            savedMessage.textContent =
+                "Saved to Google";
+        }
+
+
+        updateStats();
+
+
+        setTimeout(
+            function(){
+
+                button.textContent =
+                    "Add Follow-up";
+
+
+                if(
+                    savedMessage
+                ){
+
+                    savedMessage.textContent =
+                        "";
+                }
+
+            },
+            1800
+        );
+
+
+    }catch(error){
+
+
+        console.error(
+            "FOLLOW-UP SAVE ERROR:",
+            error
+        );
+
+
+        button.textContent =
+            "Add Follow-up";
+
+
+        if(
+            savedMessage
+        ){
+
+            savedMessage.textContent =
+                "Save failed";
+        }
+
+
+        alert(
+            error.message
+        );
+
+
+    }finally{
+
+        button.disabled =
+            false;
+    }
+}
+
+
+/* =========================================================
+   CONVERT OP LEAD TO IP
+========================================================= */
+
+async function convertLeadToIp(
+    button
+){
+
+    const recordKey =
+        String(
+            button.dataset.recordKey ||
+            ""
+        );
+
+
+    const row =
+        button.closest(
+            "tr"
+        );
+
+
+    if(
+        !row ||
+        !recordKey
+    ){
+
+        alert(
+            "Patient record not found."
+        );
+
+        return;
+    }
+
+
+    const index =
+        allAssignedOpLeads
+            .findIndex(
+                function(
+                    lead,
+                    i
+                ){
+
+                    return(
+
+                        getLeadKey(
+                            lead,
+                            i
+                        ) ===
+                        recordKey
+
+                    );
+                }
+            );
+
+
+    if(
+        index <
+        0
+    ){
+
+        alert(
+            "Patient record not found."
+        );
+
+        return;
+    }
+
+
+    const lead =
+        allAssignedOpLeads[
+            index
+        ];
+
+
+    const leadId =
+        String(
+
+            lead.id ||
+
+            lead.leadId ||
+
+            ""
+
+        )
+        .trim();
+
+
+    if(
+        !leadId
+    ){
+
+        alert(
+            "Patient ID is missing."
+        );
+
+        return;
+    }
+
+
+    const patientName =
+        String(
+            lead.name ||
+            leadId
+        )
+        .trim();
+
+
+    const confirmed =
+        window.confirm(
+
+            "Convert " +
+
+            patientName +
+
+            " (" +
+
+            leadId +
+
+            ") from Sales OP to Sales IP?"
+
+        );
+
+
+    if(
+        !confirmed
+    ){
+
+        return;
+    }
+
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "Converting...";
+
+
+    try{
+
+        const result =
+            await fetchJson(
+
+                LEADS_API_URL,
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers:{
+
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            action:
+                                CONVERT_TO_IP_ACTION,
+
+                            id:
+                                leadId,
+
+                            leadId:
+                                leadId
+
+                        })
+
+                }
+
+            );
+
+
+        if(
+            !result ||
+            !result.success
+        ){
+
+            throw new Error(
+
+                result &&
+                result.message
+
+                    ? result.message
+
+                    : "Unable to convert patient to IP."
+
+            );
+
+        }
+
+
+        const convertedAt =
+
+            result.convertedAt ||
+
+            result.convertedTime ||
+
+            new Date()
+                .toLocaleString();
+
+
+        /*
+         * Update the local record immediately.
+         */
+
+        lead.conversionStatus =
+            "Converted";
+
+
+        lead.convertedAt =
+            convertedAt;
+
+
+        lead.convertedTime =
+            convertedAt;
+
+
+        lead.ipConvertedAt =
+            convertedAt;
+
+
+        /*
+         * Remove the converted patient from Sales OP.
+         * The backend now owns the permanent converted state.
+         */
+
+        allAssignedOpLeads =
+            allAssignedOpLeads.filter(
+                function(
+                    item
+                ){
+
+                    return(
+
+                        normalizeKey(
+
+                            item.id ||
+
+                            item.leadId
+
+                        ) !==
+
+                        normalizeKey(
+                            leadId
+                        )
+
+                    );
+                }
+            );
+
+
+        /*
+         * Re-render Sales OP so the converted patient
+         * disappears immediately from the current camp.
+         */
+
+        renderCampGroups(
+
+            buildCampGroups(
+
+                assignedCamps,
+
+                allAssignedOpLeads
+
+            )
+
+        );
+
+
+        updateStats();
+
+
+        /*
+         * Force Sales IP to reload from Google.
+         * getIpData reads the conversion written by convertToIp.
+         */
+
+        salesIpLoaded =
+            false;
+
+
+        await loadSalesIpData();
+
+
+        /*
+         * Open Sales IP after a successful conversion so the
+         * user can immediately see the converted patient there.
+         */
+
+        switchSalesView(
+            "ip"
+        );
+
+
+        alert(
+
+            patientName +
+
+            " has been converted successfully and moved to Sales IP."
+
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "CONVERT TO IP ERROR:",
+            error
+        );
+
+
+        alert(
+            error.message
+        );
+
+
+        button.textContent =
+            "Convert";
+
+
+    }finally{
+
+        button.disabled =
+            false;
+
+    }
+
+}
+
+
+/* =========================================================
+   FOLLOW-UP HISTORY MAP
+========================================================= */
+
+function buildFollowupMap(
+    followups
+){
+
+    followupsByLeadId =
+        new Map();
+
+
+    followups.forEach(
+        function(
+            followup
+        ){
+
+            addFollowupToMap(
+                followup,
+                false
+            );
+
+        }
+    );
+
+}
+
+
+function addFollowupToMap(
+    followup,
+    addToTop = true
+){
+
+    const leadId =
+        normalizeKey(
+
+            followup.leadId ||
+
+            followup.id
+
+        );
+
+
+    if(
+        !leadId
+    ){
+
+        return;
+    }
+
+
+    if(
+        !followupsByLeadId.has(
+            leadId
+        )
+    ){
+
+        followupsByLeadId.set(
+            leadId,
+            []
+        );
+    }
+
+
+    const list =
+        followupsByLeadId.get(
+            leadId
+        );
+
+
+    if(
+        addToTop
+    ){
+
+        list.unshift(
+            followup
+        );
+
+    }else{
+
+        list.push(
+            followup
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   BUILD FOLLOW-UP HISTORY HTML
+========================================================= */
+
+function buildFollowupHistoryHtml(
+    leadId
+){
+
+    const history =
+        followupsByLeadId.get(
+
+            normalizeKey(
+                leadId
+            )
+
+        ) ||
+        [];
+
+
+    if(
+        !history.length
+    ){
+
+        return `
+
+            <div class="history-empty">
+                No follow-up added yet.
+            </div>
+
+        `;
+    }
+
+
+    return history
+
+        .map(
+            function(
+                item
+            ){
+
+                const status =
+
+                    item.followupStatus ||
+
+                    item.telesalesFollowupStatus ||
+
+                    "-";
+
+
+                const nextDate =
+
+                    item.nextFollowupDate ||
+
+                    item.telesalesNextFollowupDate ||
+
+                    "";
+
+
+                const remarks =
+
+                    item.remarks ||
+
+                    item.telesalesRemarks ||
+
+                    "";
+
+
+                const followupAt =
+
+                    item.followupAt ||
+
+                    item.telesalesFollowupAt ||
+
+                    "";
+
+
+                return `
+
+                    <div class="history-item">
+
+                        <div class="history-head">
+
+                            <span class="history-status">
+
+                                ${display(
+                                    status
+                                )}
+
+                            </span>
+
+
+                            <span class="history-time">
+
+                                ${display(
+                                    followupAt
+                                )}
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="history-meta">
+
+                            Next Follow-up:
+                            ${display(
+                                nextDate
+                            )}
+
+                        </div>
+
+
+                        <div class="history-remarks">
+
+                            ${remarks
+                                ? escapeHtml(
+                                    remarks
+                                )
+                                : "No remarks"
+                            }
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        )
+
+        .join("");
+
+}
+
+
+/* =========================================================
+   FOLLOW-UP OPTIONS
+========================================================= */
+
+function followupStatusOptions(
+    currentValue
+){
+
+    const options = [
+
+        "Pending",
+
+        "Contacted",
+
+        "Call Back",
+
+        "Interested",
+
+        "Not Interested",
+
+        "No Answer",
+
+        "Wrong Number",
+
+        "Follow-up Completed"
+
+    ];
+
+
+    const current =
+        normalizeText(
+            currentValue ||
+            "Pending"
+        );
+
+
+    return options
+
+        .map(
+            function(
+                option
+            ){
+
+                const selected =
+
+                    normalizeText(
+                        option
+                    ) ===
+                    current
+
+                        ? " selected"
+
+                        : "";
+
+
+                return(
+
+                    '<option value="' +
+
+                    escapeAttribute(
+                        option
+                    ) +
+
+                    '"' +
+
+                    selected +
+
+                    '>' +
+
+                    escapeHtml(
+                        option
+                    ) +
+
+                    '</option>'
+
+                );
+            }
+        )
+
+        .join("");
+}
+
+
+/* =========================================================
+   FOLLOW-UP COUNTS
+========================================================= */
+
+function getFollowupStatus(
+    lead
+){
+
+    return(
+
+        lead.telesalesFollowupStatus ||
+
+        lead.followupStatus ||
+
+        "Pending"
+
+    );
+}
+
+
+function countPendingFollowups(
+    records
+){
+
+    return records.filter(
+        function(
+            lead
+        ){
+
+            const status =
+                normalizeText(
+
+                    getFollowupStatus(
+                        lead
+                    )
+
+                );
+
+
+            return(
+
+                status === "" ||
+
+                status === "pending" ||
+
+                status === "call back" ||
+
+                status === "no answer"
+
+            );
+        }
+    )
+    .length;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function updateStats(){
+
+    document
+        .getElementById(
+            "assignedCampsCount"
+        )
+        .textContent =
+            assignedCamps.length;
+
+
+    document
+        .getElementById(
+            "opPatientsCount"
+        )
+        .textContent =
+            allAssignedOpLeads.length;
+
+
+    document
+        .getElementById(
+            "pendingFollowupCount"
+        )
+        .textContent =
+
+            countPendingFollowups(
+                allAssignedOpLeads
+            );
+
+
+    const today =
+        getLocalToday();
+
+
+    document
+        .getElementById(
+            "todayFollowupCount"
+        )
+        .textContent =
+
+            allAssignedOpLeads
+                .filter(
+                    function(
+                        lead
+                    ){
+
+                        const nextDate =
+
+                            lead.telesalesNextFollowupDate ||
+
+                            lead.nextFollowupDate ||
+
+                            lead.followupDate ||
+
+                            "";
+
+
+                        return(
+
+                            normalizeDateInput(
+                                nextDate
+                            ) ===
+                            today
+
+                        );
+                    }
+                )
+                .length;
+}
+
+
+/* =========================================================
+   SALES IP DATA
+========================================================= */
+
+async function loadSalesIpData(){
+
+    const body =
+        document.getElementById(
+            "ipTableBody"
+        );
+
+
+    body.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="17"
+                class="empty"
+            >
+                Loading assigned IP patients...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try{
+
+        const [
+            campResult,
+            ipResult
+        ] =
+            await Promise.all([
+
+                fetchJson(
+                    CAMPS_API_URL +
+                    "?action=getCamps"
+                ),
+
+                fetchJson(
+                    LEADS_API_URL +
+                    "?action=getIpData"
+                )
+
+            ]);
+
+
+        if(
+            !campResult.success
+        ){
+
+            throw new Error(
+                campResult.message ||
+                "Unable to load camps."
+            );
+
+        }
+
+
+        if(
+            !ipResult.success
+        ){
+
+            throw new Error(
+                ipResult.message ||
+                "Unable to load IP data."
+            );
+
+        }
+
+
+        const camps =
+            Array.isArray(
+                campResult.camps
+            )
+                ? campResult.camps
+                : [];
+
+
+        const ipRecords =
+            Array.isArray(
+                ipResult.records
+            )
+                ? ipResult.records
+                : Array.isArray(
+                    ipResult.leads
+                )
+                    ? ipResult.leads
+                    : [];
+
+
+        const salesCamps =
+            camps.filter(
+                function(
+                    camp
+                ){
+
+                    return(
+
+                        normalizeEmail(
+
+                            camp.telesales ||
+
+                            camp.telesalesEmail ||
+
+                            camp.teleSales ||
+
+                            camp.teleSalesEmail ||
+
+                            ""
+
+                        ) ===
+                        telesalesEmail
+
+                    );
+
+                }
+            );
+
+
+        const campIds =
+            new Set(
+
+                salesCamps
+                    .map(
+                        function(
+                            camp
+                        ){
+
+                            return normalizeKey(
+
+                                camp.id ||
+
+                                camp.campId
+
+                            );
+
+                        }
+                    )
+                    .filter(
+                        Boolean
+                    )
+
+            );
+
+
+        salesIpRecords =
+            ipRecords.filter(
+                function(
+                    record
+                ){
+
+                    return campIds.has(
+
+                        normalizeKey(
+                            record.campId
+                        )
+
+                    );
+
+                }
+            );
+
+
+        salesIpLoaded =
+            true;
+
+
+        filteredSalesIpRecords =
+            salesIpRecords.slice();
+
+
+        renderSalesIpData(
+            filteredSalesIpRecords
+        );
+
+
+        updateSalesIpStats(
+            salesCamps
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "SALES IP LOAD ERROR:",
+            error
+        );
+
+
+        salesIpRecords =
+            [];
+
+
+        filteredSalesIpRecords =
+            [];
+
+
+        salesIpLoaded =
+            false;
+
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="17"
+                    class="error"
+                >
+                    ${escapeHtml(
+                        error.message
+                    )}
+                </td>
+
+            </tr>
+
+        `;
+
+
+        updateSalesIpStats(
+            []
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER SALES IP DATA
+========================================================= */
+
+function renderSalesIpData(
+    records
+){
+
+    const body =
+        document.getElementById(
+            "ipTableBody"
+        );
+
+
+    if(
+        !records.length
+    ){
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="17"
+                    class="empty"
+                >
+                    No converted IP patients found for your assigned camps.
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    body.innerHTML =
+        records
+            .map(
+                function(
+                    record
+                ){
+
+                    const surgeryStatus =
+                        String(
+                            record.surgeryStatus ||
+                            "Pending"
+                        )
+                        .trim();
+
+
+                    const statusClass =
+                        isSurgeryCompleted(
+                            surgeryStatus
+                        )
+                            ? "completed"
+                            : "pending";
+
+
+                    return `
+
+                        <tr>
+
+                            <td class="patient-id">
+                                ${display(
+                                    record.id ||
+                                    record.leadId
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.name
+                                )}
+                            </td>
+
+                            <td>
+                                <a
+                                    class="phone-link"
+                                    href="tel:${escapeAttribute(
+                                        record.mobile ||
+                                        ""
+                                    )}"
+                                >
+                                    ${display(
+                                        record.mobile
+                                    )}
+                                </a>
+                            </td>
+
+                            <td class="camp-id">
+                                ${display(
+                                    record.campId
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.campName
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.city
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.doctorName
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.treatment
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.status
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.convertedAt ||
+                                    record.convertedTime ||
+                                    record.ipConvertedAt
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.surgeryDate
+                                )}
+                            </td>
+
+                            <td>
+
+                                <span
+                                    class="ip-status-badge ${statusClass}"
+                                >
+                                    ${display(
+                                        surgeryStatus
+                                    )}
+                                </span>
+
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.surgeryLocation
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.surgeryDoctor
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.modeOfPayment
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.amountPaid
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    record.ipUpdatedAt
+                                )}
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+/* =========================================================
+   IP STATS
+========================================================= */
+
+function updateSalesIpStats(
+    salesCamps
+){
+
+    document
+        .getElementById(
+            "ipAssignedCampsCount"
+        )
+        .textContent =
+            Array.isArray(
+                salesCamps
+            )
+                ? salesCamps.length
+                : 0;
+
+
+    document
+        .getElementById(
+            "ipPatientsCount"
+        )
+        .textContent =
+            salesIpRecords.length;
+
+
+    const completed =
+        salesIpRecords.filter(
+            function(
+                record
+            ){
+
+                return isSurgeryCompleted(
+                    record.surgeryStatus
+                );
+
+            }
+        )
+        .length;
+
+
+    document
+        .getElementById(
+            "ipCompletedCount"
+        )
+        .textContent =
+            completed;
+
+
+    document
+        .getElementById(
+            "ipPendingCount"
+        )
+        .textContent =
+            Math.max(
+                0,
+                salesIpRecords.length -
+                completed
+            );
+
+}
+
+
+/* =========================================================
+   COMPLETED SURGERY CHECK
+========================================================= */
+
+function isSurgeryCompleted(
+    value
+){
+
+    const status =
+        normalizeText(
+            value
+        );
+
+
+    return(
+
+        status === "completed" ||
+
+        status === "complete" ||
+
+        status === "done" ||
+
+        status === "surgery completed"
+
+    );
+
+}
+
+
+/* =========================================================
+   SALES IP SEARCH
+========================================================= */
+
+document
+    .getElementById(
+        "ipSearchInput"
+    )
+    .addEventListener(
+        "input",
+        function(){
+
+            const keyword =
+                normalizeText(
+                    this.value
+                );
+
+
+            if(
+                !keyword
+            ){
+
+                filteredSalesIpRecords =
+                    salesIpRecords.slice();
+
+            }else{
+
+                filteredSalesIpRecords =
+                    salesIpRecords.filter(
+                        function(
+                            record
+                        ){
+
+                            const text = [
+
+                                record.id,
+
+                                record.leadId,
+
+                                record.name,
+
+                                record.mobile,
+
+                                record.campId,
+
+                                record.campName,
+
+                                record.city,
+
+                                record.doctorName,
+
+                                record.treatment,
+
+                                record.status,
+
+                                record.conversionStatus,
+
+                                record.surgeryDate,
+
+                                record.surgeryStatus,
+
+                                record.surgeryLocation,
+
+                                record.surgeryDoctor,
+
+                                record.modeOfPayment,
+
+                                record.amountPaid
+
+                            ]
+                            .join(" ")
+                            .toLowerCase();
+
+
+                            return text.includes(
+                                keyword
+                            );
+
+                        }
+                    );
+
+            }
+
+
+            renderSalesIpData(
+                filteredSalesIpRecords
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   SALES IP REFRESH
+========================================================= */
+
+document
+    .getElementById(
+        "ipRefreshBtn"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            document
+                .getElementById(
+                    "ipSearchInput"
+                )
+                .value =
+                    "";
+
+
+            salesIpLoaded =
+                false;
+
+
+            loadSalesIpData();
+
+        }
+    );
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+document
+    .getElementById(
+        "searchInput"
+    )
+    .addEventListener(
+        "input",
+        function(){
+
+
+            const keyword =
+                normalizeText(
+                    this.value
+                );
+
+
+            closeAll();
+
+
+            if(
+                !keyword
+            ){
+
+                renderCampGroups(
+
+                    buildCampGroups(
+
+                        assignedCamps,
+
+                        allAssignedOpLeads
+
+                    )
+
+                );
+
+
+                return;
+            }
+
+
+            const matchingLeads =
+                allAssignedOpLeads.filter(
+                    function(
+                        lead
+                    ){
+
+                        const text = [
+
+                            lead.id,
+
+                            lead.name,
+
+                            lead.mobile,
+
+                            lead.city,
+
+                            lead.source,
+
+                            lead.doctorName,
+
+                            lead.treatment,
+
+                            lead.status,
+
+                            getFollowupStatus(
+                                lead
+                            ),
+
+                            lead.telesalesRemarks,
+
+                            lead.followupRemarks
+
+                        ]
+                        .join(" ")
+                        .toLowerCase();
+
+
+                        return text.includes(
+                            keyword
+                        );
+                    }
+                );
+
+
+            const matchingCampIds =
+                new Set(
+
+                    matchingLeads.map(
+                        function(
+                            lead
+                        ){
+
+                            return normalizeKey(
+                                lead.campId
+                            );
+                        }
+                    )
+
+                );
+
+
+            const filteredCamps =
+                assignedCamps.filter(
+                    function(
+                        camp
+                    ){
+
+                        const campText = [
+
+                            camp.id,
+
+                            camp.campId,
+
+                            camp.campName,
+
+                            camp.city,
+
+                            camp.doctorName,
+
+                            camp.doctor,
+
+                            camp.campaigner,
+
+                            camp.counsellor,
+
+                            camp.telesales
+
+                        ]
+                        .join(" ")
+                        .toLowerCase();
+
+
+                        return(
+
+                            campText.includes(
+                                keyword
+                            )
+
+                            ||
+
+                            matchingCampIds.has(
+
+                                normalizeKey(
+
+                                    camp.id ||
+
+                                    camp.campId
+
+                                )
+
+                            )
+
+                        );
+                    }
+                );
+
+
+            renderCampGroups(
+
+                buildCampGroups(
+
+                    filteredCamps,
+
+                    matchingLeads
+
+                )
+
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+document
+    .getElementById(
+        "refreshBtn"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            document
+                .getElementById(
+                    "searchInput"
+                )
+                .value =
+                    "";
+
+
+            loadData();
+        }
+    );
+
+
+/* =========================================================
+   CLOSE DETAILS
+========================================================= */
+
+function closeCamp(
+    rowId
+){
+
+    const row =
+        document.getElementById(
+            rowId
+        );
+
+
+    if(
+        row
+    ){
+
+        row.classList.remove(
+            "active"
+        );
+    }
+}
+
+
+function closeAll(){
+
+    document
+        .querySelectorAll(
+            ".expand-row"
+        )
+        .forEach(
+            function(
+                row
+            ){
+
+                row.classList.remove(
+                    "active"
+                );
+            }
+        );
+}
+
+
+/* =========================================================
+   OP / IP CHECK
+========================================================= */
+
+function isConvertedLead(
+    lead
+){
+
+    if(
+        normalizeKey(
+            lead.conversionStatus
+        ) ===
+        "converted"
+    ){
+
+        return true;
+    }
+
+
+    return Boolean(
+
+        String(
+
+            lead.convertedAt ||
+
+            lead.convertedTime ||
+
+            lead.ipConvertedAt ||
+
+            ""
+
+        )
+        .trim()
+
+    );
+}
+
+
+/* =========================================================
+   LEAD KEY
+========================================================= */
+
+function getLeadKey(
+    lead,
+    index
+){
+
+    const id =
+        normalizeKey(
+
+            lead.id ||
+
+            lead.leadId
+
+        );
+
+
+    if(
+        id
+    ){
+
+        return(
+            "id:" +
+            id
+        );
+    }
+
+
+    return(
+
+        "fallback:" +
+
+        [
+
+            lead.mobile || "",
+
+            lead.campId || "",
+
+            lead.name || "",
+
+            index == null
+                ? ""
+                : index
+
+        ]
+        .join("|")
+
+    );
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+function getLocalToday(){
+
+    const date =
+        new Date();
+
+
+    return(
+
+        date.getFullYear() +
+
+        "-" +
+
+        String(
+            date.getMonth() +
+            1
+        )
+        .padStart(
+            2,
+            "0"
+        ) +
+
+        "-" +
+
+        String(
+            date.getDate()
+        )
+        .padStart(
+            2,
+            "0"
+        )
+
+    );
+}
+
+
+function normalizeDateInput(
+    value
+){
+
+    const text =
+        String(
+            value == null
+                ? ""
+                : value
+        )
+        .trim();
+
+
+    if(
+        !text
+    ){
+
+        return "";
+    }
+
+
+    if(
+        /^\d{4}-\d{2}-\d{2}$/
+            .test(
+                text
+            )
+    ){
+
+        return text;
+    }
+
+
+    const match =
+        text.match(
+
+            /^(\d{1,2})-(\d{1,2})-(\d{4})/
+
+        );
+
+
+    if(
+        match
+    ){
+
+        return(
+
+            match[3] +
+
+            "-" +
+
+            String(
+                match[2]
+            )
+            .padStart(
+                2,
+                "0"
+            ) +
+
+            "-" +
+
+            String(
+                match[1]
+            )
+            .padStart(
+                2,
+                "0"
+            )
+
+        );
+    }
+
+
+    const date =
+        new Date(
+            text
+        );
+
+
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
+
+        return "";
+    }
+
+
+    return(
+
+        date.getFullYear() +
+
+        "-" +
+
+        String(
+            date.getMonth() +
+            1
+        )
+        .padStart(
+            2,
+            "0"
+        ) +
+
+        "-" +
+
+        String(
+            date.getDate()
+        )
+        .padStart(
+            2,
+            "0"
+        )
+
+    );
+}
+
+
+/* =========================================================
+   NORMALIZE
+========================================================= */
+
+function normalizeEmail(
+    value
+){
+
+    return String(
+        value == null
+            ? ""
+            : value
+    )
+    .trim()
+    .toLowerCase();
+}
+
+
+function normalizeText(
+    value
+){
+
+    return String(
+        value == null
+            ? ""
+            : value
+    )
+    .trim()
+    .toLowerCase();
+}
+
+
+function normalizeKey(
+    value
+){
+
+    return normalizeText(
+        value
+    )
+    .replace(
+        /\s+/g,
+        ""
+    );
+}
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+function display(
+    value
+){
+
+    const text =
+        String(
+            value == null
+                ? ""
+                : value
+        )
+        .trim();
+
+
+    return(
+        text
+
+            ? escapeHtml(
+                text
+            )
+
+            : "-"
+    );
+}
+
+
+function escapeHtml(
+    value
+){
+
+    return String(
+        value == null
+            ? ""
+            : value
+    )
+
+    .replaceAll(
+        "&",
+        "&amp;"
+    )
+
+    .replaceAll(
+        "<",
+        "&lt;"
+    )
+
+    .replaceAll(
+        ">",
+        "&gt;"
+    )
+
+    .replaceAll(
+        '"',
+        "&quot;"
+    )
+
+    .replaceAll(
+        "'",
+        "&#039;"
+    );
+}
+
+
+function escapeAttribute(
+    value
+){
+
+    return escapeHtml(
+        value
+    );
+}
+
+
+function escapeJsString(
+    value
+){
+
+    return String(
+        value == null
+            ? ""
+            : value
+    )
+
+    .replaceAll(
+        "\\",
+        "\\\\"
+    )
+
+    .replaceAll(
+        "'",
+        "\\'"
+    )
+
+    .replaceAll(
+        "\n",
+        "\\n"
+    )
+
+    .replaceAll(
+        "\r",
+        "\\r"
+    );
+}
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+switchSalesView("op");
+loadData();
+
+</script>
+
+</body>
+</html>

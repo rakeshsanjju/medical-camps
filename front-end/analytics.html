@@ -1,0 +1,3021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics</title>
+
+<script>
+function getAuthData() {
+    return {
+        loggedIn: sessionStorage.getItem("medical_logged_in"),
+        email: sessionStorage.getItem("medical_user_email"),
+        role: sessionStorage.getItem("medical_user_role")
+    };
+}
+
+function clearMedicalLogin() {
+    sessionStorage.removeItem("medical_logged_in");
+    sessionStorage.removeItem("medical_user_email");
+    sessionStorage.removeItem("medical_user_role");
+}
+
+function requireAdmin() {
+    const auth = getAuthData();
+
+    if (auth.loggedIn !== "true" || auth.role !== "admin") {
+        clearMedicalLogin();
+        window.location.replace("./login.html");
+        return false;
+    }
+
+    return true;
+}
+
+function logoutMedicalUser() {
+    clearMedicalLogin();
+    window.location.replace("./login.html");
+}
+
+requireAdmin();
+</script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background: #f5f7fb;
+    color: #0f172a;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.topbar {
+    background: #0f172a;
+    color: white;
+    padding: 16px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.admin-email {
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+.nav-btn,
+.logout-btn,
+.refresh-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.nav-btn,
+.refresh-btn {
+    background: #2563eb;
+    color: white;
+}
+
+.logout-btn {
+    background: #dc2626;
+    color: white;
+}
+
+.page {
+    max-width: 1700px;
+    margin: auto;
+    padding: 30px;
+}
+
+.page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.page-heading h1 {
+    margin: 0 0 7px;
+}
+
+.page-heading p {
+    margin: 0;
+    color: #64748b;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card,
+.card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+}
+
+.stat-card {
+    padding: 20px;
+}
+
+.stat-label {
+    color: #64748b;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.stat-sub {
+    color: #94a3b8;
+    font-size: 11px;
+    margin-top: 7px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.card {
+    padding: 22px;
+}
+
+.card h2 {
+    margin: 0 0 18px;
+    font-size: 18px;
+}
+
+.metric-row {
+    display: grid;
+    grid-template-columns: 150px 1fr 70px;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.metric-label {
+    font-size: 13px;
+    color: #334155;
+    font-weight: 600;
+}
+
+.bar-track {
+    height: 14px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: #2563eb;
+}
+
+.metric-value {
+    text-align: right;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.section-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.section-toolbar h2 {
+    margin: 0;
+}
+
+.search-input {
+    width: 340px;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.analytics-table {
+    width: 100%;
+    min-width: 1200px;
+    border-collapse: collapse;
+}
+
+.analytics-table th {
+    background: #f1f5f9;
+    text-align: left;
+    padding: 12px;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.analytics-table td {
+    padding: 12px;
+    font-size: 12px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.camp-id {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+.number {
+    font-weight: 700;
+}
+
+.empty,
+.error {
+    padding: 35px;
+    text-align: center;
+}
+
+.empty {
+    color: #64748b;
+}
+
+.error {
+    color: #dc2626;
+}
+
+.loading-note,
+.updated-time {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.source-note {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #475569;
+}
+
+@media (max-width: 1200px) {
+    .stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .topbar {
+        padding: 14px 15px;
+        align-items: flex-start;
+    }
+
+    .page {
+        padding: 15px;
+    }
+
+    .page-heading {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .section-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-input {
+        width: 100%;
+    }
+
+    .metric-row {
+        grid-template-columns: 110px 1fr 50px;
+    }
+}
+
+@media (max-width: 500px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="brand">
+        Medical Camps Admin
+    </div>
+
+    <div class="topbar-actions">
+        <span
+            id="adminEmail"
+            class="admin-email"
+        >
+            Admin
+        </span>
+
+        <button
+            class="nav-btn"
+            onclick="window.location.href='./op-data.html'"
+        >
+            OP Data
+        </button>
+
+        <button
+            class="nav-btn"
+            onclick="window.location.href='./ip-data.html'"
+        >
+            IP Data
+        </button>
+
+        <button
+            class="nav-btn"
+            onclick="window.location.href='./admin-dashboard.html'"
+        >
+            Admin Dashboard
+        </button>
+
+        <button
+            class="logout-btn"
+            onclick="logoutMedicalUser()"
+        >
+            Logout
+        </button>
+    </div>
+</header>
+
+
+<div class="page">
+
+    <div class="page-heading">
+        <div>
+            <h1>
+                Analytics
+            </h1>
+
+            <p>
+                Live analytics from Google Sheet data.
+            </p>
+        </div>
+
+        <div>
+            <button
+                id="refreshBtn"
+                class="refresh-btn"
+            >
+                Refresh Analytics
+            </button>
+
+            <div
+                id="updatedTime"
+                class="updated-time"
+            ></div>
+        </div>
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat-card">
+            <div class="stat-label">
+                Total Camps
+            </div>
+
+            <div
+                id="totalCamps"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                All registered camps
+            </div>
+        </div>
+
+
+        <div class="stat-card">
+            <div class="stat-label">
+                OP Patients
+            </div>
+
+            <div
+                id="totalOp"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                Not converted to IP
+            </div>
+        </div>
+
+
+        <div class="stat-card">
+            <div class="stat-label">
+                IP Patients
+            </div>
+
+            <div
+                id="totalIp"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                Conversion Status = Converted
+            </div>
+        </div>
+
+
+        <div class="stat-card">
+            <div class="stat-label">
+                Surgeries
+            </div>
+
+            <div
+                id="totalSurgeries"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                Surgery Status = Completed
+            </div>
+        </div>
+
+
+        <div class="stat-card">
+            <div class="stat-label">
+                Cash
+            </div>
+
+            <div
+                id="cashCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                IP payment mode
+            </div>
+        </div>
+
+
+        <div class="stat-card">
+            <div class="stat-label">
+                Insurance
+            </div>
+
+            <div
+                id="insuranceCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-sub">
+                IP payment mode
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="grid-2">
+
+        <div class="card">
+            <h2>
+                Surgery Status
+            </h2>
+
+            <div
+                id="surgeryBreakdown"
+            ></div>
+        </div>
+
+
+        <div class="card">
+            <h2>
+                Payment Mode
+            </h2>
+
+            <div
+                id="paymentBreakdown"
+            ></div>
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="section-toolbar">
+
+            <h2>
+                Camp-wise Analytics
+            </h2>
+
+            <input
+                id="searchInput"
+                class="search-input"
+                type="search"
+                placeholder="Search camp ID, camp name, city, doctor..."
+            >
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="analytics-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Camp ID</th>
+                        <th>Camp Name</th>
+                        <th>City</th>
+                        <th>Doctor</th>
+                        <th>Total Patients</th>
+                        <th>OP</th>
+                        <th>IP</th>
+                        <th>Surgeries</th>
+                        <th>Cash</th>
+                        <th>Insurance</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="campAnalyticsBody">
+
+                    <tr>
+                        <td
+                            colspan="10"
+                            class="empty"
+                        >
+                            Loading analytics...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div
+            id="loadingNote"
+            class="loading-note"
+        ></div>
+
+        <div
+            id="sourceNote"
+            class="source-note"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const LEADS_API_URL =
+    "https://script.google.com/macros/s/AKfycbw-nwjRZU93h_icjvdO7AJAHFfIJB7vpeVIqjY9B-V7Thd3bJ1pajRtjNYGXaYHoGGMfA/exec";
+
+const CAMPS_API_URL =
+    "https://script.google.com/macros/s/AKfycbw4w8S_nHPcdn3RWj-wm2XGT_6Il70lScUQFP71UooBPM7Npf0zedq_Vf2-4TdIBtTD1w/exec";
+
+
+let allCamps = [];
+let allLeads = [];
+let ipApiRecords = [];
+let allIpRecords = [];
+let campAnalytics = [];
+
+
+const auth =
+    getAuthData();
+
+
+document
+    .getElementById(
+        "adminEmail"
+    )
+    .textContent =
+        auth.email ||
+        "Admin";
+
+
+async function fetchJson(
+    url
+) {
+
+    const separator =
+        url.includes("?")
+            ? "&"
+            : "?";
+
+
+    const freshUrl =
+        url +
+        separator +
+        "_fresh=" +
+        Date.now() +
+        "_" +
+        Math.random()
+            .toString(36)
+            .slice(2);
+
+
+    const response =
+        await fetch(
+            freshUrl,
+            {
+                cache:
+                    "no-store"
+            }
+        );
+
+
+    const text =
+        await response.text();
+
+
+    if (
+        !response.ok
+    ) {
+
+        throw new Error(
+            "HTTP " +
+            response.status
+        );
+
+    }
+
+
+    if (
+        text
+            .trim()
+            .startsWith("<")
+    ) {
+
+        throw new Error(
+            "API returned HTML instead of JSON."
+        );
+
+    }
+
+
+    try {
+
+        return JSON.parse(
+            text
+        );
+
+    } catch (error) {
+
+        throw new Error(
+            "API returned invalid JSON."
+        );
+
+    }
+
+}
+
+
+async function loadAnalytics() {
+
+    const body =
+        document.getElementById(
+            "campAnalyticsBody"
+        );
+
+
+    const note =
+        document.getElementById(
+            "loadingNote"
+        );
+
+
+    const sourceNote =
+        document.getElementById(
+            "sourceNote"
+        );
+
+
+    body.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="10"
+                class="empty"
+            >
+
+                Loading latest analytics from Google Sheet...
+
+            </td>
+
+        </tr>
+
+    `;
+
+
+    note.textContent =
+        "";
+
+
+    sourceNote.textContent =
+        "";
+
+
+    try {
+
+        const requests =
+            await Promise.allSettled([
+
+                fetchJson(
+                    CAMPS_API_URL +
+                    "?action=getCamps"
+                ),
+
+                fetchJson(
+                    LEADS_API_URL +
+                    "?action=getLeads"
+                ),
+
+                fetchJson(
+                    LEADS_API_URL +
+                    "?action=getIpData"
+                )
+
+            ]);
+
+
+        if (
+            requests[0].status ===
+                "fulfilled" &&
+            requests[0].value.success
+        ) {
+
+            allCamps =
+                Array.isArray(
+                    requests[0].value.camps
+                )
+
+                    ? requests[0].value.camps
+
+                    : [];
+
+        } else {
+
+            allCamps =
+                [];
+
+        }
+
+
+        if (
+            requests[1].status ===
+                "fulfilled" &&
+            requests[1].value.success
+        ) {
+
+            allLeads =
+                Array.isArray(
+                    requests[1].value.leads
+                )
+
+                    ? requests[1].value.leads
+
+                    : [];
+
+        } else {
+
+            throw new Error(
+
+                requests[1].status ===
+                    "rejected"
+
+                    ? requests[1].reason.message
+
+                    : (
+                        requests[1].value.message ||
+                        "Unable to load Leads."
+                    )
+
+            );
+
+        }
+
+
+        if (
+            requests[2].status ===
+                "fulfilled" &&
+            requests[2].value.success
+        ) {
+
+            ipApiRecords =
+                Array.isArray(
+                    requests[2].value.records
+                )
+
+                    ? requests[2].value.records
+
+                    : Array.isArray(
+                        requests[2].value.leads
+                    )
+
+                        ? requests[2].value.leads
+
+                        : [];
+
+        } else {
+
+            ipApiRecords =
+                [];
+
+
+            console.warn(
+
+                "getIpData failed. Analytics is deriving IP data from getLeads."
+
+            );
+
+        }
+
+
+        allIpRecords =
+            buildCanonicalIpRecords(
+
+                allLeads,
+
+                ipApiRecords
+
+            );
+
+
+        buildCampAnalytics();
+
+
+        updateSummaryCards();
+
+
+        renderSurgeryBreakdown();
+
+
+        renderPaymentBreakdown();
+
+
+        renderCampAnalytics(
+            campAnalytics
+        );
+
+
+        document
+            .getElementById(
+                "updatedTime"
+            )
+            .textContent =
+
+                "Updated: " +
+
+                new Date()
+                    .toLocaleString(
+                        "en-IN",
+                        {
+                            timeZone:
+                                "Asia/Kolkata"
+                        }
+                    );
+
+
+        sourceNote.textContent =
+
+            "Live records loaded: " +
+
+            allLeads.length +
+
+            " Leads | " +
+
+            allIpRecords.length +
+
+            " Converted IP records | " +
+
+            countCompletedSurgeries(
+                allIpRecords
+            ) +
+
+            " Completed surgeries.";
+
+
+        if (
+            !allCamps.length
+        ) {
+
+            note.textContent =
+
+                "Camp API did not return camp records. Camp totals are being built from Leads data.";
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="10"
+                    class="error"
+                >
+
+                    ${escapeHtml(
+                        error.message
+                    )}
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        sourceNote.textContent =
+
+            "Analytics could not refresh from Google.";
+
+    }
+
+}
+
+
+function buildCanonicalIpRecords(
+    leads,
+    ipRecords
+) {
+
+    const leadMap =
+        new Map();
+
+
+    const ipMap =
+        new Map();
+
+
+    leads.forEach(
+        function(
+            lead,
+            index
+        ) {
+
+            const key =
+                getRecordKey(
+                    lead,
+                    index
+                );
+
+
+            if (
+                key
+            ) {
+
+                leadMap.set(
+                    key,
+                    lead
+                );
+
+            }
+
+        }
+    );
+
+
+    ipRecords.forEach(
+        function(
+            record,
+            index
+        ) {
+
+            const key =
+                getRecordKey(
+                    record,
+                    index
+                );
+
+
+            if (
+                key
+            ) {
+
+                ipMap.set(
+                    key,
+                    record
+                );
+
+            }
+
+        }
+    );
+
+
+    const allKeys =
+        new Set([
+
+            ...leadMap.keys(),
+
+            ...ipMap.keys()
+
+        ]);
+
+
+    const convertedRecords =
+        [];
+
+
+    allKeys.forEach(
+        function(
+            key
+        ) {
+
+            const lead =
+                leadMap.get(
+                    key
+                ) ||
+                {};
+
+
+            const ipRecord =
+                ipMap.get(
+                    key
+                ) ||
+                {};
+
+
+            /*
+            FIX:
+            getLeads / direct Google Sheet values
+            override getIpData whenever the value
+            is not empty.
+            */
+
+            const merged =
+                mergePreferNonEmpty(
+
+                    ipRecord,
+
+                    lead
+
+                );
+
+
+            const converted =
+
+                isConvertedRecord(
+                    lead
+                )
+
+                ||
+
+                isConvertedRecord(
+                    ipRecord
+                )
+
+                ||
+
+                ipMap.has(
+                    key
+                );
+
+
+            if (
+                converted
+            ) {
+
+                convertedRecords.push(
+                    merged
+                );
+
+            }
+
+        }
+    );
+
+
+    return convertedRecords;
+
+}
+
+
+function mergePreferNonEmpty(
+    base,
+    preferred
+) {
+
+    const result = {
+        ...base
+    };
+
+
+    Object
+        .keys(
+            preferred ||
+            {}
+        )
+        .forEach(
+            function(
+                key
+            ) {
+
+                const value =
+                    preferred[
+                        key
+                    ];
+
+
+                if (
+
+                    value !==
+                        null
+
+                    &&
+
+                    value !==
+                        undefined
+
+                    &&
+
+                    String(
+                        value
+                    )
+                    .trim() !==
+                        ""
+
+                ) {
+
+                    result[
+                        key
+                    ] =
+                        value;
+
+                }
+
+            }
+        );
+
+
+    return result;
+
+}
+
+
+function isConvertedRecord(
+    record
+) {
+
+    if (
+        !record
+    ) {
+
+        return false;
+
+    }
+
+
+    const status =
+        normalizeLooseKey(
+
+            record.conversionStatus ||
+
+            record.convertedStatus ||
+
+            record.ipStatus ||
+
+            ""
+
+        );
+
+
+    if (
+        status ===
+        "converted"
+    ) {
+
+        return true;
+
+    }
+
+
+    return Boolean(
+
+        String(
+
+            record.convertedAt ||
+
+            record.convertedTime ||
+
+            record.ipConvertedAt ||
+
+            ""
+
+        )
+        .trim()
+
+    );
+
+}
+
+
+function normalizeSurgeryStatus(
+    value
+) {
+
+    const text =
+        normalizeLooseKey(
+            value
+        );
+
+
+    if (
+
+        text ===
+            "completed"
+
+        ||
+
+        text ===
+            "complete"
+
+        ||
+
+        text ===
+            "done"
+
+        ||
+
+        text ===
+            "surgerycompleted"
+
+    ) {
+
+        return "completed";
+
+    }
+
+
+    if (
+
+        text ===
+            "scheduled"
+
+        ||
+
+        text ===
+            "schedule"
+
+    ) {
+
+        return "scheduled";
+
+    }
+
+
+    if (
+
+        text ===
+            "postponed"
+
+        ||
+
+        text ===
+            "postpone"
+
+    ) {
+
+        return "postponed";
+
+    }
+
+
+    if (
+
+        text ===
+            "cancelled"
+
+        ||
+
+        text ===
+            "canceled"
+
+        ||
+
+        text ===
+            "cancel"
+
+    ) {
+
+        return "cancelled";
+
+    }
+
+
+    if (
+
+        text ===
+            "pending"
+
+        ||
+
+        text ===
+            ""
+
+    ) {
+
+        return "pending";
+
+    }
+
+
+    return normalizeText(
+        value
+    );
+
+}
+
+
+function countCompletedSurgeries(
+    records
+) {
+
+    return records
+        .filter(
+            function(
+                record
+            ) {
+
+                return (
+
+                    normalizeSurgeryStatus(
+
+                        record.surgeryStatus
+
+                    )
+
+                    ===
+
+                    "completed"
+
+                );
+
+            }
+        )
+        .length;
+
+}
+
+
+function updateSummaryCards() {
+
+    const ipIds =
+        new Set(
+
+            allIpRecords
+
+                .map(
+                    function(
+                        record,
+                        index
+                    ) {
+
+                        return getRecordKey(
+
+                            record,
+
+                            index
+
+                        );
+
+                    }
+                )
+
+                .filter(
+                    Boolean
+                )
+
+        );
+
+
+    const opCount =
+        allLeads
+
+            .filter(
+                function(
+                    lead,
+                    index
+                ) {
+
+                    const key =
+                        getRecordKey(
+
+                            lead,
+
+                            index
+
+                        );
+
+
+                    return (
+
+                        !isConvertedRecord(
+                            lead
+                        )
+
+                        &&
+
+                        !ipIds.has(
+                            key
+                        )
+
+                    );
+
+                }
+            )
+
+            .length;
+
+
+    const totalSurgeries =
+        countCompletedSurgeries(
+            allIpRecords
+        );
+
+
+    const cashCount =
+        allIpRecords
+
+            .filter(
+                function(
+                    record
+                ) {
+
+                    return (
+
+                        normalizePayment(
+
+                            record.modeOfPayment
+
+                        )
+
+                        ===
+
+                        "cash"
+
+                    );
+
+                }
+            )
+
+            .length;
+
+
+    const insuranceCount =
+        allIpRecords
+
+            .filter(
+                function(
+                    record
+                ) {
+
+                    return (
+
+                        normalizePayment(
+
+                            record.modeOfPayment
+
+                        )
+
+                        ===
+
+                        "insurance"
+
+                    );
+
+                }
+            )
+
+            .length;
+
+
+    const campCount =
+
+        allCamps.length
+
+            ? allCamps.length
+
+            : countUniqueCamps(
+                allLeads
+            );
+
+
+    document
+        .getElementById(
+            "totalCamps"
+        )
+        .textContent =
+            campCount;
+
+
+    document
+        .getElementById(
+            "totalOp"
+        )
+        .textContent =
+            opCount;
+
+
+    document
+        .getElementById(
+            "totalIp"
+        )
+        .textContent =
+            allIpRecords.length;
+
+
+    document
+        .getElementById(
+            "totalSurgeries"
+        )
+        .textContent =
+            totalSurgeries;
+
+
+    document
+        .getElementById(
+            "cashCount"
+        )
+        .textContent =
+            cashCount;
+
+
+    document
+        .getElementById(
+            "insuranceCount"
+        )
+        .textContent =
+            insuranceCount;
+
+}
+
+
+function renderSurgeryBreakdown() {
+
+    const statuses = [
+
+        "Pending",
+
+        "Scheduled",
+
+        "Completed",
+
+        "Postponed",
+
+        "Cancelled"
+
+    ];
+
+
+    const counts = {
+
+        pending:
+            0,
+
+        scheduled:
+            0,
+
+        completed:
+            0,
+
+        postponed:
+            0,
+
+        cancelled:
+            0
+
+    };
+
+
+    allIpRecords.forEach(
+        function(
+            record
+        ) {
+
+            const status =
+                normalizeSurgeryStatus(
+
+                    record.surgeryStatus
+
+                );
+
+
+            if (
+                counts[
+                    status
+                ] !=
+                null
+            ) {
+
+                counts[
+                    status
+                ] +=
+                    1;
+
+            }
+
+        }
+    );
+
+
+    const max =
+        Math.max(
+
+            1,
+
+            ...Object.values(
+                counts
+            )
+
+        );
+
+
+    document
+        .getElementById(
+            "surgeryBreakdown"
+        )
+        .innerHTML =
+
+            statuses
+
+                .map(
+                    function(
+                        status
+                    ) {
+
+                        const key =
+                            normalizeSurgeryStatus(
+                                status
+                            );
+
+
+                        const value =
+                            counts[
+                                key
+                            ] ||
+                            0;
+
+
+                        const width =
+                            Math.round(
+
+                                value /
+                                max *
+                                100
+
+                            );
+
+
+                        return `
+
+                            <div class="metric-row">
+
+                                <div class="metric-label">
+
+                                    ${escapeHtml(
+                                        status
+                                    )}
+
+                                </div>
+
+
+                                <div class="bar-track">
+
+                                    <div
+                                        class="bar-fill"
+                                        style="width:${width}%"
+                                    ></div>
+
+                                </div>
+
+
+                                <div class="metric-value">
+
+                                    ${value}
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+
+                .join("");
+
+}
+
+
+function renderPaymentBreakdown() {
+
+    const modes = [
+
+        "Cash",
+
+        "Insurance",
+
+        "UPI",
+
+        "Card",
+
+        "Bank Transfer",
+
+        "EMI",
+
+        "Other",
+
+        "Not Selected"
+
+    ];
+
+
+    const counts = {
+
+        cash:
+            0,
+
+        insurance:
+            0,
+
+        upi:
+            0,
+
+        card:
+            0,
+
+        "bank transfer":
+            0,
+
+        emi:
+            0,
+
+        other:
+            0,
+
+        "not selected":
+            0
+
+    };
+
+
+    allIpRecords.forEach(
+        function(
+            record
+        ) {
+
+            const key =
+
+                normalizePayment(
+
+                    record.modeOfPayment
+
+                )
+
+                ||
+
+                "not selected";
+
+
+            if (
+                counts[
+                    key
+                ] !=
+                null
+            ) {
+
+                counts[
+                    key
+                ] +=
+                    1;
+
+            } else {
+
+                counts.other +=
+                    1;
+
+            }
+
+        }
+    );
+
+
+    const max =
+        Math.max(
+
+            1,
+
+            ...Object.values(
+                counts
+            )
+
+        );
+
+
+    document
+        .getElementById(
+            "paymentBreakdown"
+        )
+        .innerHTML =
+
+            modes
+
+                .map(
+                    function(
+                        mode
+                    ) {
+
+                        const key =
+
+                            mode ===
+                                "Not Selected"
+
+                                ? "not selected"
+
+                                : normalizePayment(
+                                    mode
+                                );
+
+
+                        const value =
+                            counts[
+                                key
+                            ] ||
+                            0;
+
+
+                        const width =
+                            Math.round(
+
+                                value /
+                                max *
+                                100
+
+                            );
+
+
+                        return `
+
+                            <div class="metric-row">
+
+                                <div class="metric-label">
+
+                                    ${escapeHtml(
+                                        mode
+                                    )}
+
+                                </div>
+
+
+                                <div class="bar-track">
+
+                                    <div
+                                        class="bar-fill"
+                                        style="width:${width}%"
+                                    ></div>
+
+                                </div>
+
+
+                                <div class="metric-value">
+
+                                    ${value}
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+
+                .join("");
+
+}
+
+
+function createCampAnalyticsObject(
+    key,
+    campId,
+    campName,
+    city,
+    doctorName
+) {
+
+    return {
+
+        key:
+            key,
+
+        campId:
+            campId ||
+            "",
+
+        campName:
+            campName ||
+            "",
+
+        city:
+            city ||
+            "",
+
+        doctorName:
+            doctorName ||
+            "",
+
+        totalPatients:
+            0,
+
+        op:
+            0,
+
+        ip:
+            0,
+
+        surgeries:
+            0,
+
+        cash:
+            0,
+
+        insurance:
+            0
+
+    };
+
+}
+
+
+function buildCampAnalytics() {
+
+    const map =
+        new Map();
+
+
+    allCamps.forEach(
+        function(
+            camp
+        ) {
+
+            const key =
+                getCampKey(
+
+                    camp.id,
+
+                    camp.campName
+
+                );
+
+
+            map.set(
+
+                key,
+
+                createCampAnalyticsObject(
+
+                    key,
+
+                    camp.id,
+
+                    camp.campName,
+
+                    camp.city,
+
+                    camp.doctorName
+
+                )
+
+            );
+
+        }
+    );
+
+
+    const ipRecordMap =
+        new Map();
+
+
+    allIpRecords.forEach(
+        function(
+            record,
+            index
+        ) {
+
+            const key =
+                getRecordKey(
+
+                    record,
+
+                    index
+
+                );
+
+
+            if (
+                key
+            ) {
+
+                ipRecordMap.set(
+
+                    key,
+
+                    record
+
+                );
+
+            }
+
+        }
+    );
+
+
+    allLeads.forEach(
+        function(
+            lead,
+            index
+        ) {
+
+            const campKey =
+                getCampKey(
+
+                    lead.campId,
+
+                    lead.campName
+
+                );
+
+
+            if (
+                !map.has(
+                    campKey
+                )
+            ) {
+
+                map.set(
+
+                    campKey,
+
+                    createCampAnalyticsObject(
+
+                        campKey,
+
+                        lead.campId,
+
+                        lead.campName,
+
+                        lead.city,
+
+                        lead.doctorName
+
+                    )
+
+                );
+
+            }
+
+
+            const group =
+                map.get(
+                    campKey
+                );
+
+
+            group.totalPatients +=
+                1;
+
+
+            const recordKey =
+                getRecordKey(
+
+                    lead,
+
+                    index
+
+                );
+
+
+            const converted =
+
+                isConvertedRecord(
+                    lead
+                )
+
+                ||
+
+                ipRecordMap.has(
+                    recordKey
+                );
+
+
+            if (
+                converted
+            ) {
+
+                group.ip +=
+                    1;
+
+            } else {
+
+                group.op +=
+                    1;
+
+            }
+
+
+            if (
+                !group.city &&
+                lead.city
+            ) {
+
+                group.city =
+                    lead.city;
+
+            }
+
+
+            if (
+                !group.doctorName &&
+                lead.doctorName
+            ) {
+
+                group.doctorName =
+                    lead.doctorName;
+
+            }
+
+        }
+    );
+
+
+    allIpRecords.forEach(
+        function(
+            record
+        ) {
+
+            const campKey =
+                getCampKey(
+
+                    record.campId,
+
+                    record.campName
+
+                );
+
+
+            if (
+                !map.has(
+                    campKey
+                )
+            ) {
+
+                const group =
+                    createCampAnalyticsObject(
+
+                        campKey,
+
+                        record.campId,
+
+                        record.campName,
+
+                        record.city,
+
+                        record.doctorName
+
+                    );
+
+
+                group.totalPatients =
+                    1;
+
+
+                group.ip =
+                    1;
+
+
+                map.set(
+
+                    campKey,
+
+                    group
+
+                );
+
+            }
+
+
+            const group =
+                map.get(
+                    campKey
+                );
+
+
+            if (
+
+                normalizeSurgeryStatus(
+
+                    record.surgeryStatus
+
+                )
+
+                ===
+
+                "completed"
+
+            ) {
+
+                group.surgeries +=
+                    1;
+
+            }
+
+
+            const payment =
+                normalizePayment(
+
+                    record.modeOfPayment
+
+                );
+
+
+            if (
+                payment ===
+                "cash"
+            ) {
+
+                group.cash +=
+                    1;
+
+            }
+
+
+            if (
+                payment ===
+                "insurance"
+            ) {
+
+                group.insurance +=
+                    1;
+
+            }
+
+        }
+    );
+
+
+    campAnalytics =
+
+        Array.from(
+            map.values()
+        )
+
+        .sort(
+            function(
+                a,
+                b
+            ) {
+
+                return (
+
+                    b.totalPatients
+
+                    -
+
+                    a.totalPatients
+
+                );
+
+            }
+        );
+
+}
+
+
+function renderCampAnalytics(
+    records
+) {
+
+    const body =
+        document.getElementById(
+            "campAnalyticsBody"
+        );
+
+
+    if (
+        !records.length
+    ) {
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="10"
+                    class="empty"
+                >
+
+                    No camp analytics found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    body.innerHTML =
+
+        records
+
+            .map(
+                function(
+                    item
+                ) {
+
+                    return `
+
+                        <tr>
+
+                            <td class="camp-id">
+                                ${display(
+                                    item.campId
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    item.campName
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    item.city
+                                )}
+                            </td>
+
+                            <td>
+                                ${display(
+                                    item.doctorName
+                                )}
+                            </td>
+
+                            <td class="number">
+                                ${item.totalPatients}
+                            </td>
+
+                            <td class="number">
+                                ${item.op}
+                            </td>
+
+                            <td class="number">
+                                ${item.ip}
+                            </td>
+
+                            <td class="number">
+                                ${item.surgeries}
+                            </td>
+
+                            <td class="number">
+                                ${item.cash}
+                            </td>
+
+                            <td class="number">
+                                ${item.insurance}
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            )
+
+            .join("");
+
+}
+
+
+document
+    .getElementById(
+        "searchInput"
+    )
+    .addEventListener(
+        "input",
+        function() {
+
+            const keyword =
+                normalizeText(
+                    this.value
+                );
+
+
+            if (
+                !keyword
+            ) {
+
+                renderCampAnalytics(
+                    campAnalytics
+                );
+
+                return;
+
+            }
+
+
+            const filtered =
+
+                campAnalytics.filter(
+                    function(
+                        item
+                    ) {
+
+                        const text = [
+
+                            item.campId,
+
+                            item.campName,
+
+                            item.city,
+
+                            item.doctorName
+
+                        ]
+
+                        .join(" ")
+
+                        .toLowerCase();
+
+
+                        return text.includes(
+                            keyword
+                        );
+
+                    }
+                );
+
+
+            renderCampAnalytics(
+                filtered
+            );
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "refreshBtn"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            document
+                .getElementById(
+                    "searchInput"
+                )
+                .value =
+                    "";
+
+
+            loadAnalytics();
+
+        }
+    );
+
+
+window.addEventListener(
+    "focus",
+    function() {
+
+        loadAnalytics();
+
+    }
+);
+
+
+function getRecordKey(
+    record,
+    fallbackIndex
+) {
+
+    const id =
+        normalizeKey(
+
+            record &&
+            (
+                record.id ||
+                record.leadId
+            )
+
+        );
+
+
+    if (
+        id
+    ) {
+
+        return (
+            "id:" +
+            id
+        );
+
+    }
+
+
+    const mobile =
+        normalizeKey(
+
+            record &&
+            record.mobile
+
+        );
+
+
+    const camp =
+        normalizeKey(
+
+            record &&
+            record.campId
+
+        );
+
+
+    const name =
+        normalizeText(
+
+            record &&
+            record.name
+
+        );
+
+
+    if (
+        mobile ||
+        camp ||
+        name
+    ) {
+
+        return (
+
+            "fallback:" +
+
+            mobile +
+
+            "|" +
+
+            camp +
+
+            "|" +
+
+            name
+
+        );
+
+    }
+
+
+    if (
+
+        fallbackIndex !==
+            undefined
+
+        &&
+
+        fallbackIndex !==
+            null
+
+    ) {
+
+        return (
+
+            "index:" +
+
+            fallbackIndex
+
+        );
+
+    }
+
+
+    return "";
+
+}
+
+
+function getCampKey(
+    campId,
+    campName
+) {
+
+    const id =
+        normalizeKey(
+            campId
+        );
+
+
+    if (
+        id
+    ) {
+
+        return (
+
+            "id:" +
+
+            id
+
+        );
+
+    }
+
+
+    return (
+
+        "name:" +
+
+        normalizeText(
+
+            campName ||
+
+            "unknown"
+
+        )
+
+    );
+
+}
+
+
+function countUniqueCamps(
+    records
+) {
+
+    const set =
+        new Set();
+
+
+    records.forEach(
+        function(
+            record
+        ) {
+
+            set.add(
+
+                getCampKey(
+
+                    record.campId,
+
+                    record.campName
+
+                )
+
+            );
+
+        }
+    );
+
+
+    return set.size;
+
+}
+
+
+function normalizeText(
+    value
+) {
+
+    return String(
+
+        value == null
+
+            ? ""
+
+            : value
+
+    )
+    .trim()
+    .toLowerCase();
+
+}
+
+
+function normalizeKey(
+    value
+) {
+
+    return normalizeText(
+        value
+    )
+    .replace(
+        /\s+/g,
+        ""
+    );
+
+}
+
+
+function normalizeLooseKey(
+    value
+) {
+
+    return normalizeText(
+        value
+    )
+    .replace(
+        /[^a-z0-9]+/g,
+        ""
+    );
+
+}
+
+
+function normalizePayment(
+    value
+) {
+
+    const text =
+        normalizeText(
+            value
+        );
+
+
+    if (
+        !text
+    ) {
+
+        return "";
+
+    }
+
+
+    if (
+
+        text ===
+            "cash"
+
+        ||
+
+        text.includes(
+            "cash payment"
+        )
+
+    ) {
+
+        return "cash";
+
+    }
+
+
+    if (
+        text.includes(
+            "insurance"
+        )
+    ) {
+
+        return "insurance";
+
+    }
+
+
+    if (
+
+        text ===
+            "upi"
+
+        ||
+
+        text.startsWith(
+            "upi "
+        )
+
+    ) {
+
+        return "upi";
+
+    }
+
+
+    if (
+
+        text ===
+            "card"
+
+        ||
+
+        text.includes(
+            "credit card"
+        )
+
+        ||
+
+        text.includes(
+            "debit card"
+        )
+
+    ) {
+
+        return "card";
+
+    }
+
+
+    if (
+        text.includes(
+            "bank"
+        )
+    ) {
+
+        return "bank transfer";
+
+    }
+
+
+    if (
+
+        text ===
+            "emi"
+
+        ||
+
+        text.includes(
+            "emi"
+        )
+
+    ) {
+
+        return "emi";
+
+    }
+
+
+    return "other";
+
+}
+
+
+function display(
+    value
+) {
+
+    const text =
+        String(
+
+            value == null
+
+                ? ""
+
+                : value
+
+        )
+        .trim();
+
+
+    return (
+
+        text
+
+            ? escapeHtml(
+                text
+            )
+
+            : "-"
+
+    );
+
+}
+
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+
+        value == null
+
+            ? ""
+
+            : value
+
+    )
+
+    .replaceAll(
+        "&",
+        "&amp;"
+    )
+
+    .replaceAll(
+        "<",
+        "&lt;"
+    )
+
+    .replaceAll(
+        ">",
+        "&gt;"
+    )
+
+    .replaceAll(
+        '"',
+        "&quot;"
+    )
+
+    .replaceAll(
+        "'",
+        "&#039;"
+    );
+
+}
+
+
+loadAnalytics();
+
+</script>
+
+</body>
+</html>
