@@ -285,6 +285,48 @@
             background: #d97706;
         }
 
+
+        .download-pdf-btn,
+        .download-excel-btn {
+            border: none;
+            border-radius: 7px;
+            padding: 9px 14px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .download-pdf-btn {
+            background: #dc2626;
+        }
+
+        .download-pdf-btn:hover:not(:disabled) {
+            background: #b91c1c;
+        }
+
+        .download-excel-btn {
+            background: #15803d;
+        }
+
+        .download-excel-btn:hover:not(:disabled) {
+            background: #166534;
+        }
+
+        .download-pdf-btn:disabled,
+        .download-excel-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .patient-panel-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
         .view-data-btn:disabled,
         .edit-camp-btn:disabled,
         .edit-patient-btn:disabled {
@@ -626,6 +668,15 @@
             }
         }
     </style>
+
+    <!-- =====================================================
+         EXPORT LIBRARIES
+         - SheetJS: Excel (.xlsx)
+         - jsPDF + AutoTable: PDF
+    ====================================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body>
@@ -1809,6 +1860,24 @@ function renderCamps(
                                 >
                                     Edit Camp
                                 </button>
+
+                                <button
+                                    type="button"
+                                    class="download-pdf-btn"
+                                    data-camp-id="${safeCampId}"
+                                    title="Download this camp and its patient data as PDF"
+                                >
+                                    PDF
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="download-excel-btn"
+                                    data-camp-id="${safeCampId}"
+                                    title="Download this camp and its patient data as Excel"
+                                >
+                                    Excel
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -1834,6 +1903,7 @@ function renderCamps(
 
     attachViewDataButtons();
     attachEditCampButtons();
+    attachDownloadCampButtons();
 }
 
 
@@ -1878,6 +1948,50 @@ function attachEditCampButtons() {
                     function () {
                         openEditCamp(
                             this.dataset.campId
+                        );
+                    }
+                );
+            }
+        );
+}
+
+
+
+function attachDownloadCampButtons() {
+    document
+        .querySelectorAll(
+            ".download-pdf-btn"
+        )
+        .forEach(
+            function (
+                button
+            ) {
+                button.addEventListener(
+                    "click",
+                    function () {
+                        downloadCampPdf(
+                            this.dataset.campId,
+                            this
+                        );
+                    }
+                );
+            }
+        );
+
+    document
+        .querySelectorAll(
+            ".download-excel-btn"
+        )
+        .forEach(
+            function (
+                button
+            ) {
+                button.addEventListener(
+                    "click",
+                    function () {
+                        downloadCampExcel(
+                            this.dataset.campId,
+                            this
                         );
                     }
                 );
@@ -2160,9 +2274,27 @@ function renderCampPatientData(
                     </p>
                 </div>
 
-                <span class="patient-count">
-                    0 Patients
-                </span>
+                <div class="patient-panel-actions">
+                    <button
+                        type="button"
+                        class="download-pdf-btn"
+                        onclick="downloadCampPdf('${escapeJs(campId)}', this)"
+                    >
+                        Download PDF
+                    </button>
+
+                    <button
+                        type="button"
+                        class="download-excel-btn"
+                        onclick="downloadCampExcel('${escapeJs(campId)}', this)"
+                    >
+                        Download Excel
+                    </button>
+
+                    <span class="patient-count">
+                        0 Patients
+                    </span>
+                </div>
             </div>
 
             <div class="no-patient-data">
@@ -2340,14 +2472,32 @@ function renderCampPatientData(
                 </p>
             </div>
 
-            <span class="patient-count">
-                ${patients.length}
-                ${
-                    patients.length === 1
-                        ? "Patient"
-                        : "Patients"
-                }
-            </span>
+            <div class="patient-panel-actions">
+                <button
+                    type="button"
+                    class="download-pdf-btn"
+                    onclick="downloadCampPdf('${escapeJs(campId)}', this)"
+                >
+                    Download PDF
+                </button>
+
+                <button
+                    type="button"
+                    class="download-excel-btn"
+                    onclick="downloadCampExcel('${escapeJs(campId)}', this)"
+                >
+                    Download Excel
+                </button>
+
+                <span class="patient-count">
+                    ${patients.length}
+                    ${
+                        patients.length === 1
+                            ? "Patient"
+                            : "Patients"
+                    }
+                </span>
+            </div>
         </div>
 
 
@@ -2389,6 +2539,989 @@ function renderCampPatientData(
             </button>
         </div>
     `;
+}
+
+
+
+/* =========================================================
+   CAMP EXPORT - PDF + EXCEL
+========================================================= */
+
+function findCampForExport(
+    campId
+) {
+    const key =
+        normalizeKey(
+            campId
+        );
+
+    return allCamps.find(
+        function (
+            camp
+        ) {
+            return (
+                normalizeKey(
+                    camp.id ||
+                    camp.campId
+                ) ===
+                key
+            );
+        }
+    ) || null;
+}
+
+
+async function getCampPatientsForExport(
+    campId
+) {
+    await loadAllLeads(
+        false
+    );
+
+    const key =
+        normalizeKey(
+            campId
+        );
+
+    return allLeads
+        .filter(
+            function (
+                lead
+            ) {
+                return (
+                    normalizeKey(
+                        lead.campId
+                    ) ===
+                    key
+                );
+            }
+        )
+        .sort(
+            function (
+                a,
+                b
+            ) {
+                return (
+                    patientNumber(
+                        a.id
+                    )
+                    -
+                    patientNumber(
+                        b.id
+                    )
+                );
+            }
+        );
+}
+
+
+function getCampExportFilename(
+    camp,
+    extension
+) {
+    const campId =
+        clean(
+            camp.id ||
+            camp.campId ||
+            "Camp"
+        );
+
+    const campName =
+        clean(
+            camp.campName ||
+            "Data"
+        );
+
+    const raw =
+        campId +
+        "_" +
+        campName;
+
+    const safe =
+        raw
+            .replace(
+                /[^a-zA-Z0-9_-]+/g,
+                "_"
+            )
+            .replace(
+                /_+/g,
+                "_"
+            )
+            .replace(
+                /^_+|_+$/g,
+                ""
+            );
+
+    return (
+        safe ||
+        "Camp_Data"
+    ) +
+    "." +
+    extension;
+}
+
+
+function buildCampSummaryRows(
+    camp,
+    patientCount
+) {
+    return [
+        [
+            "Camp ID",
+            clean(
+                camp.id ||
+                camp.campId
+            )
+        ],
+        [
+            "Created Date",
+            clean(
+                camp.createdDate
+            )
+        ],
+        [
+            "Created Time",
+            clean(
+                camp.createdTime
+            )
+        ],
+        [
+            "Camp Name",
+            clean(
+                camp.campName
+            )
+        ],
+        [
+            "Camp Date",
+            clean(
+                camp.campDate
+            )
+        ],
+        [
+            "City",
+            clean(
+                camp.city
+            )
+        ],
+        [
+            "Doctor Name",
+            clean(
+                camp.doctorName ||
+                camp.doctor
+            )
+        ],
+        [
+            "Campaigner",
+            clean(
+                camp.campaigner ||
+                camp.campaignerEmail
+            )
+        ],
+        [
+            "Counsellor",
+            clean(
+                camp.counsellor ||
+                camp.counsellorEmail
+            )
+        ],
+        [
+            "Telesales Email",
+            clean(
+                camp.telesales ||
+                camp.telesalesEmail ||
+                camp.teleSales ||
+                camp.teleSalesEmail
+            )
+        ],
+        [
+            "Total Patients",
+            String(
+                patientCount
+            )
+        ]
+    ];
+}
+
+
+function buildPatientExportRows(
+    patients
+) {
+    return patients.map(
+        function (
+            lead
+        ) {
+            return {
+                "Patient ID":
+                    clean(
+                        lead.id ||
+                        lead.leadId
+                    ),
+
+                "Date & Time":
+                    clean(
+                        lead.date
+                    ),
+
+                "Name":
+                    clean(
+                        lead.name
+                    ),
+
+                "Age":
+                    clean(
+                        lead.age
+                    ),
+
+                "Gender":
+                    clean(
+                        lead.gender
+                    ),
+
+                "Mobile":
+                    clean(
+                        lead.mobile ||
+                        lead.phone
+                    ),
+
+                "City":
+                    clean(
+                        lead.city
+                    ),
+
+                "Source":
+                    clean(
+                        lead.source
+                    ),
+
+                "Doctor Name":
+                    clean(
+                        lead.doctorName ||
+                        lead.doctor
+                    ),
+
+                "Treatment":
+                    clean(
+                        lead.treatment
+                    ),
+
+                "Status":
+                    clean(
+                        lead.status
+                    ),
+
+                "Camp ID":
+                    clean(
+                        lead.campId
+                    ),
+
+                "Camp Name":
+                    clean(
+                        lead.campName
+                    ),
+
+                "Campaigner Email":
+                    clean(
+                        lead.campaignerEmail
+                    ),
+
+                "Counsellor Email":
+                    clean(
+                        lead.counsellorEmail
+                    ),
+
+                "Counsellor Updated At":
+                    clean(
+                        lead.counsellorUpdatedAt
+                    ),
+
+                "Conversion Status":
+                    clean(
+                        lead.conversionStatus
+                    ),
+
+                "Converted Time":
+                    clean(
+                        lead.convertedTime ||
+                        lead.convertedAt
+                    ),
+
+                "Surgery Date":
+                    clean(
+                        lead.surgeryDate
+                    ),
+
+                "Surgery Status":
+                    clean(
+                        lead.surgeryStatus
+                    ),
+
+                "Surgery Location":
+                    clean(
+                        lead.surgeryLocation
+                    ),
+
+                "Surgery Doctor":
+                    clean(
+                        lead.surgeryDoctor
+                    ),
+
+                "Mode of Payment":
+                    clean(
+                        lead.modeOfPayment
+                    ),
+
+                "Amount Paid":
+                    clean(
+                        lead.amountPaid
+                    ),
+
+                "IP Updated At":
+                    clean(
+                        lead.ipUpdatedAt
+                    ),
+
+                "Telesales Email":
+                    clean(
+                        lead.telesalesEmail
+                    )
+            };
+        }
+    );
+}
+
+
+async function downloadCampExcel(
+    campId,
+    button
+) {
+    const originalText =
+        button
+            ? button.textContent
+            : "";
+
+    if (button) {
+        button.disabled =
+            true;
+
+        button.textContent =
+            "Preparing...";
+    }
+
+    try {
+        if (
+            typeof XLSX ===
+            "undefined"
+        ) {
+            throw new Error(
+                "Excel library did not load. Check your internet connection and refresh the page."
+            );
+        }
+
+        const camp =
+            findCampForExport(
+                campId
+            );
+
+        if (!camp) {
+            throw new Error(
+                "Camp record could not be found."
+            );
+        }
+
+        const patients =
+            await getCampPatientsForExport(
+                campId
+            );
+
+        const workbook =
+            XLSX.utils.book_new();
+
+        const campRows =
+            [
+                [
+                    "Field",
+                    "Value"
+                ],
+                ...buildCampSummaryRows(
+                    camp,
+                    patients.length
+                )
+            ];
+
+        const campSheet =
+            XLSX.utils.aoa_to_sheet(
+                campRows
+            );
+
+        campSheet["!cols"] = [
+            {
+                wch:
+                    24
+            },
+            {
+                wch:
+                    42
+            }
+        ];
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            campSheet,
+            "Camp Details"
+        );
+
+        const patientRows =
+            buildPatientExportRows(
+                patients
+            );
+
+        const patientSheet =
+            patientRows.length
+                ? XLSX.utils.json_to_sheet(
+                    patientRows
+                )
+                : XLSX.utils.aoa_to_sheet(
+                    [[
+                        "No patient records found for this camp."
+                    ]]
+                );
+
+        if (patientRows.length) {
+            patientSheet["!cols"] =
+                Object.keys(
+                    patientRows[0]
+                )
+                .map(
+                    function (
+                        key
+                    ) {
+                        return {
+                            wch:
+                                Math.min(
+                                    Math.max(
+                                        key.length + 2,
+                                        14
+                                    ),
+                                    32
+                                )
+                        };
+                    }
+                );
+
+            patientSheet["!autofilter"] = {
+                ref:
+                    patientSheet["!ref"]
+            };
+        }
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            patientSheet,
+            "Patients"
+        );
+
+        XLSX.writeFile(
+            workbook,
+            getCampExportFilename(
+                camp,
+                "xlsx"
+            ),
+            {
+                compression:
+                    true
+            }
+        );
+
+    } catch (error) {
+        console.error(
+            "EXCEL EXPORT ERROR:",
+            error
+        );
+
+        alert(
+            "Excel download failed.\n\n" +
+            (
+                error.message ||
+                "Unable to create Excel file."
+            )
+        );
+
+    } finally {
+        if (button) {
+            button.disabled =
+                false;
+
+            button.textContent =
+                originalText;
+        }
+    }
+}
+
+
+async function downloadCampPdf(
+    campId,
+    button
+) {
+    const originalText =
+        button
+            ? button.textContent
+            : "";
+
+    if (button) {
+        button.disabled =
+            true;
+
+        button.textContent =
+            "Preparing...";
+    }
+
+    try {
+        if (
+            !window.jspdf ||
+            !window.jspdf.jsPDF
+        ) {
+            throw new Error(
+                "PDF library did not load. Check your internet connection and refresh the page."
+            );
+        }
+
+        const camp =
+            findCampForExport(
+                campId
+            );
+
+        if (!camp) {
+            throw new Error(
+                "Camp record could not be found."
+            );
+        }
+
+        const patients =
+            await getCampPatientsForExport(
+                campId
+            );
+
+        const {
+            jsPDF
+        } =
+            window.jspdf;
+
+        const pdf =
+            new jsPDF({
+                orientation:
+                    "landscape",
+
+                unit:
+                    "pt",
+
+                format:
+                    "a3"
+            });
+
+        const pageWidth =
+            pdf.internal.pageSize.getWidth();
+
+        pdf.setFont(
+            "helvetica",
+            "bold"
+        );
+
+        pdf.setFontSize(
+            20
+        );
+
+        pdf.text(
+            "Medical Camp Patient Data",
+            40,
+            42
+        );
+
+        pdf.setFont(
+            "helvetica",
+            "normal"
+        );
+
+        pdf.setFontSize(
+            10
+        );
+
+        pdf.text(
+            "Generated: " +
+            new Date()
+                .toLocaleString(
+                    "en-IN"
+                ),
+            pageWidth - 40,
+            42,
+            {
+                align:
+                    "right"
+            }
+        );
+
+        const campSummary =
+            buildCampSummaryRows(
+                camp,
+                patients.length
+            );
+
+        pdf.autoTable({
+            startY:
+                60,
+
+            head:
+                [[
+                    "Camp Field",
+                    "Value"
+                ]],
+
+            body:
+                campSummary,
+
+            theme:
+                "grid",
+
+            styles: {
+                fontSize:
+                    9,
+
+                cellPadding:
+                    5
+            },
+
+            headStyles: {
+                fontStyle:
+                    "bold"
+            },
+
+            columnStyles: {
+                0: {
+                    cellWidth:
+                        120,
+
+                    fontStyle:
+                        "bold"
+                }
+            },
+
+            margin: {
+                left:
+                    40,
+
+                right:
+                    40
+            }
+        });
+
+        const patientHead =
+            [[
+                "ID",
+                "Date",
+                "Name",
+                "Age",
+                "Gender",
+                "Mobile",
+                "City",
+                "Source",
+                "Doctor",
+                "Treatment",
+                "Status",
+                "Campaigner",
+                "Counsellor"
+            ]];
+
+        const patientBody =
+            patients.map(
+                function (
+                    lead
+                ) {
+                    return [
+                        clean(
+                            lead.id ||
+                            lead.leadId
+                        ),
+                        clean(
+                            lead.date
+                        ),
+                        clean(
+                            lead.name
+                        ),
+                        clean(
+                            lead.age
+                        ),
+                        clean(
+                            lead.gender
+                        ),
+                        clean(
+                            lead.mobile ||
+                            lead.phone
+                        ),
+                        clean(
+                            lead.city
+                        ),
+                        clean(
+                            lead.source
+                        ),
+                        clean(
+                            lead.doctorName ||
+                            lead.doctor
+                        ),
+                        clean(
+                            lead.treatment
+                        ),
+                        clean(
+                            lead.status
+                        ),
+                        clean(
+                            lead.campaignerEmail
+                        ),
+                        clean(
+                            lead.counsellorEmail
+                        )
+                    ];
+                }
+            );
+
+        const patientStartY =
+            (
+                pdf.lastAutoTable &&
+                pdf.lastAutoTable.finalY
+                    ? pdf.lastAutoTable.finalY
+                    : 60
+            ) +
+            25;
+
+        if (patients.length) {
+            pdf.autoTable({
+                startY:
+                    patientStartY,
+
+                head:
+                    patientHead,
+
+                body:
+                    patientBody,
+
+                theme:
+                    "grid",
+
+                styles: {
+                    fontSize:
+                        7,
+
+                    cellPadding:
+                        3,
+
+                    overflow:
+                        "linebreak",
+
+                    valign:
+                        "middle"
+                },
+
+                headStyles: {
+                    fontStyle:
+                        "bold"
+                },
+
+                margin: {
+                    left:
+                        25,
+
+                    right:
+                        25
+                },
+
+                didDrawPage:
+                    function (
+                        data
+                    ) {
+                        const pageNumber =
+                            pdf.internal.getNumberOfPages();
+
+                        pdf.setFontSize(
+                            8
+                        );
+
+                        pdf.text(
+                            "Camp: " +
+                            clean(
+                                camp.id ||
+                                camp.campId
+                            ) +
+                            " | " +
+                            clean(
+                                camp.campName
+                            ),
+                            25,
+                            pdf.internal.pageSize.getHeight() - 15
+                        );
+
+                        pdf.text(
+                            "Page " +
+                            pageNumber,
+                            pdf.internal.pageSize.getWidth() - 25,
+                            pdf.internal.pageSize.getHeight() - 15,
+                            {
+                                align:
+                                    "right"
+                            }
+                        );
+                    }
+            });
+
+            const ipHead =
+                [[
+                    "ID",
+                    "Conversion Status",
+                    "Converted Time",
+                    "Surgery Date",
+                    "Surgery Status",
+                    "Surgery Location",
+                    "Surgery Doctor",
+                    "Payment Mode",
+                    "Amount Paid",
+                    "IP Updated At",
+                    "Telesales Email"
+                ]];
+
+            const ipBody =
+                patients.map(
+                    function (
+                        lead
+                    ) {
+                        return [
+                            clean(
+                                lead.id ||
+                                lead.leadId
+                            ),
+                            clean(
+                                lead.conversionStatus
+                            ),
+                            clean(
+                                lead.convertedTime ||
+                                lead.convertedAt
+                            ),
+                            clean(
+                                lead.surgeryDate
+                            ),
+                            clean(
+                                lead.surgeryStatus
+                            ),
+                            clean(
+                                lead.surgeryLocation
+                            ),
+                            clean(
+                                lead.surgeryDoctor
+                            ),
+                            clean(
+                                lead.modeOfPayment
+                            ),
+                            clean(
+                                lead.amountPaid
+                            ),
+                            clean(
+                                lead.ipUpdatedAt
+                            ),
+                            clean(
+                                lead.telesalesEmail
+                            )
+                        ];
+                    }
+                );
+
+            const ipStartY =
+                (
+                    pdf.lastAutoTable &&
+                    pdf.lastAutoTable.finalY
+                        ? pdf.lastAutoTable.finalY
+                        : patientStartY
+                ) +
+                25;
+
+            pdf.autoTable({
+                startY:
+                    ipStartY,
+
+                head:
+                    ipHead,
+
+                body:
+                    ipBody,
+
+                theme:
+                    "grid",
+
+                styles: {
+                    fontSize:
+                        7,
+
+                    cellPadding:
+                        3,
+
+                    overflow:
+                        "linebreak",
+
+                    valign:
+                        "middle"
+                },
+
+                headStyles: {
+                    fontStyle:
+                        "bold"
+                },
+
+                margin: {
+                    left:
+                        25,
+
+                    right:
+                        25
+                }
+            });
+
+        } else {
+            pdf.setFontSize(
+                11
+            );
+
+            pdf.text(
+                "No patient records were found for this camp.",
+                40,
+                patientStartY
+            );
+        }
+
+        pdf.save(
+            getCampExportFilename(
+                camp,
+                "pdf"
+            )
+        );
+
+    } catch (error) {
+        console.error(
+            "PDF EXPORT ERROR:",
+            error
+        );
+
+        alert(
+            "PDF download failed.\n\n" +
+            (
+                error.message ||
+                "Unable to create PDF file."
+            )
+        );
+
+    } finally {
+        if (button) {
+            button.disabled =
+                false;
+
+            button.textContent =
+                originalText;
+        }
+    }
 }
 
 

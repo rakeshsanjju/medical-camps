@@ -352,7 +352,7 @@ body {
 
 .patient-table {
     width: 100%;
-    min-width: 2150px;
+    min-width: 2850px;
     border-collapse: collapse;
 }
 
@@ -420,10 +420,175 @@ body {
 }
 
 
-.telesales-email {
+.followup-email {
     color: #0369a1;
     font-weight: 700;
     white-space: nowrap;
+}
+
+.followup-status-badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.followup-status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.followup-status-badge.contacted {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.followup-status-badge.interested {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.followup-status-badge.call-back,
+.followup-status-badge.no-answer {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.followup-status-badge.not-interested,
+.followup-status-badge.wrong-number {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.followup-status-badge.follow-up-completed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.followup-date {
+    color: #7c3aed;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.followup-remarks-cell {
+    min-width: 220px;
+    max-width: 320px;
+    white-space: normal;
+    line-height: 1.45;
+}
+
+.followup-time {
+    color: #15803d;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.history-btn {
+    border: none;
+    padding: 7px 11px;
+    border-radius: 7px;
+    background: #0f766e;
+    color: white;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.history-btn:hover {
+    filter: brightness(0.95);
+}
+
+.history-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 23, 42, 0.55);
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.history-modal.active {
+    display: block;
+}
+
+.history-modal-card {
+    width: min(1100px, 100%);
+    margin: 35px auto;
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 18px 60px rgba(15, 23, 42, 0.28);
+}
+
+.history-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 22px;
+    background: #0f172a;
+    color: white;
+}
+
+.history-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.history-modal-close {
+    border: none;
+    background: #dc2626;
+    color: white;
+    border-radius: 7px;
+    padding: 8px 13px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.history-modal-body {
+    padding: 22px;
+}
+
+.history-patient-summary {
+    margin-bottom: 18px;
+    color: #475569;
+    font-size: 13px;
+}
+
+.history-table-wrapper {
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+}
+
+.history-table th {
+    background: #f1f5f9;
+    text-align: left;
+    padding: 11px;
+    font-size: 11px;
+}
+
+.history-table td {
+    padding: 11px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 12px;
+    vertical-align: top;
+}
+
+.history-remarks {
+    min-width: 240px;
+    white-space: normal;
 }
 
 .panel-footer {
@@ -603,6 +768,38 @@ body {
     </div>
 </div>
 
+<!-- =========================================================
+     TELESALES FOLLOW-UP HISTORY MODAL
+========================================================= -->
+<div
+    id="followupHistoryModal"
+    class="history-modal"
+    onclick="handleHistoryModalBackdrop(event)"
+>
+    <div class="history-modal-card">
+        <div class="history-modal-header">
+            <h3 id="followupHistoryTitle">
+                Telesales Follow-up History
+            </h3>
+
+            <button
+                type="button"
+                class="history-modal-close"
+                onclick="closeFollowupHistory()"
+            >
+                Close
+            </button>
+        </div>
+
+        <div
+            id="followupHistoryBody"
+            class="history-modal-body"
+        >
+            Loading...
+        </div>
+    </div>
+</div>
+
 <script>
 /* =========================================================
    URLS / API ACTIONS
@@ -635,6 +832,8 @@ const GET_CAMP_PATIENTS_ACTION = "getCounsellorLeads";
 */
 const CONVERT_TO_IP_ACTION = "convertToIp";
 const GET_IP_DATA_ACTION = "getIpData";
+const GET_ALL_LEADS_ACTION = "getLeads";
+const GET_TELESALES_FOLLOWUPS_ACTION = "getTelesalesFollowups";
 
 
 /* =========================================================
@@ -798,6 +997,7 @@ async function loadData() {
         });
 
         await mergeGoogleConversionState();
+        await mergeGoogleTelesalesFollowupState();
         buildGlobalLeadList();
         renderCamps(allCamps);
         updateStats();
@@ -1022,8 +1222,46 @@ function buildCampDetails(camp, rowId) {
                             )}
                         </td>
 
-                        <td class="telesales-email">
+                        <td class="followup-email">
                             ${display(lead.telesalesEmail)}
+                        </td>
+
+                        <td>
+                            <span class="followup-status-badge ${escapeAttribute(
+                                getFollowupStatusClass(
+                                    getFollowupStatus(lead)
+                                )
+                            )}">
+                                ${display(getFollowupStatus(lead))}
+                            </span>
+                        </td>
+
+                        <td class="followup-date">
+                            ${display(getNextFollowupDate(lead))}
+                        </td>
+
+                        <td class="followup-remarks-cell">
+                            ${display(getFollowupRemarks(lead))}
+                        </td>
+
+                        <td class="followup-time">
+                            ${escapeHtml(
+                                formatFollowupTime(
+                                    getLastFollowupAt(lead)
+                                )
+                            )}
+                        </td>
+
+                        <td>
+                            <button
+                                type="button"
+                                class="history-btn"
+                                data-lead-id="${escapeAttribute(lead.id)}"
+                                data-patient-name="${escapeAttribute(lead.name)}"
+                                onclick="openFollowupHistory(this)"
+                            >
+                                History
+                            </button>
                         </td>
 
                         <td class="converted-time">
@@ -1077,6 +1315,11 @@ function buildCampDetails(camp, rowId) {
                             <th>Status</th>
                             <th>Modified At</th>
                             <th>Telesales Email</th>
+                            <th>Follow-up Status</th>
+                            <th>Next Follow-up</th>
+                            <th>Follow-up Remarks</th>
+                            <th>Last Follow-up</th>
+                            <th>Follow-up History</th>
                             <th>Converted Time</th>
                             <th>Action</th>
                         </tr>
@@ -1325,6 +1568,9 @@ function getLastModified(leads) {
     const values = leads
         .map(function(lead) {
             return String(
+                lead.telesalesFollowupAt ||
+                lead.followupUpdatedAt ||
+                lead.lastFollowupAt ||
                 lead.counsellorUpdatedAt ||
                 lead.updatedAt ||
                 lead.modifiedAt ||
@@ -1392,6 +1638,10 @@ document
                         lead.status,
                         lead.treatment,
                         lead.telesalesEmail,
+                        getFollowupStatus(lead),
+                        getNextFollowupDate(lead),
+                        getFollowupRemarks(lead),
+                        getLastFollowupAt(lead),
                         getConvertedTime(lead)
                     ].join(" ");
                 })
@@ -1575,6 +1825,463 @@ async function mergeGoogleConversionState() {
         );
     }
 }
+
+
+/* =========================================================
+   MERGE TELESALES FOLLOW-UP STATE FROM GOOGLE
+
+   The camp-specific lead call normally already contains the
+   latest follow-up fields. This extra getLeads call makes the
+   Admin OP page resilient and always merges the latest
+   Telesales values by Patient ID.
+========================================================= */
+
+async function mergeGoogleTelesalesFollowupState() {
+    try {
+        const result = await fetchJson(
+            LEADS_API_URL +
+            "?action=" +
+            encodeURIComponent(GET_ALL_LEADS_ACTION) +
+            "&t=" +
+            Date.now()
+        );
+
+        if (!result || !result.success) {
+            throw new Error(
+                result && result.message
+                    ? result.message
+                    : "Unable to read latest Telesales follow-up data."
+            );
+        }
+
+        const records = Array.isArray(result.leads)
+            ? result.leads
+            : Array.isArray(result.records)
+                ? result.records
+                : [];
+
+        const map = new Map();
+
+        records.forEach(function(record) {
+            const id = String(
+                record.id ||
+                record.leadId ||
+                ""
+            ).trim();
+
+            if (id) {
+                map.set(id, record);
+            }
+        });
+
+        allCamps.forEach(function(camp) {
+            camp.leads.forEach(function(lead) {
+                const id = String(lead.id || "").trim();
+                const record = id ? map.get(id) : null;
+
+                if (!record) {
+                    return;
+                }
+
+                lead.telesalesEmail =
+                    record.telesalesEmail ||
+                    record.teleSalesEmail ||
+                    "";
+
+                lead.telesalesFollowupStatus =
+                    record.telesalesFollowupStatus ||
+                    record.followupStatus ||
+                    "Pending";
+
+                lead.followupStatus =
+                    record.followupStatus ||
+                    record.telesalesFollowupStatus ||
+                    "Pending";
+
+                lead.telesalesNextFollowupDate =
+                    record.telesalesNextFollowupDate ||
+                    record.nextFollowupDate ||
+                    "";
+
+                lead.nextFollowupDate =
+                    record.nextFollowupDate ||
+                    record.telesalesNextFollowupDate ||
+                    "";
+
+                lead.telesalesRemarks =
+                    record.telesalesRemarks ||
+                    record.followupRemarks ||
+                    "";
+
+                lead.followupRemarks =
+                    record.followupRemarks ||
+                    record.telesalesRemarks ||
+                    "";
+
+                lead.telesalesFollowupAt =
+                    record.telesalesFollowupAt ||
+                    record.followupUpdatedAt ||
+                    record.lastFollowupAt ||
+                    "";
+
+                lead.followupUpdatedAt =
+                    record.followupUpdatedAt ||
+                    record.telesalesFollowupAt ||
+                    record.lastFollowupAt ||
+                    "";
+
+                lead.lastFollowupAt =
+                    record.lastFollowupAt ||
+                    record.telesalesFollowupAt ||
+                    record.followupUpdatedAt ||
+                    "";
+            });
+        });
+
+    } catch (error) {
+        console.warn(
+            "Could not merge latest Telesales follow-up data:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   TELESALES FOLLOW-UP DISPLAY HELPERS
+========================================================= */
+
+function getFollowupStatus(lead) {
+    return (
+        lead.telesalesFollowupStatus ||
+        lead.followupStatus ||
+        "Pending"
+    );
+}
+
+
+function getNextFollowupDate(lead) {
+    return (
+        lead.telesalesNextFollowupDate ||
+        lead.nextFollowupDate ||
+        ""
+    );
+}
+
+
+function getFollowupRemarks(lead) {
+    return (
+        lead.telesalesRemarks ||
+        lead.followupRemarks ||
+        ""
+    );
+}
+
+
+function getLastFollowupAt(lead) {
+    return (
+        lead.telesalesFollowupAt ||
+        lead.followupUpdatedAt ||
+        lead.lastFollowupAt ||
+        ""
+    );
+}
+
+
+function getFollowupStatusClass(value) {
+    const status = String(value || "Pending")
+        .trim()
+        .toLowerCase();
+
+    if (!status) {
+        return "pending";
+    }
+
+    return status
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "") ||
+        "pending";
+}
+
+
+function formatFollowupTime(value) {
+    const text = String(value == null ? "" : value).trim();
+
+    if (!text) {
+        return "-";
+    }
+
+    /*
+       Google Apps Script stores the value as:
+       dd-MM-yyyy HH:mm:ss
+       If it is already in that format, display it as-is.
+    */
+    if (
+        /^\d{1,2}-\d{1,2}-\d{4}\s+\d{1,2}:\d{2}:\d{2}$/
+            .test(text)
+    ) {
+        return text;
+    }
+
+    const date = new Date(text);
+
+    if (Number.isNaN(date.getTime())) {
+        return text;
+    }
+
+    return date.toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+    });
+}
+
+
+/* =========================================================
+   FOLLOW-UP HISTORY MODAL
+========================================================= */
+
+async function openFollowupHistory(button) {
+    const leadId = String(
+        button.dataset.leadId ||
+        ""
+    ).trim();
+
+    const patientName = String(
+        button.dataset.patientName ||
+        ""
+    ).trim();
+
+    if (!leadId) {
+        alert("Patient ID is missing.");
+        return;
+    }
+
+    const modal =
+        document.getElementById("followupHistoryModal");
+
+    const title =
+        document.getElementById("followupHistoryTitle");
+
+    const body =
+        document.getElementById("followupHistoryBody");
+
+    title.textContent =
+        "Telesales Follow-up History — " +
+        (patientName || leadId);
+
+    body.innerHTML = `
+        <div class="empty">
+            Loading follow-up history...
+        </div>
+    `;
+
+    modal.classList.add("active");
+
+    try {
+        const url =
+            LEADS_API_URL +
+            "?action=" +
+            encodeURIComponent(GET_TELESALES_FOLLOWUPS_ACTION) +
+            "&leadId=" +
+            encodeURIComponent(leadId) +
+            "&t=" +
+            Date.now();
+
+        const result =
+            await fetchJson(url);
+
+        if (!result || !result.success) {
+            throw new Error(
+                result && result.message
+                    ? result.message
+                    : "Unable to load follow-up history."
+            );
+        }
+
+        const followups =
+            Array.isArray(result.followups)
+                ? result.followups
+                : [];
+
+        renderFollowupHistory(
+            leadId,
+            patientName,
+            followups
+        );
+
+    } catch (error) {
+        console.error(
+            "FOLLOW-UP HISTORY ERROR:",
+            error
+        );
+
+        body.innerHTML = `
+            <div class="error">
+                ${escapeHtml(error.message)}
+            </div>
+        `;
+    }
+}
+
+
+function renderFollowupHistory(
+    leadId,
+    patientName,
+    followups
+) {
+    const body =
+        document.getElementById("followupHistoryBody");
+
+    if (!followups.length) {
+        body.innerHTML = `
+            <div class="history-patient-summary">
+                Patient:
+                <strong>${display(patientName || leadId)}</strong>
+                &nbsp; | &nbsp;
+                ID:
+                <strong>${display(leadId)}</strong>
+            </div>
+
+            <div class="empty">
+                No Telesales follow-ups have been added for this patient.
+            </div>
+        `;
+
+        return;
+    }
+
+    const rows =
+        followups
+            .map(function(item, index) {
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+
+                        <td>
+                            ${display(
+                                item.followupId
+                            )}
+                        </td>
+
+                        <td>
+                            ${display(
+                                item.telesalesEmail
+                            )}
+                        </td>
+
+                        <td>
+                            <span class="followup-status-badge ${escapeAttribute(
+                                getFollowupStatusClass(
+                                    item.followupStatus ||
+                                    item.telesalesFollowupStatus
+                                )
+                            )}">
+                                ${display(
+                                    item.followupStatus ||
+                                    item.telesalesFollowupStatus
+                                )}
+                            </span>
+                        </td>
+
+                        <td>
+                            ${display(
+                                item.nextFollowupDate ||
+                                item.telesalesNextFollowupDate
+                            )}
+                        </td>
+
+                        <td class="history-remarks">
+                            ${display(
+                                item.remarks ||
+                                item.telesalesRemarks
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                formatFollowupTime(
+                                    item.followupAt ||
+                                    item.telesalesFollowupAt ||
+                                    item.followupUpdatedAt
+                                )
+                            )}
+                        </td>
+                    </tr>
+                `;
+            })
+            .join("");
+
+    body.innerHTML = `
+        <div class="history-patient-summary">
+            Patient:
+            <strong>${display(patientName || leadId)}</strong>
+            &nbsp; | &nbsp;
+            ID:
+            <strong>${display(leadId)}</strong>
+            &nbsp; | &nbsp;
+            Total Follow-ups:
+            <strong>${followups.length}</strong>
+        </div>
+
+        <div class="history-table-wrapper">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Follow-up ID</th>
+                        <th>Telesales Email</th>
+                        <th>Status</th>
+                        <th>Next Follow-up</th>
+                        <th>Remarks</th>
+                        <th>Follow-up At</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+
+function closeFollowupHistory() {
+    const modal =
+        document.getElementById("followupHistoryModal");
+
+    modal.classList.remove("active");
+}
+
+
+function handleHistoryModalBackdrop(event) {
+    if (
+        event.target &&
+        event.target.id ===
+        "followupHistoryModal"
+    ) {
+        closeFollowupHistory();
+    }
+}
+
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+        if (
+            event.key ===
+            "Escape"
+        ) {
+            closeFollowupHistory();
+        }
+    }
+);
 
 
 /* =========================================================

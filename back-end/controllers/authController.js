@@ -1,3 +1,5 @@
+==================== authController.js ====================
+
 const crypto = require("crypto");
 
 const transporter = require("../config/mailer");
@@ -9,7 +11,7 @@ const otpStore = require("../utils/otpStore");
 ========================================================= */
 
 const AUTH_VERSION =
-    "2026-08-18-telesales-login-v4";
+    "2026-08-20-super-admin-login-v5";
 
 
 /* =========================================================
@@ -17,6 +19,11 @@ const AUTH_VERSION =
 ========================================================= */
 
 const ROLE_CONFIG = {
+
+    super_admin: {
+        dashboard:
+            "super-admin-dashboard.html"
+    },
 
     admin: {
         dashboard:
@@ -88,7 +95,7 @@ const ALLOWED_USERS = {
 
     "rakeshdev7465@gmail.com": {
         role:
-            "counsellor"
+            "super_admin"
     },
 
 
@@ -1277,6 +1284,26 @@ console.log(
 );
 
 
+console.log(
+
+    "SUPER ADMIN AUTHORIZED:",
+
+    Boolean(
+
+        ALLOWED_USERS[
+            "rakeshdev7465@gmail.com"
+        ] &&
+
+        ALLOWED_USERS[
+            "rakeshdev7465@gmail.com"
+        ].role ===
+            "super_admin"
+
+    )
+
+);
+
+
 /* =========================================================
    EXPORT
 ========================================================= */
@@ -1288,3 +1315,5 @@ module.exports = {
     verifyOtp
 
 };
+
+

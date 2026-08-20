@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>Telesales OP Follow-up</title>
+<title>Telesales Sales OP & IP</title>
 
 <script>
 function getAuthData(){
@@ -204,13 +204,6 @@ button{
 }
 
 
-.save-btn{
-
-    background:#16a34a;
-
-    color:#fff;
-}
-
 
 .convert-btn{
 
@@ -316,7 +309,7 @@ button{
 
     grid-template-columns:
         repeat(
-            4,
+            2,
             minmax(
                 180px,
                 1fr
@@ -759,184 +752,6 @@ button{
 }
 
 
-.field-input,
-.field-select,
-.field-textarea{
-
-    border:
-        1px solid
-        #cbd5e1;
-
-    border-radius:7px;
-
-    padding:8px;
-
-    font-size:12px;
-
-    background:#fff;
-
-    color:#0f172a;
-}
-
-
-.field-select,
-.field-input{
-
-    width:150px;
-}
-
-
-.field-textarea{
-
-    width:220px;
-
-    min-height:65px;
-
-    resize:vertical;
-}
-
-
-.save-btn{
-
-    padding:
-        8px
-        14px;
-
-    white-space:nowrap;
-}
-
-
-.save-btn:disabled{
-
-    opacity:.6;
-
-    cursor:not-allowed;
-}
-
-
-.saved-message{
-
-    display:block;
-
-    min-height:13px;
-
-    margin-top:5px;
-
-    color:#15803d;
-
-    font-size:10px;
-
-    white-space:nowrap;
-}
-
-
-.last-followup{
-
-    color:#475569;
-
-    white-space:nowrap;
-}
-
-
-.followup-history-cell{
-
-    min-width:320px;
-
-    max-width:420px;
-}
-
-
-.followup-history{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:8px;
-
-    max-height:230px;
-
-    overflow-y:auto;
-}
-
-
-.history-item{
-
-    border:1px solid #e2e8f0;
-
-    border-radius:8px;
-
-    padding:9px;
-
-    background:#f8fafc;
-}
-
-
-.history-head{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    gap:8px;
-
-    align-items:flex-start;
-
-    margin-bottom:5px;
-}
-
-
-.history-status{
-
-    font-weight:700;
-
-    color:#0f172a;
-}
-
-
-.history-time{
-
-    color:#64748b;
-
-    font-size:10px;
-
-    white-space:nowrap;
-}
-
-
-.history-meta{
-
-    color:#475569;
-
-    font-size:10px;
-
-    line-height:1.5;
-}
-
-
-.history-remarks{
-
-    margin-top:4px;
-
-    color:#334155;
-
-    font-size:11px;
-
-    white-space:normal;
-
-    word-break:break-word;
-}
-
-
-.history-empty{
-
-    color:#94a3b8;
-
-    font-size:11px;
-
-    font-style:italic;
-}
-
 
 .panel-footer{
 
@@ -1341,7 +1156,7 @@ button{
 <header class="topbar">
 
     <div class="brand">
-        Telesales Follow-up
+        Telesales Sales
     </div>
 
 
@@ -1361,7 +1176,7 @@ button{
                 window.location.href='./telesales.html'
             "
         >
-            OP Follow-up
+            Sales OP
         </button>
 
 
@@ -1389,7 +1204,7 @@ button{
             </h1>
 
             <p>
-                OP patients from camps assigned to you for Telesales follow-up.
+                OP patients from camps assigned to you.
             </p>
 
         </div>
@@ -1450,52 +1265,11 @@ button{
             </div>
 
         </div>
-
-
-        <div class="stat-card">
-
-            <div class="stat-label">
-                Follow-up Pending
-            </div>
-
-            <div
-                id="pendingFollowupCount"
-                class="stat-value"
-            >
-                0
-            </div>
-
-            <div class="stat-sub">
-                Pending / No Answer / Callback
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <div class="stat-label">
-                Follow-up Today
-            </div>
-
-            <div
-                id="todayFollowupCount"
-                class="stat-value"
-            >
-                0
-            </div>
-
-            <div class="stat-sub">
-                Next follow-up date is today
-            </div>
-
-        </div>
-
-    </div>
+</div>
 
 
     <!-- =====================================================
-         OP FOLLOW-UP
+         SALES OP
     ====================================================== -->
 
     <section class="card">
@@ -1504,7 +1278,7 @@ button{
         <div class="toolbar">
 
             <h2>
-                OP Follow-up Data
+                Sales OP Data
             </h2>
 
 
@@ -1539,10 +1313,6 @@ button{
                         </th>
 
                         <th>
-                            Follow-up Pending
-                        </th>
-
-                        <th>
                             Data
                         </th>
 
@@ -1556,7 +1326,7 @@ button{
                     <tr>
 
                         <td
-                            colspan="5"
+                            colspan="4"
                             class="empty"
                         >
                             Loading assigned OP data...
@@ -1790,8 +1560,6 @@ const LEADS_API_URL =
     "https://script.google.com/macros/s/AKfycbwaY7WhanDFXtLn4PkSym_BmT_oGnea4-Ckm30wyJDkO6odi4f2HP-4YB07aPQEGd3t0Q/exec";
 
 
-const ADD_FOLLOWUP_ACTION =
-    "addTelesalesFollowup";
 
 
 const CONVERT_TO_IP_ACTION =
@@ -1814,8 +1582,6 @@ let visibleCampGroups =
     [];
 
 
-let followupsByLeadId =
-    new Map();
 
 
 const auth =
@@ -2024,298 +1790,153 @@ async function loadData(){
             "campTableBody"
         );
 
-
     body.innerHTML = `
-
         <tr>
-
             <td
-                colspan="5"
+                colspan="4"
                 class="empty"
             >
                 Loading assigned camps and OP patients...
             </td>
-
         </tr>
-
     `;
-
 
     closeAll();
 
-
     try{
-
 
         const [
             campResult,
-            leadResult,
-            followupResult
+            leadResult
         ] =
             await Promise.all([
 
                 fetchJson(
-
                     CAMPS_API_URL +
-
                     "?action=getCamps"
-
                 ),
 
                 fetchJson(
-
                     LEADS_API_URL +
-
                     "?action=getLeads"
-
-                ),
-
-                fetchJson(
-
-                    LEADS_API_URL +
-
-                    "?action=getTelesalesFollowups" +
-
-                    "&telesalesEmail=" +
-
-                    encodeURIComponent(
-                        telesalesEmail
-                    )
-
                 )
 
             ]);
 
-
         if(
             !campResult.success
         ){
-
             throw new Error(
-
                 campResult.message ||
-
                 "Unable to load camps."
-
             );
         }
-
 
         if(
             !leadResult.success
         ){
-
             throw new Error(
-
                 leadResult.message ||
-
                 "Unable to load OP data."
-
             );
         }
-
-
-        if(
-            !followupResult.success
-        ){
-
-            throw new Error(
-
-                followupResult.message ||
-
-                "Unable to load Telesales follow-up history."
-
-            );
-        }
-
 
         const camps =
             Array.isArray(
                 campResult.camps
             )
-
                 ? campResult.camps
-
                 : [];
-
 
         const leads =
             Array.isArray(
                 leadResult.leads
             )
-
                 ? leadResult.leads
-
                 : [];
-
-
-        const followups =
-            Array.isArray(
-                followupResult.followups
-            )
-
-                ? followupResult.followups
-
-                : [];
-
-
-        buildFollowupMap(
-            followups
-        );
-
-
-/* =========================================================
-   FILTER CAMPS ASSIGNED TO TELESALES
-========================================================= */
 
         assignedCamps =
             camps.filter(
-                function(
-                    camp
-                ){
+                function(camp){
 
                     const assignedEmail =
                         normalizeEmail(
-
                             camp.telesales ||
-
                             camp.telesalesEmail ||
-
                             camp.teleSales ||
-
                             camp.teleSalesEmail
-
                         );
 
-
                     return(
-
                         assignedEmail ===
                         telesalesEmail
-
                     );
                 }
             );
-
 
         const assignedCampIds =
             new Set(
-
                 assignedCamps
-
                     .map(
-                        function(
-                            camp
-                        ){
-
+                        function(camp){
                             return normalizeKey(
-
                                 camp.id ||
-
                                 camp.campId
-
                             );
                         }
                     )
-
-                    .filter(
-                        Boolean
-                    )
-
+                    .filter(Boolean)
             );
-
-
-/* =========================================================
-   FILTER ONLY OP RECORDS
-========================================================= */
 
         allAssignedOpLeads =
             leads.filter(
-                function(
-                    lead
-                ){
-
+                function(lead){
                     return(
-
                         assignedCampIds.has(
-
                             normalizeKey(
                                 lead.campId
                             )
-
                         )
-
                         &&
-
                         !isConvertedLead(
                             lead
                         )
-
                     );
                 }
             );
 
-
         renderCampGroups(
-
             buildCampGroups(
-
                 assignedCamps,
-
                 allAssignedOpLeads
-
             )
-
         );
-
 
         updateStats();
 
-
     }catch(error){
-
 
         console.error(
             "TELESALES LOAD ERROR:",
             error
         );
 
-
-        assignedCamps =
-            [];
-
-
-        allAssignedOpLeads =
-            [];
-
-
-        visibleCampGroups =
-            [];
-
-
-        followupsByLeadId =
-            new Map();
-
+        assignedCamps = [];
+        allAssignedOpLeads = [];
+        visibleCampGroups = [];
 
         body.innerHTML = `
-
             <tr>
-
                 <td
-                    colspan="5"
+                    colspan="4"
                     class="error"
                 >
-
                     ${escapeHtml(
                         error.message
                     )}
-
                 </td>
-
             </tr>
-
         `;
-
 
         updateStats();
     }
@@ -2474,46 +2095,34 @@ function renderCampGroups(
     visibleCampGroups =
         groups;
 
-
     const body =
         document.getElementById(
             "campTableBody"
         );
-
 
     if(
         !groups.length
     ){
 
         body.innerHTML = `
-
             <tr>
-
                 <td
-                    colspan="5"
+                    colspan="4"
                     class="empty"
                 >
-
                     No camps are assigned to
-
                     ${escapeHtml(
                         telesalesEmail
                     )}.
-
                 </td>
-
             </tr>
-
         `;
-
 
         return;
     }
 
-
     body.innerHTML =
         groups
-
             .map(
                 function(
                     group,
@@ -2524,85 +2133,48 @@ function renderCampGroups(
                         "telesales_camp_" +
                         index;
 
-
-                    const pending =
-                        countPendingFollowups(
-                            group.records
-                        );
-
-
                     return `
-
                         <tr>
-
                             <td class="camp-id">
-
                                 ${display(
                                     group.campId
                                 )}
-
                             </td>
 
-
                             <td class="camp-details">
-
                                 <strong>
-
                                     ${display(
                                         group.campName
                                     )}
-
                                 </strong>
 
-
                                 <span>
-
                                     Date:
                                     ${display(
                                         group.campDate
                                     )}
-
                                 </span>
 
-
                                 <span>
-
                                     City:
                                     ${display(
                                         group.city
                                     )}
-
                                 </span>
 
-
                                 <span>
-
                                     Doctor:
                                     ${display(
                                         group.doctorName
                                     )}
-
                                 </span>
-
                             </td>
 
-
                             <td class="patient-count">
-
                                 ${group.records.length}
-
                             </td>
-
-
-                            <td class="patient-count">
-
-                                ${pending}
-
-                            </td>
-
 
                             <td>
-
                                 <button
                                     class="view-btn"
                                     data-row-id="${escapeAttribute(
@@ -2615,18 +2187,13 @@ function renderCampGroups(
                                         : "disabled"
                                     }
                                 >
-
                                     ${group.records.length
                                         ? "View Details"
                                         : "No OP Data"
                                     }
-
                                 </button>
-
                             </td>
-
                         </tr>
-
 
                         <tr
                             id="${escapeAttribute(
@@ -2634,27 +2201,21 @@ function renderCampGroups(
                             )}"
                             class="expand-row"
                         >
-
                             <td
-                                colspan="5"
+                                colspan="4"
                                 class="expand-cell"
                             >
-
                                 <div
                                     id="${escapeAttribute(
                                         rowId
                                     )}_content"
                                     class="panel"
                                 ></div>
-
                             </td>
-
                         </tr>
-
                     `;
                 }
             )
-
             .join("");
 }
 
@@ -2754,7 +2315,6 @@ function buildCampDetailHtml(
 
     const rows =
         group.records
-
             .map(
                 function(
                     lead,
@@ -2767,112 +2327,43 @@ function buildCampDetailHtml(
                             index
                         );
 
-
-                    const followupStatus =
-                        getFollowupStatus(
-                            lead
-                        );
-
-
-                    const nextDate =
-                        normalizeDateInput(
-
-                            lead.telesalesNextFollowupDate ||
-
-                            lead.nextFollowupDate ||
-
-                            lead.followupDate ||
-
-                            ""
-
-                        );
-
-
-                    const remarks =
-
-                        lead.telesalesRemarks ||
-
-                        lead.followupRemarks ||
-
-                        lead.remarks ||
-
-                        "";
-
-
-                    const lastFollowup =
-
-                        lead.telesalesFollowupAt ||
-
-                        lead.followupUpdatedAt ||
-
-                        lead.lastFollowupAt ||
-
-                        "";
-
-
-                    const historyHtml =
-                        buildFollowupHistoryHtml(
-                            lead.id ||
-                            lead.leadId ||
-                            ""
-                        );
-
-
                     return `
-
                         <tr
                             data-record-key="${escapeAttribute(
                                 recordKey
                             )}"
                         >
-
                             <td class="patient-id">
-
                                 ${display(
                                     lead.id
                                 )}
-
                             </td>
 
-
                             <td>
-
                                 ${display(
                                     lead.date
                                 )}
-
                             </td>
 
-
                             <td>
-
                                 ${display(
                                     lead.name
                                 )}
-
                             </td>
 
-
                             <td>
-
                                 ${display(
                                     lead.age
                                 )}
-
                             </td>
 
-
                             <td>
-
                                 ${display(
                                     lead.gender
                                 )}
-
                             </td>
 
-
                             <td>
-
                                 <a
                                     class="phone-link"
                                     href="tel:${escapeAttribute(
@@ -2880,145 +2371,50 @@ function buildCampDetailHtml(
                                         ""
                                     )}"
                                 >
-
                                     ${display(
                                         lead.mobile
                                     )}
-
                                 </a>
-
                             </td>
 
-
                             <td>
-
                                 ${display(
                                     lead.city
                                 )}
-
                             </td>
 
-
                             <td>
-
                                 ${display(
                                     lead.source
                                 )}
-
                             </td>
 
-
                             <td>
-
                                 ${display(
                                     lead.doctorName
                                 )}
-
                             </td>
 
-
                             <td>
-
                                 ${display(
                                     lead.treatment
                                 )}
-
                             </td>
 
-
                             <td>
-
                                 ${display(
                                     lead.status
                                 )}
-
                             </td>
-
 
                             <td>
-
-                                <select
-                                    class="field-select followup-status"
-                                >
-
-                                    ${followupStatusOptions(
-                                        followupStatus
-                                    )}
-
-                                </select>
-
-                            </td>
-
-
-                            <td>
-
-                                <input
-                                    type="date"
-                                    class="field-input next-followup-date"
-                                    value="${escapeAttribute(
-                                        nextDate
-                                    )}"
-                                >
-
-                            </td>
-
-
-                            <td>
-
-                                <textarea
-                                    class="field-textarea followup-remarks"
-                                    placeholder="Enter follow-up remarks"
-                                >${escapeHtml(
-                                    remarks
-                                )}</textarea>
-
-                            </td>
-
-
-                            <td class="last-followup">
-
                                 ${display(
-                                    lastFollowup
+                                    lead.telesalesEmail ||
+                                    group.telesales
                                 )}
-
                             </td>
-
-
-                            <td
-                                class="followup-history-cell"
-                            >
-
-                                <div
-                                    class="followup-history"
-                                >
-                                    ${historyHtml}
-                                </div>
-
-                            </td>
-
 
                             <td>
-
-                                <button
-                                    class="save-btn"
-                                    data-record-key="${escapeAttribute(
-                                        recordKey
-                                    )}"
-                                    onclick="saveFollowup(this)"
-                                >
-                                    Add Follow-up
-                                </button>
-
-
-                                <span
-                                    class="saved-message"
-                                ></span>
-
-                            </td>
-
-
-                            <td>
-
                                 <button
                                     class="convert-btn"
                                     data-record-key="${escapeAttribute(
@@ -3028,208 +2424,125 @@ function buildCampDetailHtml(
                                 >
                                     Convert
                                 </button>
-
                             </td>
-
                         </tr>
-
                     `;
                 }
             )
-
             .join("");
 
-
     return `
-
         <div class="panel-header">
-
             <div>
-
                 <h3>
-
                     ${display(
                         group.campName
                     )}
-
                 </h3>
 
-
                 <p>
-
-                    Telesales follow-up for
-
+                    OP patients for
                     ${display(
                         group.campId
                     )}.
-
                 </p>
-
             </div>
 
-
             <span class="badge">
-
                 ${group.records.length}
                 OP Patients
-
             </span>
-
         </div>
 
-
         <div class="camp-summary">
-
-
             <div class="summary-box">
-
                 <div class="summary-label">
                     Camp ID
                 </div>
 
                 <div class="summary-value">
-
                     ${display(
                         group.campId
                     )}
-
                 </div>
-
             </div>
 
-
             <div class="summary-box">
-
                 <div class="summary-label">
                     Camp Name
                 </div>
 
                 <div class="summary-value">
-
                     ${display(
                         group.campName
                     )}
-
                 </div>
-
             </div>
 
-
             <div class="summary-box">
-
                 <div class="summary-label">
                     Doctor
                 </div>
 
                 <div class="summary-value">
-
                     ${display(
                         group.doctorName
                     )}
-
                 </div>
-
             </div>
 
-
             <div class="summary-box">
-
                 <div class="summary-label">
                     City
                 </div>
 
                 <div class="summary-value">
-
                     ${display(
                         group.city
                     )}
-
                 </div>
-
             </div>
 
-
             <div class="summary-box">
-
                 <div class="summary-label">
                     Telesales
                 </div>
 
                 <div class="summary-value">
-
                     ${display(
                         group.telesales
                     )}
-
                 </div>
-
             </div>
-
         </div>
-
 
         <div class="patient-wrapper">
-
             <table class="patient-table">
-
                 <thead>
-
                     <tr>
-
                         <th>ID</th>
-
                         <th>Date</th>
-
                         <th>Patient</th>
-
                         <th>Age</th>
-
                         <th>Gender</th>
-
                         <th>Phone</th>
-
                         <th>City</th>
-
                         <th>Source</th>
-
                         <th>Doctor</th>
-
                         <th>Treatment</th>
-
                         <th>Clinical Status</th>
-
-                        <th>Follow-up Status</th>
-
-                        <th>Next Follow-up</th>
-
-                        <th>Remarks</th>
-
-                        <th>Last Follow-up</th>
-
-                        <th>Follow-up History</th>
-
-                        <th>Follow-up Action</th>
-
+                        <th>Telesales Email</th>
                         <th>Convert to IP</th>
-
                     </tr>
-
                 </thead>
 
-
                 <tbody>
-
                     ${rows}
-
                 </tbody>
-
             </table>
-
         </div>
 
-
         <div class="panel-footer">
-
             <button
                 class="close-btn"
                 onclick="
@@ -3242,481 +2555,8 @@ function buildCampDetailHtml(
             >
                 Close
             </button>
-
         </div>
-
     `;
-}
-
-
-/* =========================================================
-   SAVE FOLLOW-UP TO GOOGLE
-========================================================= */
-
-async function saveFollowup(
-    button
-){
-
-    const recordKey =
-        String(
-            button.dataset.recordKey ||
-            ""
-        );
-
-
-    const row =
-        button.closest(
-            "tr"
-        );
-
-
-    if(
-        !row ||
-        !recordKey
-    ){
-
-        alert(
-            "Patient record not found."
-        );
-
-        return;
-    }
-
-
-    const index =
-        allAssignedOpLeads
-            .findIndex(
-                function(
-                    lead,
-                    i
-                ){
-
-                    return(
-
-                        getLeadKey(
-                            lead,
-                            i
-                        ) ===
-                        recordKey
-
-                    );
-                }
-            );
-
-
-    if(
-        index <
-        0
-    ){
-
-        alert(
-            "Patient record not found."
-        );
-
-        return;
-    }
-
-
-    const lead =
-        allAssignedOpLeads[
-            index
-        ];
-
-
-    const leadId =
-        String(
-
-            lead.id ||
-
-            lead.leadId ||
-
-            ""
-
-        )
-        .trim();
-
-
-    if(
-        !leadId
-    ){
-
-        alert(
-            "Patient ID is missing."
-        );
-
-        return;
-    }
-
-
-    const followupStatus =
-        row
-            .querySelector(
-                ".followup-status"
-            )
-            .value;
-
-
-    const nextFollowupDate =
-        row
-            .querySelector(
-                ".next-followup-date"
-            )
-            .value;
-
-
-    const remarks =
-        row
-            .querySelector(
-                ".followup-remarks"
-            )
-            .value
-            .trim();
-
-
-    const savedMessage =
-        row.querySelector(
-            ".saved-message"
-        );
-
-
-    button.disabled =
-        true;
-
-
-    button.textContent =
-        "Saving...";
-
-
-    if(
-        savedMessage
-    ){
-
-        savedMessage.textContent =
-            "";
-    }
-
-
-    try{
-
-
-        const response =
-            await fetch(
-
-                LEADS_API_URL,
-
-                {
-
-                    method:
-                        "POST",
-
-                    headers:{
-
-                        "Content-Type":
-                            "text/plain;charset=utf-8"
-
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            action:
-                                ADD_FOLLOWUP_ACTION,
-
-                            id:
-                                leadId,
-
-                            leadId:
-                                leadId,
-
-                            campId:
-                                lead.campId ||
-                                "",
-
-                            telesalesEmail:
-                                telesalesEmail,
-
-                            followupStatus:
-                                followupStatus,
-
-                            nextFollowupDate:
-                                nextFollowupDate,
-
-                            remarks:
-                                remarks
-
-                        })
-
-                }
-
-            );
-
-
-        const text =
-            await response.text();
-
-
-        let result;
-
-
-        try{
-
-            result =
-                JSON.parse(
-                    text
-                );
-
-        }catch(error){
-
-            throw new Error(
-                "Google Leads API returned invalid JSON."
-            );
-        }
-
-
-        if(
-            !result.success
-        ){
-
-            const apiMessage =
-                result.message ||
-
-                "Unable to save follow-up.";
-
-
-            if(
-                /invalid\s+action/i.test(
-                    apiMessage
-                )
-            ){
-
-                throw new Error(
-
-                    "The Leads Apps Script does not yet support " +
-
-                    "addTelesalesFollowup. " +
-
-                    "Update and redeploy the Leads Apps Script."
-
-                );
-            }
-
-
-            if(
-                /parsePostData\s+is\s+not\s+defined/i.test(
-                    apiMessage
-                )
-            ){
-                throw new Error(
-                    "The deployed Leads Apps Script is incomplete: parsePostData() is missing. " +
-                    "Replace Code.gs with the corrected single-layout Apps Script and redeploy it as a new version."
-                );
-            }
-
-
-            throw new Error(
-                apiMessage
-            );
-        }
-
-
-        const updatedAt =
-
-            result.telesalesFollowupAt ||
-
-            result.followupUpdatedAt ||
-
-            result.updatedAt ||
-
-            "";
-
-
-        const savedFollowup =
-            result.followup ||
-            {
-
-                followupId:
-                    result.followupId ||
-                    "",
-
-                leadId:
-                    leadId,
-
-                campId:
-                    lead.campId ||
-                    "",
-
-                campName:
-                    lead.campName ||
-                    "",
-
-                patientName:
-                    lead.name ||
-                    "",
-
-                mobile:
-                    lead.mobile ||
-                    "",
-
-                telesalesEmail:
-                    telesalesEmail,
-
-                followupStatus:
-                    followupStatus,
-
-                nextFollowupDate:
-                    nextFollowupDate,
-
-                remarks:
-                    remarks,
-
-                followupAt:
-                    updatedAt
-
-            };
-
-
-        addFollowupToMap(
-            savedFollowup
-        );
-
-
-        Object.assign(
-            lead,
-            {
-
-                telesalesEmail:
-                    telesalesEmail,
-
-                telesalesFollowupStatus:
-                    followupStatus,
-
-                followupStatus:
-                    followupStatus,
-
-                telesalesNextFollowupDate:
-                    nextFollowupDate,
-
-                nextFollowupDate:
-                    nextFollowupDate,
-
-                telesalesRemarks:
-                    remarks,
-
-                followupRemarks:
-                    remarks,
-
-                telesalesFollowupAt:
-                    updatedAt,
-
-                followupUpdatedAt:
-                    updatedAt
-
-            }
-        );
-
-
-        const lastCell =
-            row.querySelector(
-                ".last-followup"
-            );
-
-
-        if(
-            lastCell
-        ){
-
-            lastCell.innerHTML =
-                display(
-                    updatedAt
-                );
-        }
-
-
-        const historyContainer =
-            row.querySelector(
-                ".followup-history"
-            );
-
-
-        if(
-            historyContainer
-        ){
-
-            historyContainer.innerHTML =
-                buildFollowupHistoryHtml(
-                    leadId
-                );
-        }
-
-
-        button.textContent =
-            "Added";
-
-
-        if(
-            savedMessage
-        ){
-
-            savedMessage.textContent =
-                "Saved to Google";
-        }
-
-
-        updateStats();
-
-
-        setTimeout(
-            function(){
-
-                button.textContent =
-                    "Add Follow-up";
-
-
-                if(
-                    savedMessage
-                ){
-
-                    savedMessage.textContent =
-                        "";
-                }
-
-            },
-            1800
-        );
-
-
-    }catch(error){
-
-
-        console.error(
-            "FOLLOW-UP SAVE ERROR:",
-            error
-        );
-
-
-        button.textContent =
-            "Add Follow-up";
-
-
-        if(
-            savedMessage
-        ){
-
-            savedMessage.textContent =
-                "Save failed";
-        }
-
-
-        alert(
-            error.message
-        );
-
-
-    }finally{
-
-        button.disabled =
-            false;
-    }
 }
 
 
@@ -4056,369 +2896,6 @@ async function convertLeadToIp(
 
 
 /* =========================================================
-   FOLLOW-UP HISTORY MAP
-========================================================= */
-
-function buildFollowupMap(
-    followups
-){
-
-    followupsByLeadId =
-        new Map();
-
-
-    followups.forEach(
-        function(
-            followup
-        ){
-
-            addFollowupToMap(
-                followup,
-                false
-            );
-
-        }
-    );
-
-}
-
-
-function addFollowupToMap(
-    followup,
-    addToTop = true
-){
-
-    const leadId =
-        normalizeKey(
-
-            followup.leadId ||
-
-            followup.id
-
-        );
-
-
-    if(
-        !leadId
-    ){
-
-        return;
-    }
-
-
-    if(
-        !followupsByLeadId.has(
-            leadId
-        )
-    ){
-
-        followupsByLeadId.set(
-            leadId,
-            []
-        );
-    }
-
-
-    const list =
-        followupsByLeadId.get(
-            leadId
-        );
-
-
-    if(
-        addToTop
-    ){
-
-        list.unshift(
-            followup
-        );
-
-    }else{
-
-        list.push(
-            followup
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   BUILD FOLLOW-UP HISTORY HTML
-========================================================= */
-
-function buildFollowupHistoryHtml(
-    leadId
-){
-
-    const history =
-        followupsByLeadId.get(
-
-            normalizeKey(
-                leadId
-            )
-
-        ) ||
-        [];
-
-
-    if(
-        !history.length
-    ){
-
-        return `
-
-            <div class="history-empty">
-                No follow-up added yet.
-            </div>
-
-        `;
-    }
-
-
-    return history
-
-        .map(
-            function(
-                item
-            ){
-
-                const status =
-
-                    item.followupStatus ||
-
-                    item.telesalesFollowupStatus ||
-
-                    "-";
-
-
-                const nextDate =
-
-                    item.nextFollowupDate ||
-
-                    item.telesalesNextFollowupDate ||
-
-                    "";
-
-
-                const remarks =
-
-                    item.remarks ||
-
-                    item.telesalesRemarks ||
-
-                    "";
-
-
-                const followupAt =
-
-                    item.followupAt ||
-
-                    item.telesalesFollowupAt ||
-
-                    "";
-
-
-                return `
-
-                    <div class="history-item">
-
-                        <div class="history-head">
-
-                            <span class="history-status">
-
-                                ${display(
-                                    status
-                                )}
-
-                            </span>
-
-
-                            <span class="history-time">
-
-                                ${display(
-                                    followupAt
-                                )}
-
-                            </span>
-
-                        </div>
-
-
-                        <div class="history-meta">
-
-                            Next Follow-up:
-                            ${display(
-                                nextDate
-                            )}
-
-                        </div>
-
-
-                        <div class="history-remarks">
-
-                            ${remarks
-                                ? escapeHtml(
-                                    remarks
-                                )
-                                : "No remarks"
-                            }
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            }
-        )
-
-        .join("");
-
-}
-
-
-/* =========================================================
-   FOLLOW-UP OPTIONS
-========================================================= */
-
-function followupStatusOptions(
-    currentValue
-){
-
-    const options = [
-
-        "Pending",
-
-        "Contacted",
-
-        "Call Back",
-
-        "Interested",
-
-        "Not Interested",
-
-        "No Answer",
-
-        "Wrong Number",
-
-        "Follow-up Completed"
-
-    ];
-
-
-    const current =
-        normalizeText(
-            currentValue ||
-            "Pending"
-        );
-
-
-    return options
-
-        .map(
-            function(
-                option
-            ){
-
-                const selected =
-
-                    normalizeText(
-                        option
-                    ) ===
-                    current
-
-                        ? " selected"
-
-                        : "";
-
-
-                return(
-
-                    '<option value="' +
-
-                    escapeAttribute(
-                        option
-                    ) +
-
-                    '"' +
-
-                    selected +
-
-                    '>' +
-
-                    escapeHtml(
-                        option
-                    ) +
-
-                    '</option>'
-
-                );
-            }
-        )
-
-        .join("");
-}
-
-
-/* =========================================================
-   FOLLOW-UP COUNTS
-========================================================= */
-
-function getFollowupStatus(
-    lead
-){
-
-    return(
-
-        lead.telesalesFollowupStatus ||
-
-        lead.followupStatus ||
-
-        "Pending"
-
-    );
-}
-
-
-function countPendingFollowups(
-    records
-){
-
-    return records.filter(
-        function(
-            lead
-        ){
-
-            const status =
-                normalizeText(
-
-                    getFollowupStatus(
-                        lead
-                    )
-
-                );
-
-
-            return(
-
-                status === "" ||
-
-                status === "pending" ||
-
-                status === "call back" ||
-
-                status === "no answer"
-
-            );
-        }
-    )
-    .length;
-}
-
-
-/* =========================================================
    STATS
 ========================================================= */
 
@@ -4431,64 +2908,12 @@ function updateStats(){
         .textContent =
             assignedCamps.length;
 
-
     document
         .getElementById(
             "opPatientsCount"
         )
         .textContent =
             allAssignedOpLeads.length;
-
-
-    document
-        .getElementById(
-            "pendingFollowupCount"
-        )
-        .textContent =
-
-            countPendingFollowups(
-                allAssignedOpLeads
-            );
-
-
-    const today =
-        getLocalToday();
-
-
-    document
-        .getElementById(
-            "todayFollowupCount"
-        )
-        .textContent =
-
-            allAssignedOpLeads
-                .filter(
-                    function(
-                        lead
-                    ){
-
-                        const nextDate =
-
-                            lead.telesalesNextFollowupDate ||
-
-                            lead.nextFollowupDate ||
-
-                            lead.followupDate ||
-
-                            "";
-
-
-                        return(
-
-                            normalizeDateInput(
-                                nextDate
-                            ) ===
-                            today
-
-                        );
-                    }
-                )
-                .length;
 }
 
 
@@ -5200,15 +3625,7 @@ document
 
                             lead.treatment,
 
-                            lead.status,
-
-                            getFollowupStatus(
-                                lead
-                            ),
-
-                            lead.telesalesRemarks,
-
-                            lead.followupRemarks
+                            lead.status
 
                         ]
                         .join(" ")
@@ -5466,162 +3883,6 @@ function getLeadKey(
 
         ]
         .join("|")
-
-    );
-}
-
-
-/* =========================================================
-   DATE
-========================================================= */
-
-function getLocalToday(){
-
-    const date =
-        new Date();
-
-
-    return(
-
-        date.getFullYear() +
-
-        "-" +
-
-        String(
-            date.getMonth() +
-            1
-        )
-        .padStart(
-            2,
-            "0"
-        ) +
-
-        "-" +
-
-        String(
-            date.getDate()
-        )
-        .padStart(
-            2,
-            "0"
-        )
-
-    );
-}
-
-
-function normalizeDateInput(
-    value
-){
-
-    const text =
-        String(
-            value == null
-                ? ""
-                : value
-        )
-        .trim();
-
-
-    if(
-        !text
-    ){
-
-        return "";
-    }
-
-
-    if(
-        /^\d{4}-\d{2}-\d{2}$/
-            .test(
-                text
-            )
-    ){
-
-        return text;
-    }
-
-
-    const match =
-        text.match(
-
-            /^(\d{1,2})-(\d{1,2})-(\d{4})/
-
-        );
-
-
-    if(
-        match
-    ){
-
-        return(
-
-            match[3] +
-
-            "-" +
-
-            String(
-                match[2]
-            )
-            .padStart(
-                2,
-                "0"
-            ) +
-
-            "-" +
-
-            String(
-                match[1]
-            )
-            .padStart(
-                2,
-                "0"
-            )
-
-        );
-    }
-
-
-    const date =
-        new Date(
-            text
-        );
-
-
-    if(
-        Number.isNaN(
-            date.getTime()
-        )
-    ){
-
-        return "";
-    }
-
-
-    return(
-
-        date.getFullYear() +
-
-        "-" +
-
-        String(
-            date.getMonth() +
-            1
-        )
-        .padStart(
-            2,
-            "0"
-        ) +
-
-        "-" +
-
-        String(
-            date.getDate()
-        )
-        .padStart(
-            2,
-            "0"
-        )
 
     );
 }
