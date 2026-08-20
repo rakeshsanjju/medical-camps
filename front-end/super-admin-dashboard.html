@@ -1,5 +1,3 @@
-==================== login.html ====================
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,1670 +11,274 @@
     >
 
     <title>
-        Medical Camps Login
+        Super Admin Dashboard
     </title>
 
 
+    <!-- ================================================
+         SUPER ADMIN AUTHENTICATION
+    ================================================= -->
+
+    <script>
+
+    (function () {
+
+        "use strict";
+
+
+        const SUPER_ADMIN_EMAIL =
+            "rakeshdev7465@gmail.com";
+
+
+        function readValue(
+            key
+        ) {
+
+            return (
+                sessionStorage.getItem(
+                    key
+                ) ||
+                localStorage.getItem(
+                    key
+                ) ||
+                ""
+            );
+
+        }
+
+
+        function normalize(
+            value
+        ) {
+
+            return String(
+                value == null
+                    ? ""
+                    : value
+            )
+                .trim()
+                .toLowerCase();
+
+        }
+
+
+        function clearMedicalLogin() {
+
+            const keys = [
+                "medical_logged_in",
+                "medical_user_email",
+                "medical_user_role",
+                "medical_user_dashboard",
+                "medical_user_is_super_admin",
+                "medical_user_base_role"
+            ];
+
+
+            keys.forEach(
+                function (
+                    key
+                ) {
+
+                    sessionStorage.removeItem(
+                        key
+                    );
+
+                    localStorage.removeItem(
+                        key
+                    );
+
+                }
+            );
+
+        }
+
+
+        function restoreSessionStorage() {
+
+            const keys = [
+                "medical_logged_in",
+                "medical_user_email",
+                "medical_user_role",
+                "medical_user_dashboard",
+                "medical_user_is_super_admin",
+                "medical_user_base_role"
+            ];
+
+
+            keys.forEach(
+                function (
+                    key
+                ) {
+
+                    const value =
+                        localStorage.getItem(
+                            key
+                        );
+
+
+                    if (
+                        value &&
+                        !sessionStorage.getItem(
+                            key
+                        )
+                    ) {
+
+                        sessionStorage.setItem(
+                            key,
+                            value
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        function requireSuperAdmin() {
+
+            restoreSessionStorage();
+
+
+            const loggedIn =
+                readValue(
+                    "medical_logged_in"
+                );
+
+
+            const email =
+                normalize(
+                    readValue(
+                        "medical_user_email"
+                    )
+                );
+
+
+            const role =
+                normalize(
+                    readValue(
+                        "medical_user_role"
+                    )
+                );
+
+
+            const dashboard =
+                String(
+                    readValue(
+                        "medical_user_dashboard"
+                    )
+                )
+                    .trim()
+                    .replace(
+                        /^\.\//,
+                        ""
+                    )
+                    .replace(
+                        /^\//,
+                        ""
+                    );
+
+
+            const isSuperAdmin =
+                (
+                    loggedIn === "true" &&
+                    email === SUPER_ADMIN_EMAIL &&
+                    role === "super_admin" &&
+                    (
+                        !dashboard ||
+                        dashboard ===
+                            "super-admin-dashboard.html"
+                    )
+                );
+
+
+            if (
+                !isSuperAdmin
+            ) {
+
+                console.warn(
+                    "SUPER ADMIN ACCESS DENIED:",
+                    {
+                        loggedIn,
+                        email,
+                        role,
+                        dashboard
+                    }
+                );
+
+
+                clearMedicalLogin();
+
+
+                window.location.replace(
+                    "./login.html"
+                );
+
+
+                return false;
+
+            }
+
+
+            sessionStorage.setItem(
+                "medical_logged_in",
+                "true"
+            );
+
+            sessionStorage.setItem(
+                "medical_user_email",
+                email
+            );
+
+            sessionStorage.setItem(
+                "medical_user_role",
+                "super_admin"
+            );
+
+            sessionStorage.setItem(
+                "medical_user_dashboard",
+                "super-admin-dashboard.html"
+            );
+
+            sessionStorage.setItem(
+                "medical_user_is_super_admin",
+                "true"
+            );
+
+
+            return true;
+
+        }
+
+
+        window.requireSuperAdmin =
+            requireSuperAdmin;
+
+
+        requireSuperAdmin();
+
+
+    })();
+
+    </script>
+
+
+    <!-- ================================================
+         YOUR EXISTING CSS STARTS BELOW
+    ================================================= -->
+
     <style>
 
-        * {
-            box-sizing: border-box;
-        }
-
-
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-
-        body {
-
-            min-height: 100vh;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            padding: 20px;
-
-            background: #f4f7fb;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-        }
-
-
-        .login-wrapper {
-            width: 100%;
-        }
-
-
-        .login-card {
-
-            width: 100%;
-            max-width: 430px;
-
-            margin: auto;
-
-            padding: 32px;
-
-            background: #ffffff;
-
-            border-radius: 16px;
-
-            box-shadow:
-                0 12px 35px
-                rgba(15, 23, 42, 0.1);
-
-        }
-
-
-        .logo-wrap {
-            text-align: center;
-            margin-bottom: 5px;
-        }
-
-
-        .logo-wrap img {
-
-            max-width: 100%;
-            width: 370px;
-            height: auto;
-
-        }
-
-
-        h1 {
-
-            margin:
-                0
-                0
-                8px;
-
-            text-align: center;
-
-            font-size: 28px;
-
-            color: #0f172a;
-
-        }
-
-
-        .subtitle {
-
-            margin:
-                0
-                0
-                28px;
-
-            text-align: center;
-
-            color: #64748b;
-
-            font-size: 14px;
-
-        }
-
-
-        label {
-
-            display: block;
-
-            margin-bottom: 8px;
-
-            color: #334155;
-
-            font-size: 14px;
-            font-weight: 600;
-
-        }
-
-
-        input {
-
-            width: 100%;
-
-            margin-bottom: 16px;
-
-            padding:
-                13px
-                14px;
-
-            border:
-                1px solid
-                #cbd5e1;
-
-            border-radius: 9px;
-
-            outline: none;
-
-            font-size: 15px;
-
-        }
-
-
-        input:focus {
-
-            border-color:
-                #2563eb;
-
-            box-shadow:
-                0 0 0 3px
-                rgba(37, 99, 235, 0.08);
-
-        }
-
-
-        button {
-
-            width: 100%;
-
-            padding: 13px;
-
-            border: 0;
-
-            border-radius: 9px;
-
-            background: #2563eb;
-
-            color: #ffffff;
-
-            font-size: 14px;
-
-            font-weight: 600;
-
-            cursor: pointer;
-
-        }
-
-
-        button:hover {
-            background: #1d4ed8;
-        }
-
-
-        button:disabled {
-
-            opacity: 0.6;
-
-            cursor: not-allowed;
-
-        }
-
-
-        .secondary-btn {
-
-            margin-top: 10px;
-
-            background: #e2e8f0;
-
-            color: #0f172a;
-
-        }
-
-
-        .secondary-btn:hover {
-            background: #cbd5e1;
-        }
-
-
-        .text-btn {
-
-            margin-top: 8px;
-
-            background: transparent;
-
-            color: #2563eb;
-
-        }
-
-
-        .text-btn:hover {
-
-            background:
-                rgba(37, 99, 235, 0.06);
-
-        }
-
-
-        .hidden {
-            display: none;
-        }
-
-
-        .message {
-
-            min-height: 20px;
-
-            margin-top: 16px;
-
-            text-align: center;
-
-            font-size: 13px;
-
-        }
-
-
-        .message.success {
-            color: #15803d;
-        }
-
-
-        .message.error {
-            color: #dc2626;
-        }
-
-
-        .otp-info {
-
-            margin-bottom: 18px;
-
-            color: #64748b;
-
-            text-align: center;
-
-            font-size: 13px;
-
-        }
-
-
-        #otp {
-
-            text-align: center;
-
-            letter-spacing: 6px;
-
-            font-size: 20px;
-
-        }
-
-
-        @media screen and (max-width: 480px) {
-
-            body {
-                padding: 14px;
-            }
-
-
-            .login-card {
-
-                padding:
-                    24px
-                    18px;
-
-            }
-
-
-            h1 {
-                font-size: 24px;
-            }
-
-        }
+        /* Your existing dashboard CSS */
 
     </style>
 
 </head>
 
-
 <body>
 
-
-<div class="login-wrapper">
-
-
-    <div class="login-card">
-
-
-        <div class="logo-wrap">
-
-            <img
-                src="https://avisvascularcentre.com/assets/logo-1.png"
-                alt="Medical Camps Logo"
-            >
-
-        </div>
-
-
-        <h1>
-            Medical Camps
-        </h1>
-
-
-        <p class="subtitle">
-            Login using your authorized email
-        </p>
-
-
-
-        <!-- =====================================================
-             EMAIL STEP
-        ====================================================== -->
-
-        <div id="emailStep">
-
-
-            <label for="email">
-                Email Address
-            </label>
-
-
-            <input
-                type="email"
-                id="email"
-                placeholder="Enter your email address"
-                autocomplete="email"
-            >
-
-
-            <button
-                type="button"
-                id="sendOtpBtn"
-            >
-                Send OTP
-            </button>
-
-
-        </div>
-
-
-
-        <!-- =====================================================
-             OTP STEP
-        ====================================================== -->
-
-        <div
-            id="otpStep"
-            class="hidden"
-        >
-
-
-            <p class="otp-info">
-
-                OTP sent to
-
-                <strong
-                    id="displayEmail"
-                ></strong>
-
-            </p>
-
-
-            <label for="otp">
-                Enter OTP
-            </label>
-
-
-            <input
-                type="text"
-                id="otp"
-                maxlength="6"
-                inputmode="numeric"
-                autocomplete="one-time-code"
-                placeholder="6-digit OTP"
-            >
-
-
-            <button
-                type="button"
-                id="verifyOtpBtn"
-            >
-                Verify OTP
-            </button>
-
-
-            <button
-                type="button"
-                id="resendOtpBtn"
-                class="secondary-btn"
-            >
-                Resend OTP
-            </button>
-
-
-            <button
-                type="button"
-                id="changeEmailBtn"
-                class="text-btn"
-            >
-                Change Email
-            </button>
-
-
-        </div>
-
-
-        <div
-            id="message"
-            class="message"
-        ></div>
-
-
-    </div>
-
-
-</div>
-
-
-
-<script>
-
-
-/* =========================================================
-   BACKEND
-========================================================= */
-
-const API_BASE_URL =
-    "https://medical-camps-production.up.railway.app";
-
-
-const EXPECTED_AUTH_VERSION =
-    "2026-08-20-super-admin-login-v5";
-
-
-
-/* =========================================================
-   ROLE / DASHBOARD CONFIGURATION
-========================================================= */
-
-const ROLE_DASHBOARDS = {
-
-    super_admin:
-        "super-admin-dashboard.html",
-
-    admin:
-        "admin-dashboard.html",
-
-    campaigner:
-        "dashboard.html",
-
-    counsellor:
-        "counsellor.html",
-
-    telesales:
-        "telesales.html"
-
-};
-
-
-
-const ALLOWED_DASHBOARDS =
-    new Set(
-
-        Object.values(
-            ROLE_DASHBOARDS
-        )
-
-    );
-
-
-
-/* =========================================================
-   NORMALIZE ROLE
-========================================================= */
-
-function normalizeRole(
-    value
-) {
-
-    return String(
-
-        value == null
-            ? ""
-            : value
-
-    )
-        .trim()
-        .toLowerCase();
-
-}
-
-
-
-/* =========================================================
-   NORMALIZE DASHBOARD
-========================================================= */
-
-function normalizeDashboardName(
-    value
-) {
-
-    return String(
-
-        value == null
-            ? ""
-            : value
-
-    )
-        .trim()
-        .replace(
-            /^\.\//,
-            ""
-        )
-        .replace(
-            /^\//,
-            ""
-        );
-
-}
-
-
-
-/* =========================================================
-   RESOLVE DASHBOARD
-
-   Backend dashboard is preferred,
-   but only known application pages
-   are allowed.
-========================================================= */
-
-function resolveDashboard(
-    role,
-    backendDashboard = ""
-) {
-
-    const normalizedRole =
-        normalizeRole(
-            role
-        );
-
-
-    const dashboardFromBackend =
-        normalizeDashboardName(
-            backendDashboard
-        );
-
-
-    if (
-
-        dashboardFromBackend &&
-
-        ALLOWED_DASHBOARDS.has(
-            dashboardFromBackend
-        )
-
-    ) {
-
-        return (
-
-            "./" +
-            dashboardFromBackend
-
-        );
-
-    }
-
-
-    const dashboardFromRole =
-        ROLE_DASHBOARDS[
-            normalizedRole
-        ];
-
-
-    if (
-        dashboardFromRole
-    ) {
-
-        return (
-
-            "./" +
-            dashboardFromRole
-
-        );
-
-    }
-
-
-    return "";
-
-}
-
-
-
-/* =========================================================
-   ELEMENTS
-========================================================= */
-
-const emailStep =
-    document.getElementById(
-        "emailStep"
-    );
-
-
-const otpStep =
-    document.getElementById(
-        "otpStep"
-    );
-
-
-const emailInput =
-    document.getElementById(
-        "email"
-    );
-
-
-const otpInput =
-    document.getElementById(
-        "otp"
-    );
-
-
-const sendOtpBtn =
-    document.getElementById(
-        "sendOtpBtn"
-    );
-
-
-const verifyOtpBtn =
-    document.getElementById(
-        "verifyOtpBtn"
-    );
-
-
-const resendOtpBtn =
-    document.getElementById(
-        "resendOtpBtn"
-    );
-
-
-const changeEmailBtn =
-    document.getElementById(
-        "changeEmailBtn"
-    );
-
-
-const displayEmail =
-    document.getElementById(
-        "displayEmail"
-    );
-
-
-const message =
-    document.getElementById(
-        "message"
-    );
-
-
-
-/* =========================================================
-   IF ALREADY LOGGED IN
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-
-        const loggedIn =
-            sessionStorage.getItem(
-                "medical_logged_in"
-            );
-
-
-        const role =
-            normalizeRole(
-
-                sessionStorage.getItem(
-                    "medical_user_role"
-                )
-
-            );
-
-
-        const savedDashboard =
-            sessionStorage.getItem(
-                "medical_user_dashboard"
-            ) ||
-            "";
-
-
-        if (
-            loggedIn === "true"
-        ) {
-
-
-            const destination =
-                resolveDashboard(
-
-                    role,
-
-                    savedDashboard
-
-                );
-
-
-            if (
-                destination
-            ) {
-
-
-                window.location.replace(
-                    destination
-                );
-
-
-                return;
-
-            }
-
-
-            /*
-            Invalid / old session.
-            */
-
-            clearLogin();
-
-        }
-
-    }
-);
-
-
-
-/* =========================================================
-   SEND OTP BUTTON
-========================================================= */
-
-sendOtpBtn.addEventListener(
-    "click",
-    sendOtp
-);
-
-
-resendOtpBtn.addEventListener(
-    "click",
-    sendOtp
-);
-
-
-
-/* =========================================================
-   SEND OTP
-========================================================= */
-
-async function sendOtp() {
-
-
-    const email =
-        emailInput
-            .value
-            .trim()
-            .toLowerCase();
-
-
-    if (
-        !email
-    ) {
-
-
-        showMessage(
-            "Enter your email address.",
-            "error"
-        );
-
-
-        emailInput.focus();
-
-
-        return;
-
-    }
-
-
-    if (
-        !validateEmail(
-            email
-        )
-    ) {
-
-
-        showMessage(
-            "Enter a valid email address.",
-            "error"
-        );
-
-
-        emailInput.focus();
-
-
-        return;
-
-    }
-
-
-    sendOtpBtn.disabled =
-        true;
-
-
-    resendOtpBtn.disabled =
-        true;
-
-
-    sendOtpBtn.textContent =
-        "Sending...";
-
-
-    showMessage(
-        "Sending OTP...",
-        ""
-    );
-
-
-    try {
-
-
-        const response =
-            await fetch(
-
-                `${API_BASE_URL}/api/auth/send-otp`,
-
-                {
-
-                    method:
-                        "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            email:
-                                email
-
-                        })
-
-                }
-
-            );
-
-
-        let result;
-
-
-        try {
-
-            result =
-                await response.json();
-
-        } catch (error) {
-
-            throw new Error(
-                "Invalid response received from login server."
-            );
-
-        }
-
-
-        console.log(
-            "SEND OTP:",
-            result
-        );
-
-
-        if (
-            result.authVersion
-        ) {
-
-            console.log(
-                "AUTH VERSION:",
-                result.authVersion,
-                "EXPECTED:",
-                EXPECTED_AUTH_VERSION
-            );
-
-        }
-
-
-        if (
-
-            !response.ok ||
-
-            !result.success
-
-        ) {
-
-
-            /*
-             * If Telesales is present in this frontend but Railway
-             * still returns the old permission error, the deployed
-             * backend has not been updated yet.
-             */
-            if (
-                response.status === 403 &&
-                email === "tele.sales@avisvascularcentre.com"
-            ) {
-
-                const version =
-                    result.authVersion ||
-                    "old/unknown";
-
-
-                throw new Error(
-
-                    "Telesales login is not enabled in the currently deployed backend. " +
-                    "Deploy the latest auth controller to Railway. " +
-                    "Backend version: " +
-                    version
-
-                );
-
-            }
-
-
-            throw new Error(
-
-                result.message ||
-
-                "Unable to send OTP"
-
-            );
-
-        }
-
-
-        displayEmail.textContent =
-            email;
-
-
-        emailStep
-            .classList
-            .add(
-                "hidden"
-            );
-
-
-        otpStep
-            .classList
-            .remove(
-                "hidden"
-            );
-
-
-        otpInput.value =
-            "";
-
-
-        otpInput.focus();
-
-
-        showMessage(
-            "OTP sent successfully.",
-            "success"
-        );
-
-
-    } catch (
-        error
-    ) {
-
-
-        console.error(
-            "SEND OTP ERROR:",
-            error
-        );
-
-
-        showMessage(
-
-            error.message ||
-
-            "Unable to send OTP.",
-
-            "error"
-
-        );
-
-
-    } finally {
-
-
-        sendOtpBtn.disabled =
-            false;
-
-
-        resendOtpBtn.disabled =
-            false;
-
-
-        sendOtpBtn.textContent =
-            "Send OTP";
-
-    }
-
-}
-
-
-
-/* =========================================================
-   VERIFY OTP BUTTON
-========================================================= */
-
-verifyOtpBtn.addEventListener(
-    "click",
-    verifyOtp
-);
-
-
-
-/* =========================================================
-   VERIFY OTP
-========================================================= */
-
-async function verifyOtp() {
-
-
-    const email =
-        emailInput
-            .value
-            .trim()
-            .toLowerCase();
-
-
-    const otp =
-        otpInput
-            .value
-            .trim();
-
-
-    if (
-        !email
-    ) {
-
-
-        showMessage(
-            "Email is missing. Please enter your email again.",
-            "error"
-        );
-
-
-        changeToEmailStep();
-
-
-        return;
-
-    }
-
-
-    if (
-        !/^\d{6}$/
-            .test(
-                otp
-            )
-    ) {
-
-
-        showMessage(
-            "Enter a valid 6-digit OTP.",
-            "error"
-        );
-
-
-        otpInput.focus();
-
-
-        return;
-
-    }
-
-
-    verifyOtpBtn.disabled =
-        true;
-
-
-    verifyOtpBtn.textContent =
-        "Verifying...";
-
-
-    showMessage(
-        "Verifying OTP...",
-        ""
-    );
-
-
-    try {
-
-
-        const response =
-            await fetch(
-
-                `${API_BASE_URL}/api/auth/verify-otp`,
-
-                {
-
-                    method:
-                        "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            email:
-                                email,
-
-                            otp:
-                                otp
-
-                        })
-
-                }
-
-            );
-
-
-        let result;
-
-
-        try {
-
-            result =
-                await response.json();
-
-        } catch (error) {
-
-            throw new Error(
-                "Invalid response received from login server."
-            );
-
-        }
-
-
-        console.log(
-            "VERIFY OTP:",
-            result
-        );
-
-
-        if (
-            result.authVersion
-        ) {
-
-            console.log(
-                "AUTH VERSION:",
-                result.authVersion,
-                "EXPECTED:",
-                EXPECTED_AUTH_VERSION
-            );
-
-        }
-
-
-        if (
-
-            !response.ok ||
-
-            !result.success
-
-        ) {
-
-
-            throw new Error(
-
-                result.message ||
-
-                "OTP verification failed"
-
-            );
-
-        }
-
-
-        /*
-        Backend returns:
-
-        {
-            success: true,
-            email: "...",
-            role: "...",
-            dashboard: "..."
-        }
-        */
-
-
-        const responseEmail =
-            String(
-                result.email ||
-                email
-            )
-                .trim()
-                .toLowerCase();
-
-
-        /*
-         * Security check for the Super Admin account.
-         * The backend must explicitly return the new role/dashboard.
-         * This prevents the frontend from elevating an old/stale
-         * counsellor response into a Super Admin session.
-         */
-        if (
-            responseEmail ===
-                "rakeshdev7465@gmail.com" &&
-            (
-                normalizeRole(
-                    result.role
-                ) !==
-                    "super_admin" ||
-                normalizeDashboardName(
-                    result.dashboard
-                ) !==
-                    "super-admin-dashboard.html"
-            )
-        ) {
-
-            clearLogin();
-
-            throw new Error(
-                "Super Admin login is not enabled in the currently deployed backend. " +
-                "Deploy the latest auth controller to Railway. " +
-                "Backend version: " +
-                (
-                    result.authVersion ||
-                    "old/unknown"
-                )
-            );
-
-        }
-
-
-        const normalizedRole =
-            normalizeRole(
-                result.role
-            );
-
-
-        const destination =
-            resolveDashboard(
-
-                normalizedRole,
-
-                result.dashboard
-
-            );
-
-
-        if (
-
-            !normalizedRole ||
-
-            !destination
-
-        ) {
-
-
-            clearLogin();
-
-
-            throw new Error(
-                "Invalid user role or dashboard."
-            );
-
-        }
-
-
-
-        /* =====================================================
-           SAVE LOGIN SESSION
-        ====================================================== */
-
-        sessionStorage.setItem(
-            "medical_logged_in",
-            "true"
-        );
-
-
-        sessionStorage.setItem(
-
-            "medical_user_email",
-
-            String(
-                result.email ||
-                email
-            )
-                .trim()
-                .toLowerCase()
-
-        );
-
-
-        sessionStorage.setItem(
-            "medical_user_role",
-            normalizedRole
-        );
-
-
-        sessionStorage.setItem(
-
-            "medical_user_dashboard",
-
-            normalizeDashboardName(
-
-                result.dashboard ||
-
-                ROLE_DASHBOARDS[
-                    normalizedRole
-                ]
-
-            )
-
-        );
-
-
-        console.log(
-            "LOGIN SAVED:",
-            {
-
-                loggedIn:
-                    sessionStorage.getItem(
-                        "medical_logged_in"
-                    ),
-
-                email:
-                    sessionStorage.getItem(
-                        "medical_user_email"
-                    ),
-
-                role:
-                    sessionStorage.getItem(
-                        "medical_user_role"
-                    ),
-
-                dashboard:
-                    sessionStorage.getItem(
-                        "medical_user_dashboard"
-                    )
-
-            }
-        );
-
-
-        showMessage(
-            "Login successful.",
-            "success"
-        );
-
-
-        /*
-        ROLE ROUTING
-
-        super_admin -> super-admin-dashboard.html
-        admin       -> admin-dashboard.html
-        campaigner  -> dashboard.html
-        counsellor  -> counsellor.html
-        telesales   -> telesales.html
-        */
-
-
-        window.location.replace(
-            destination
-        );
-
-
-        return;
-
-
-    } catch (
-        error
-    ) {
-
-
-        console.error(
-            "VERIFY ERROR:",
-            error
-        );
-
-
-        showMessage(
-
-            error.message ||
-
-            "Login failed",
-
-            "error"
-
-        );
-
-
-    } finally {
-
-
-        verifyOtpBtn.disabled =
-            false;
-
-
-        verifyOtpBtn.textContent =
-            "Verify OTP";
-
-    }
-
-}
-
-
-
-/* =========================================================
-   CHANGE EMAIL
-========================================================= */
-
-changeEmailBtn.addEventListener(
-    "click",
-    changeToEmailStep
-);
-
-
-
-function changeToEmailStep() {
-
-
-    otpStep
-        .classList
-        .add(
-            "hidden"
-        );
-
-
-    emailStep
-        .classList
-        .remove(
-            "hidden"
-        );
-
-
-    otpInput.value =
-        "";
-
-
-    showMessage(
-        "",
-        ""
-    );
-
-
-    emailInput.focus();
-
-}
-
-
-
-/* =========================================================
-   OTP NUMBERS ONLY
-========================================================= */
-
-otpInput.addEventListener(
-    "input",
-    function () {
-
-
-        this.value =
-            this.value
-                .replace(
-                    /\D/g,
-                    ""
-                )
-                .slice(
-                    0,
-                    6
-                );
-
-    }
-);
-
-
-
-/* =========================================================
-   ENTER KEY - EMAIL
-========================================================= */
-
-emailInput.addEventListener(
-    "keydown",
-    function (
-        event
-    ) {
-
-
-        if (
-            event.key ===
-            "Enter"
-        ) {
-
-
-            event.preventDefault();
-
-
-            sendOtp();
-
-        }
-
-    }
-);
-
-
-
-/* =========================================================
-   ENTER KEY - OTP
-========================================================= */
-
-otpInput.addEventListener(
-    "keydown",
-    function (
-        event
-    ) {
-
-
-        if (
-            event.key ===
-            "Enter"
-        ) {
-
-
-            event.preventDefault();
-
-
-            verifyOtp();
-
-        }
-
-    }
-);
-
-
-
-/* =========================================================
-   VALIDATE EMAIL
-========================================================= */
-
-function validateEmail(
-    email
-) {
-
-
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        .test(
-            email
-        );
-
-}
-
-
-
-/* =========================================================
-   CLEAR LOGIN
-========================================================= */
-
-function clearLogin() {
-
-
-    sessionStorage.removeItem(
-        "medical_logged_in"
-    );
-
-
-    sessionStorage.removeItem(
-        "medical_user_email"
-    );
-
-
-    sessionStorage.removeItem(
-        "medical_user_role"
-    );
-
-
-    sessionStorage.removeItem(
-        "medical_user_dashboard"
-    );
-
-}
-
-
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-function showMessage(
-    text,
-    type
-) {
-
-
-    message.className =
-        "message";
-
-
-    if (
-        type
-    ) {
-
-
-        message
-            .classList
-            .add(
-                type
-            );
-
-    }
-
-
-    message.textContent =
-        text;
-
-}
-
-
-</script>
-
+    <h1>Super Admin</h1>
 
 </body>
 

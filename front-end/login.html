@@ -473,7 +473,7 @@ const API_BASE_URL =
 
 
 const EXPECTED_AUTH_VERSION =
-    "2026-08-20-super-admin-login-v5";
+    "2026-08-20-super-admin-login-v7";
 
 
 
@@ -635,6 +635,124 @@ function resolveDashboard(
 
 
 
+
+/* =========================================================
+   LOGIN STORAGE
+
+   Store the authenticated session in BOTH sessionStorage and
+   localStorage AFTER successful OTP verification.
+
+   login.html itself always clears old sessions when opened, so
+   users are never silently redirected from the login screen.
+========================================================= */
+
+function setMedicalStorage(
+    key,
+    value
+) {
+
+    sessionStorage.setItem(
+        key,
+        value
+    );
+
+    localStorage.setItem(
+        key,
+        value
+    );
+
+}
+
+
+function getMedicalStorage(
+    key
+) {
+
+    return (
+        sessionStorage.getItem(
+            key
+        ) ||
+        localStorage.getItem(
+            key
+        ) ||
+        ""
+    );
+
+}
+
+
+function saveLoginSession(
+    email,
+    role,
+    dashboard
+) {
+
+    const normalizedEmail =
+        String(
+            email || ""
+        )
+            .trim()
+            .toLowerCase();
+
+
+    const normalizedRole =
+        normalizeRole(
+            role
+        );
+
+
+    const normalizedDashboard =
+        normalizeDashboardName(
+            dashboard
+        );
+
+
+    setMedicalStorage(
+        "medical_logged_in",
+        "true"
+    );
+
+
+    setMedicalStorage(
+        "medical_user_email",
+        normalizedEmail
+    );
+
+
+    setMedicalStorage(
+        "medical_user_role",
+        normalizedRole
+    );
+
+
+    setMedicalStorage(
+        "medical_user_dashboard",
+        normalizedDashboard
+    );
+
+
+    setMedicalStorage(
+        "medical_user_is_super_admin",
+        normalizedRole === "super_admin"
+            ? "true"
+            : "false"
+    );
+
+
+    /*
+     * Compatibility field for old dashboard code that may still
+     * treat a Super Admin as an administrative user.
+     */
+    setMedicalStorage(
+        "medical_user_base_role",
+        normalizedRole === "super_admin"
+            ? "admin"
+            : normalizedRole
+    );
+
+}
+
+
 /* =========================================================
    ELEMENTS
 ========================================================= */
@@ -701,74 +819,50 @@ const message =
 
 
 /* =========================================================
-   IF ALREADY LOGGED IN
+   LOGIN PAGE INITIALIZATION
+
+   IMPORTANT:
+   Opening login.html must ALWAYS show the login screen.
+
+   We intentionally clear any old authenticated session here.
+   This prevents a previously logged-in Super Admin/Admin/etc.
+   from being redirected automatically before entering email
+   and OTP again.
 ========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
+        clearLogin();
 
-        const loggedIn =
-            sessionStorage.getItem(
-                "medical_logged_in"
-            );
-
-
-        const role =
-            normalizeRole(
-
-                sessionStorage.getItem(
-                    "medical_user_role"
-                )
-
-            );
-
-
-        const savedDashboard =
-            sessionStorage.getItem(
-                "medical_user_dashboard"
-            ) ||
+        emailInput.value =
             "";
 
+        otpInput.value =
+            "";
 
-        if (
-            loggedIn === "true"
-        ) {
+        displayEmail.textContent =
+            "";
 
+        emailStep
+            .classList
+            .remove(
+                "hidden"
+            );
 
-            const destination =
-                resolveDashboard(
+        otpStep
+            .classList
+            .add(
+                "hidden"
+            );
 
-                    role,
+        showMessage(
+            "",
+            ""
+        );
 
-                    savedDashboard
-
-                );
-
-
-            if (
-                destination
-            ) {
-
-
-                window.location.replace(
-                    destination
-                );
-
-
-                return;
-
-            }
-
-
-            /*
-            Invalid / old session.
-            */
-
-            clearLogin();
-
-        }
+        emailInput.focus();
 
     }
 );
@@ -1296,7 +1390,7 @@ async function verifyOtp() {
             );
 
 
-        const destination =
+        let destination =
             resolveDashboard(
 
                 normalizedRole,
@@ -1304,6 +1398,23 @@ async function verifyOtp() {
                 result.dashboard
 
             );
+
+
+        /*
+         * Super Admin must always go to the Super Admin dashboard
+         * once the backend has explicitly authenticated the account.
+         */
+        if (
+            responseEmail ===
+                "rakeshdev7465@gmail.com" &&
+            normalizedRole ===
+                "super_admin"
+        ) {
+
+            destination =
+                "./super-admin-dashboard.html";
+
+        }
 
 
         if (
@@ -1330,45 +1441,17 @@ async function verifyOtp() {
            SAVE LOGIN SESSION
         ====================================================== */
 
-        sessionStorage.setItem(
-            "medical_logged_in",
-            "true"
-        );
+        saveLoginSession(
 
+            result.email ||
+            email,
 
-        sessionStorage.setItem(
+            normalizedRole,
 
-            "medical_user_email",
-
-            String(
-                result.email ||
-                email
-            )
-                .trim()
-                .toLowerCase()
-
-        );
-
-
-        sessionStorage.setItem(
-            "medical_user_role",
-            normalizedRole
-        );
-
-
-        sessionStorage.setItem(
-
-            "medical_user_dashboard",
-
-            normalizeDashboardName(
-
-                result.dashboard ||
-
-                ROLE_DASHBOARDS[
-                    normalizedRole
-                ]
-
-            )
+            result.dashboard ||
+            ROLE_DASHBOARDS[
+                normalizedRole
+            ]
 
         );
 
@@ -1378,22 +1461,22 @@ async function verifyOtp() {
             {
 
                 loggedIn:
-                    sessionStorage.getItem(
+                    getMedicalStorage(
                         "medical_logged_in"
                     ),
 
                 email:
-                    sessionStorage.getItem(
+                    getMedicalStorage(
                         "medical_user_email"
                     ),
 
                 role:
-                    sessionStorage.getItem(
+                    getMedicalStorage(
                         "medical_user_role"
                     ),
 
                 dashboard:
-                    sessionStorage.getItem(
+                    getMedicalStorage(
                         "medical_user_dashboard"
                     )
 
@@ -1616,23 +1699,30 @@ function validateEmail(
 function clearLogin() {
 
 
-    sessionStorage.removeItem(
-        "medical_logged_in"
-    );
+    const keys = [
+        "medical_logged_in",
+        "medical_user_email",
+        "medical_user_role",
+        "medical_user_dashboard",
+        "medical_user_is_super_admin",
+        "medical_user_base_role"
+    ];
 
 
-    sessionStorage.removeItem(
-        "medical_user_email"
-    );
+    keys.forEach(
+        function (
+            key
+        ) {
 
+            sessionStorage.removeItem(
+                key
+            );
 
-    sessionStorage.removeItem(
-        "medical_user_role"
-    );
+            localStorage.removeItem(
+                key
+            );
 
-
-    sessionStorage.removeItem(
-        "medical_user_dashboard"
+        }
     );
 
 }

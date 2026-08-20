@@ -11,7 +11,7 @@ const otpStore = require("../utils/otpStore");
 ========================================================= */
 
 const AUTH_VERSION =
-    "2026-08-20-super-admin-login-v5";
+    "2026-08-20-super-admin-login-v6";
 
 
 /* =========================================================
@@ -718,7 +718,10 @@ const sendOtp =
                         user.dashboard,
 
                     authVersion:
-                        AUTH_VERSION
+                        AUTH_VERSION,
+
+                    isSuperAdmin:
+                        user.role === "super_admin"
 
                 });
 
@@ -1246,7 +1249,13 @@ const verifyOtp =
                         "Unable to verify OTP",
 
                     authVersion:
-                        AUTH_VERSION
+                        AUTH_VERSION,
+
+                    isSuperAdmin:
+                        role === "super_admin",
+
+                    accessLevel:
+                        role
 
                 });
 
