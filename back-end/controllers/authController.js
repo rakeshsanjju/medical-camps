@@ -82,6 +82,11 @@ const ALLOWED_USERS = {
         role:
             "campaigner"
     },
+
+    "chintalajagadesh@avisvascularcentre.com":{
+        role:
+            "campaigner"
+    },
     
 
     /* -------------------------
@@ -89,6 +94,11 @@ const ALLOWED_USERS = {
     ------------------------- */
 
     "srinivasoman2017@gmail.com": {
+        role:
+            "counsellor"
+    },
+
+    "nazeer.shaike2@gmail.com"{
         role:
             "counsellor"
     },
