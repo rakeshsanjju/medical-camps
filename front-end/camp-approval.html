@@ -148,7 +148,7 @@
 
         .budget-table {
             width: 100%;
-            min-width: 1050px;
+            min-width: 1250px;
             border-collapse: collapse;
         }
 
@@ -197,6 +197,31 @@
             color: #92400e;
             font-size: 11px;
             font-weight: 700;
+        }
+
+        .mail-status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .mail-status.sent {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .mail-status.queued,
+        .mail-status.sending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .mail-status.failed {
+            background: #fee2e2;
+            color: #991b1b;
         }
 
         .document-link {
@@ -560,6 +585,21 @@
                         Enter the camp details, proposed budget amount
                         and upload the supporting budget document.
                     </p>
+
+                    <p
+                        id="approvalRouteInfo"
+                        style="
+                            margin-top: 10px;
+                            padding: 10px 12px;
+                            border-radius: 8px;
+                            background: #eff6ff;
+                            color: #1e40af;
+                            font-size: 12px;
+                            line-height: 1.5;
+                        "
+                    >
+                        Approval request will be sent to Super Admin.
+                    </p>
                 </div>
 
                 <button
@@ -600,14 +640,14 @@
                     <div class="form-group full-width">
 
                         <label for="campArea">
-                            Camp Area
+                            City
                             <span class="required">*</span>
                         </label>
 
                         <input
                             type="text"
                             id="campArea"
-                            placeholder="Enter Camp Area / Location"
+                            placeholder="Enter City"
                             maxlength="200"
                             required
                         >
@@ -707,11 +747,74 @@
         ========================================================= */
 
         const BUDGET_API_URL =
-            "https://script.google.com/a/macros/avishospitals.com/s/AKfycbz0vKINqiaQlfPH7ZYoTisrTnK1B_Tf89PWF27C95uvMiNciwbvhQSFAzwwrrmvZbgEqA/exec";
+            "https://script.google.com/macros/s/AKfycbx9Ma9rfcPeRIYVx3mJPx-2Kf1_EZwCzlRI-oMj9SbIK89xdTWxYtvi32tb6XM_AdBEaw/exec";
+
+
+        const SUPER_ADMIN_EMAIL =
+            "rakeshdev7465@gmail.com";
 
 
         const MAX_FILE_SIZE =
             10 * 1024 * 1024;
+
+
+        const MAIL_STATUS_AUTO_REFRESH_MS =
+            10000;
+
+        let mailStatusRefreshTimer =
+            null;
+
+
+        /* =========================================================
+           ADMIN SESSION
+        ========================================================= */
+
+        function readMedicalStorage(
+            key
+        ) {
+
+            return (
+                sessionStorage.getItem(
+                    key
+                ) ||
+                localStorage.getItem(
+                    key
+                ) ||
+                ""
+            );
+
+        }
+
+
+        function normalizeAuthValue(
+            value
+        ) {
+
+            return String(
+                value == null
+                    ? ""
+                    : value
+            )
+                .trim()
+                .toLowerCase();
+
+        }
+
+
+        const currentAdminEmail =
+            normalizeAuthValue(
+                readMedicalStorage(
+                    "medical_user_email"
+                )
+            );
+
+
+        const currentUserRole =
+            normalizeAuthValue(
+                readMedicalStorage(
+                    "medical_user_role"
+                )
+            );
 
 
         /* =========================================================
@@ -794,6 +897,25 @@
             );
 
 
+        const approvalRouteInfo =
+            document.getElementById(
+                "approvalRouteInfo"
+            );
+
+
+        approvalRouteInfo.innerHTML =
+            "<strong>Requested By:</strong> " +
+            escapeHtml(
+                currentAdminEmail ||
+                "Admin"
+            ) +
+            "<br>" +
+            "<strong>Alert Mail To:</strong> " +
+            escapeHtml(
+                SUPER_ADMIN_EMAIL
+            );
+
+
         /* =========================================================
            API CONFIG CHECK
         ========================================================= */
@@ -803,7 +925,7 @@
             return (
                 BUDGET_API_URL &&
                 BUDGET_API_URL.startsWith(
-                    "https://script.google.com/a/macros/avishospitals.com/s/AKfycbz0vKINqiaQlfPH7ZYoTisrTnK1B_Tf89PWF27C95uvMiNciwbvhQSFAzwwrrmvZbgEqA/exec"
+                    "https://script.google.com/macros/s/AKfycbx9Ma9rfcPeRIYVx3mJPx-2Kf1_EZwCzlRI-oMj9SbIK89xdTWxYtvi32tb6XM_AdBEaw/exec"
                 ) &&
                 BUDGET_API_URL.endsWith(
                     "/exec"
@@ -1082,7 +1204,7 @@
                 ) {
 
                     showMessage(
-                        "Please enter Camp Area.",
+                        "Please enter City.",
                         "error"
                     );
 
@@ -1143,13 +1265,42 @@
                 }
 
 
+                if (
+                    !currentAdminEmail
+                ) {
+
+                    showMessage(
+                        "Admin email is missing. Please log in again before submitting the request.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    currentUserRole &&
+                    currentUserRole !== "admin"
+                ) {
+
+                    showMessage(
+                        "Only an Admin account can submit a camp approval request.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
                 setSubmittingState(
                     true
                 );
 
 
                 showMessage(
-                    "Uploading document and saving budget request...",
+                    "Saving camp request, uploading document and queuing Super Admin alert...",
                     ""
                 );
 
@@ -1174,6 +1325,15 @@
 
                         budgetAmount:
                             budgetAmount,
+
+                        submittedByEmail:
+                            currentAdminEmail,
+
+                        submittedByRole:
+                            "admin",
+
+                        sentToEmail:
+                            SUPER_ADMIN_EMAIL,
 
                         document: {
                             name:
@@ -1211,10 +1371,41 @@
                     }
 
 
-                    showMessage(
-                        "Camp budget submitted successfully.",
-                        "success"
-                    );
+                    if (
+                        result.notificationSent === true
+                    ) {
+
+                        showMessage(
+                            "Camp request submitted successfully. Camp Name, City, Budget Amount and Budget Document were emailed to Super Admin.",
+                            "success"
+                        );
+
+                    } else if (
+                        result.emailQueued === true
+                    ) {
+
+                        showMessage(
+                            "Camp request submitted successfully. The Super Admin alert email is queued and will be sent automatically by the authorized mail trigger.",
+                            "success"
+                        );
+
+                    } else {
+
+                        const mailError =
+                            String(
+                                result.notificationError ||
+                                "Unable to send or queue the Super Admin email."
+                            )
+                                .trim();
+
+
+                        showMessage(
+                            "Camp request saved successfully, but the email could not be sent: " +
+                            mailError,
+                            "error"
+                        );
+
+                    }
 
 
                     await loadBudgets();
@@ -1398,6 +1589,91 @@
            RENDER BUDGET REQUESTS
         ========================================================= */
 
+        function mailStatusClass(
+            value
+        ) {
+
+            const status =
+                String(
+                    value ||
+                    "Queued"
+                )
+                    .trim()
+                    .toLowerCase();
+
+            return [
+                "sent",
+                "queued",
+                "sending",
+                "failed"
+            ].includes(
+                status
+            )
+                ? status
+                : "queued";
+        }
+
+
+        function scheduleMailStatusAutoRefresh(
+            budgets
+        ) {
+
+            if (
+                mailStatusRefreshTimer
+            ) {
+
+                clearTimeout(
+                    mailStatusRefreshTimer
+                );
+
+                mailStatusRefreshTimer =
+                    null;
+
+            }
+
+
+            const hasPendingMail =
+                Array.isArray(
+                    budgets
+                ) &&
+                budgets.some(
+                    function (
+                        item
+                    ) {
+
+                        const status =
+                            String(
+                                item.superAdminMailStatus ||
+                                ""
+                            )
+                                .trim()
+                                .toLowerCase();
+
+                        return (
+                            !status ||
+                            status === "queued" ||
+                            status === "sending"
+                        );
+
+                    }
+                );
+
+
+            if (
+                hasPendingMail
+            ) {
+
+                mailStatusRefreshTimer =
+                    setTimeout(
+                        loadBudgets,
+                        MAIL_STATUS_AUTO_REFRESH_MS
+                    );
+
+            }
+
+        }
+
+
         function renderBudgets(
             budgets
         ) {
@@ -1505,6 +1781,35 @@
                                     </td>
 
                                     <td>
+                                        ${displayValue(
+                                            item.submittedByEmail
+                                        )}
+                                    </td>
+
+                                    <td>
+                                        ${displayValue(
+                                            item.sentToEmail
+                                        )}
+                                    </td>
+
+                                    <td>
+                                        <span
+                                            class="mail-status ${mailStatusClass(
+                                                item.superAdminMailStatus
+                                            )}"
+                                            title="${escapeHtml(
+                                                item.superAdminMailError ||
+                                                ""
+                                            )}"
+                                        >
+                                            ${displayValue(
+                                                item.superAdminMailStatus ||
+                                                "Queued"
+                                            )}
+                                        </span>
+                                    </td>
+
+                                    <td>
                                         <span class="status-badge">
                                             ${displayValue(
                                                 item.status ||
@@ -1531,9 +1836,12 @@
                             <th>Request ID</th>
                             <th>Submitted</th>
                             <th>Camp Name</th>
-                            <th>Camp Area</th>
+                            <th>City</th>
                             <th>Budget Amount</th>
                             <th>Budget Document</th>
+                            <th>Submitted By</th>
+                            <th>Alert Mail To</th>
+                            <th>Mail Status</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -1543,6 +1851,11 @@
                     </tbody>
                 </table>
             `;
+
+
+            scheduleMailStatusAutoRefresh(
+                budgets
+            );
 
         }
 

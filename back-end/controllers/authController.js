@@ -78,6 +78,11 @@ const ALLOWED_USERS = {
             "campaigner"
     },
 
+    "reception.avis@gmail.com":{
+        role:
+            "campaigner"
+    },
+    
 
     /* -------------------------
        COUNSELLORS
@@ -93,10 +98,17 @@ const ALLOWED_USERS = {
             "counsellor"
     },
 
+    "richard@avishospitals.com":{
+        role:
+            "counsellor"
+    },
+
     "rakeshdev7465@gmail.com": {
         role:
             "super_admin"
     },
+
+    
 
 
     /* -------------------------
