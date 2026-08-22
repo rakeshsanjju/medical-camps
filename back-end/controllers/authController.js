@@ -98,7 +98,7 @@ const ALLOWED_USERS = {
             "counsellor"
     },
 
-    "nazeer.shaike2@gmail.com"{
+    "nazeer.shaike2@gmail.com":{
         role:
             "counsellor"
     },
