@@ -1,589 +1,334 @@
-
-
 const crypto = require("crypto");
 
 const transporter = require("../config/mailer");
 const otpStore = require("../utils/otpStore");
 
-
 /* =========================================================
    AUTH CONTROLLER VERSION
 ========================================================= */
 
-const AUTH_VERSION =
-    "2026-08-20-super-admin-login-v6";
-
+const AUTH_VERSION = "2026-08-20-super-admin-login-v6";
 
 /* =========================================================
    ROLE CONFIGURATION
 ========================================================= */
 
 const ROLE_CONFIG = {
+  super_admin: {
+    dashboard: "super-admin-dashboard.html",
+  },
 
-    super_admin: {
-        dashboard:
-            "super-admin-dashboard.html"
-    },
+  admin: {
+    dashboard: "admin-dashboard.html",
+  },
 
-    admin: {
-        dashboard:
-            "admin-dashboard.html"
-    },
+  campaigner: {
+    dashboard: "dashboard.html",
+  },
 
-    campaigner: {
-        dashboard:
-            "dashboard.html"
-    },
+  counsellor: {
+    dashboard: "counsellor.html",
+  },
 
-    counsellor: {
-        dashboard:
-            "counsellor.html"
-    },
-
-    telesales: {
-        dashboard:
-            "telesales.html"
-    }
-
+  telesales: {
+    dashboard: "telesales.html",
+  },
 };
-
 
 /* =========================================================
    AUTHORIZED USERS
 ========================================================= */
 
 const ALLOWED_USERS = {
-
-    /* -------------------------
+  /* -------------------------
        ADMIN
     ------------------------- */
 
-    "rakesh@avishospitals.com": {
-        role:
-            "admin"
-    },
+  "rakesh@avishospitals.com": {
+    role: "admin",
+  },
 
-    "praveen@avishospitals.com": {
-        role:
-            "admin"
-    },
+  "praveen@avishospitals.com": {
+    role: "admin",
+  },
 
-
-    /* -------------------------
+  /* -------------------------
        CAMPAIGNER
     ------------------------- */
 
-    "sanjurakeshdasari4@gmail.com": {
-        role:
-            "campaigner"
-    },
+  "sanjurakeshdasari4@gmail.com": {
+    role: "campaigner",
+  },
 
-    "reception.avis@gmail.com":{
-        role:
-            "campaigner"
-    },
+  "reception.avis@gmail.com": {
+    role: "campaigner",
+  },
 
-    "chintalajagadesh@avisvascularcentre.com":{
-        role:
-            "campaigner"
-    },
-    
+  "chintalajagadesh@avisvascularcentre.com": {
+    role: "campaigner",
+  },
 
-    /* -------------------------
+  /* -------------------------
        COUNSELLORS
     ------------------------- */
 
-    "srinivasoman2017@gmail.com": {
-        role:
-            "counsellor"
-    },
+  "srinivasoman2017@gmail.com": {
+    role: "counsellor",
+  },
 
-    "nazeer.shaike2@gmail.com":{
-        role:
-            "counsellor"
-    },
+  "avishospitalrjy1@gmail.com": {
+    role: "counsellor",
+  },
 
-    "babashaik@avisvascularcentre.com": {
-        role:
-            "counsellor"
-    },
+  "nazeer.shaike2@gmail.com": {
+    role: "counsellor",
+  },
 
-    "richard@avishospitals.com":{
-        role:
-            "counsellor"
-    },
+  "babashaik@avisvascularcentre.com": {
+    role: "counsellor",
+  },
 
-    "rakeshdev7465@gmail.com": {
-        role:
-            "super_admin"
-    },
+  "richard@avishospitals.com": {
+    role: "counsellor",
+  },
 
-    
+  "rakeshdev7465@gmail.com": {
+    role: "super_admin",
+  },
 
-
-    /* -------------------------
+  /* -------------------------
        TELESALES
     ------------------------- */
 
-    "tele.sales@avisvascularcentre.com": {
-        role:
-            "telesales"
-    },
+  "tele.sales@avisvascularcentre.com": {
+    role: "telesales",
+  },
 
-    "rakeshdasari0705@gmail.com": {
-        role:
-            "telesales"
-    }
-
+  "rakeshdasari0705@gmail.com": {
+    role: "telesales",
+  },
 };
-
 
 /* =========================================================
    NORMALIZE EMAIL
 ========================================================= */
 
-function normalizeEmail(
-    value
-) {
-
-    return String(
-
-        value == null
-            ? ""
-            : value
-
-    )
-        .trim()
-        .toLowerCase();
-
+function normalizeEmail(value) {
+  return String(value == null ? "" : value)
+    .trim()
+    .toLowerCase();
 }
-
 
 /* =========================================================
    NORMALIZE ROLE
 ========================================================= */
 
-function normalizeRole(
-    value
-) {
-
-    return String(
-
-        value == null
-            ? ""
-            : value
-
-    )
-        .trim()
-        .toLowerCase();
-
+function normalizeRole(value) {
+  return String(value == null ? "" : value)
+    .trim()
+    .toLowerCase();
 }
-
 
 /* =========================================================
    VALIDATE EMAIL
 ========================================================= */
 
-function isValidEmail(
-    email
-) {
-
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        .test(
-            email
-        );
-
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
-
 
 /* =========================================================
    AUTHORIZED USER LOOKUP
 ========================================================= */
 
-function getAuthorizedUser(
-    email
-) {
+function getAuthorizedUser(email) {
+  const normalizedEmail = normalizeEmail(email);
 
-    const normalizedEmail =
-        normalizeEmail(
-            email
-        );
+  if (!normalizedEmail) {
+    return null;
+  }
 
+  let user = ALLOWED_USERS[normalizedEmail];
 
-    if (
-        !normalizedEmail
-    ) {
+  /*
+   * Additional explicit safeguard
+   * for Telesales login.
+   */
 
-        return null;
-
-    }
-
-
-    let user =
-        ALLOWED_USERS[
-            normalizedEmail
-        ];
-
-
-    /*
-     * Additional explicit safeguard
-     * for Telesales login.
-     */
-
-    if (
-
-        !user &&
-
-        normalizedEmail ===
-            "tele.sales@avisvascularcentre.com"
-
-    ) {
-
-        user = {
-
-            role:
-                "telesales"
-
-        };
-
-    }
-
-
-    if (
-        !user
-    ) {
-
-        return null;
-
-    }
-
-
-    const role =
-        normalizeRole(
-            user.role
-        );
-
-
-    if (
-        !ROLE_CONFIG[
-            role
-        ]
-    ) {
-
-        console.error(
-
-            "INVALID ROLE:",
-
-            normalizedEmail,
-
-            role
-
-        );
-
-
-        return null;
-
-    }
-
-
-    return {
-
-        email:
-            normalizedEmail,
-
-        role:
-            role,
-
-        dashboard:
-            ROLE_CONFIG[
-                role
-            ].dashboard
-
+  if (!user && normalizedEmail === "tele.sales@avisvascularcentre.com") {
+    user = {
+      role: "telesales",
     };
+  }
 
+  if (!user) {
+    return null;
+  }
+
+  const role = normalizeRole(user.role);
+
+  if (!ROLE_CONFIG[role]) {
+    console.error(
+      "INVALID ROLE:",
+
+      normalizedEmail,
+
+      role,
+    );
+
+    return null;
+  }
+
+  return {
+    email: normalizedEmail,
+
+    role: role,
+
+    dashboard: ROLE_CONFIG[role].dashboard,
+  };
 }
-
 
 /* =========================================================
    REMOVE OTP
 ========================================================= */
 
-function removeOtp(
-    email
-) {
-
-    try {
-
-        otpStore.delete(
-            email
-        );
-
-
-    } catch (
-        error
-    ) {
-
-        console.error(
-            "OTP DELETE ERROR:",
-            error
-        );
-
-    }
-
+function removeOtp(email) {
+  try {
+    otpStore.delete(email);
+  } catch (error) {
+    console.error("OTP DELETE ERROR:", error);
+  }
 }
-
 
 /* =========================================================
    SEND OTP
 ========================================================= */
 
-const sendOtp =
-    async (
-        req,
-        res
-    ) => {
+const sendOtp = async (req, res) => {
+  let email = "";
 
-        let email =
-            "";
-
-
-        try {
-
-            /* =========================================
+  try {
+    /* =========================================
                GET EMAIL
             ========================================= */
 
-            email =
-                normalizeEmail(
-                    req.body?.email
-                );
+    email = normalizeEmail(req.body?.email);
 
+    console.log("AUTH VERSION:", AUTH_VERSION);
 
-            console.log(
-                "AUTH VERSION:",
-                AUTH_VERSION
-            );
+    console.log("LOGIN ATTEMPT:", email);
 
-
-            console.log(
-                "LOGIN ATTEMPT:",
-                email
-            );
-
-
-            /* =========================================
+    /* =========================================
                EMAIL REQUIRED
             ========================================= */
 
-            if (
-                !email
-            ) {
+    if (!email) {
+      return res.status(400).json({
+        success: false,
 
-                return res
-                    .status(
-                        400
-                    )
-                    .json({
+        message: "Email is required",
 
-                        success:
-                            false,
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-                        message:
-                            "Email is required",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                EMAIL FORMAT
             ========================================= */
 
-            if (
-                !isValidEmail(
-                    email
-                )
-            ) {
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        success: false,
 
-                return res
-                    .status(
-                        400
-                    )
-                    .json({
+        message: "Enter a valid email address",
 
-                        success:
-                            false,
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-                        message:
-                            "Enter a valid email address",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                AUTHORIZATION
             ========================================= */
 
-            const user =
-                getAuthorizedUser(
-                    email
-                );
+    const user = getAuthorizedUser(email);
 
+    if (!user) {
+      console.log("UNAUTHORIZED LOGIN:", email);
 
-            if (
-                !user
-            ) {
+      return res.status(403).json({
+        success: false,
 
-                console.log(
-                    "UNAUTHORIZED LOGIN:",
-                    email
-                );
+        message: "You don't have permission to access this dashboard.",
 
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-                return res
-                    .status(
-                        403
-                    )
-                    .json({
+    console.log(
+      "AUTHORIZED LOGIN:",
 
-                        success:
-                            false,
+      user.email,
 
-                        message:
-                            "You don't have permission to access this dashboard.",
+      user.role,
 
-                        authVersion:
-                            AUTH_VERSION
+      user.dashboard,
+    );
 
-                    });
-
-            }
-
-
-            console.log(
-
-                "AUTHORIZED LOGIN:",
-
-                user.email,
-
-                user.role,
-
-                user.dashboard
-
-            );
-
-
-            /* =========================================
+    /* =========================================
                SMTP SETTINGS
             ========================================= */
 
-            if (
-                !process.env.SMTP_USER ||
-                !process.env.SMTP_PASS
-            ) {
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.error("SMTP CONFIGURATION MISSING");
 
-                console.error(
-                    "SMTP CONFIGURATION MISSING"
-                );
+      return res.status(500).json({
+        success: false,
 
+        message: "Email service is not configured.",
 
-                return res
-                    .status(
-                        500
-                    )
-                    .json({
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-                        success:
-                            false,
-
-                        message:
-                            "Email service is not configured.",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                GENERATE OTP
             ========================================= */
 
-            const otp =
-                crypto
-                    .randomInt(
-                        100000,
-                        1000000
-                    )
-                    .toString();
+    const otp = crypto.randomInt(100000, 1000000).toString();
 
+    const expiresAt = Date.now() + 5 * 60 * 1000;
 
-            const expiresAt =
-                Date.now() +
-                5 * 60 * 1000;
-
-
-            /* =========================================
+    /* =========================================
                STORE OTP
             ========================================= */
 
-            otpStore.set(
-                email,
-                {
+    otpStore.set(email, {
+      otp: otp,
 
-                    otp:
-                        otp,
+      expiresAt: expiresAt,
 
-                    expiresAt:
-                        expiresAt,
+      role: user.role,
 
-                    role:
-                        user.role,
+      dashboard: user.dashboard,
 
-                    dashboard:
-                        user.dashboard,
+      attempts: 0,
+    });
 
-                    attempts:
-                        0
-
-                }
-            );
-
-
-            /* =========================================
+    /* =========================================
                SEND OTP EMAIL
             ========================================= */
 
-            try {
+    try {
+      const info = await transporter.sendMail({
+        from: `"Medical Dashboard" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
 
-                const info =
-                    await transporter
-                        .sendMail({
+        to: email,
 
-                            from:
-                                `"Medical Dashboard" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+        subject: "Medical Dashboard Login OTP",
 
-                            to:
-                                email,
+        text: `Your Medical Dashboard login OTP is ${otp}. This OTP expires in 5 minutes.`,
 
-                            subject:
-                                "Medical Dashboard Login OTP",
-
-                            text:
-                                `Your Medical Dashboard login OTP is ${otp}. This OTP expires in 5 minutes.`,
-
-                            html: `
+        html: `
 
                                 <div
                                     style="
@@ -668,680 +413,333 @@ const sendOtp =
 
                                 </div>
 
-                            `
+                            `,
+      });
 
-                        });
+      console.log(
+        "OTP EMAIL SENT:",
 
+        info.messageId,
+      );
+    } catch (mailError) {
+      removeOtp(email);
 
-                console.log(
+      console.error("SMTP ERROR:", mailError);
 
-                    "OTP EMAIL SENT:",
+      return res.status(500).json({
+        success: false,
 
-                    info.messageId
+        message: "Unable to send OTP. Email service error.",
 
-                );
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-
-            } catch (
-                mailError
-            ) {
-
-                removeOtp(
-                    email
-                );
-
-
-                console.error(
-                    "SMTP ERROR:",
-                    mailError
-                );
-
-
-                return res
-                    .status(
-                        500
-                    )
-                    .json({
-
-                        success:
-                            false,
-
-                        message:
-                            "Unable to send OTP. Email service error.",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                SUCCESS
             ========================================= */
 
-            return res
-                .status(
-                    200
-                )
-                .json({
+    return res.status(200).json({
+      success: true,
 
-                    success:
-                        true,
+      message: "OTP sent successfully",
 
-                    message:
-                        "OTP sent successfully",
+      role: user.role,
 
-                    role:
-                        user.role,
+      dashboard: user.dashboard,
 
-                    dashboard:
-                        user.dashboard,
+      authVersion: AUTH_VERSION,
 
-                    authVersion:
-                        AUTH_VERSION,
+      isSuperAdmin: user.role === "super_admin",
+    });
+  } catch (error) {
+    if (email) {
+      removeOtp(email);
+    }
 
-                    isSuperAdmin:
-                        user.role === "super_admin"
+    console.error("SEND OTP ERROR:", error);
 
-                });
+    return res.status(500).json({
+      success: false,
 
+      message: error.message || "Unable to send OTP",
 
-        } catch (
-            error
-        ) {
-
-            if (
-                email
-            ) {
-
-                removeOtp(
-                    email
-                );
-
-            }
-
-
-            console.error(
-                "SEND OTP ERROR:",
-                error
-            );
-
-
-            return res
-                .status(
-                    500
-                )
-                .json({
-
-                    success:
-                        false,
-
-                    message:
-                        error.message ||
-                        "Unable to send OTP",
-
-                    authVersion:
-                        AUTH_VERSION
-
-                });
-
-        }
-
-    };
-
+      authVersion: AUTH_VERSION,
+    });
+  }
+};
 
 /* =========================================================
    VERIFY OTP
 ========================================================= */
 
-const verifyOtp =
-    async (
-        req,
-        res
-    ) => {
-
-        try {
-
-            /* =========================================
+const verifyOtp = async (req, res) => {
+  try {
+    /* =========================================
                EMAIL
             ========================================= */
 
-            const email =
-                normalizeEmail(
-                    req.body?.email
-                );
+    const email = normalizeEmail(req.body?.email);
 
-
-            /* =========================================
+    /* =========================================
                OTP
             ========================================= */
 
-            const otp =
-                String(
+    const otp = String(req.body?.otp || "").trim();
 
-                    req.body?.otp ||
+    console.log(
+      "VERIFY OTP:",
 
-                    ""
+      email,
 
-                )
-                    .trim();
+      "AUTH VERSION:",
 
+      AUTH_VERSION,
+    );
 
-            console.log(
-
-                "VERIFY OTP:",
-
-                email,
-
-                "AUTH VERSION:",
-
-                AUTH_VERSION
-
-            );
-
-
-            /* =========================================
+    /* =========================================
                EMAIL REQUIRED
             ========================================= */
 
-            if (
-                !email
-            ) {
+    if (!email) {
+      return res.status(400).json({
+        success: false,
 
-                return res
-                    .status(
-                        400
-                    )
-                    .json({
+        message: "Email is required",
 
-                        success:
-                            false,
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-                        message:
-                            "Email is required",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                EMAIL VALIDATION
             ========================================= */
 
-            if (
-                !isValidEmail(
-                    email
-                )
-            ) {
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        success: false,
 
-                return res
-                    .status(
-                        400
-                    )
-                    .json({
+        message: "Enter a valid email address",
 
-                        success:
-                            false,
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-                        message:
-                            "Enter a valid email address",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                AUTHORIZATION
             ========================================= */
 
-            const user =
-                getAuthorizedUser(
-                    email
-                );
+    const user = getAuthorizedUser(email);
 
+    if (!user) {
+      return res.status(403).json({
+        success: false,
 
-            if (
-                !user
-            ) {
+        message: "You don't have permission to access this dashboard.",
 
-                return res
-                    .status(
-                        403
-                    )
-                    .json({
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-                        success:
-                            false,
-
-                        message:
-                            "You don't have permission to access this dashboard.",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                OTP REQUIRED
             ========================================= */
 
-            if (
-                !otp
-            ) {
+    if (!otp) {
+      return res.status(400).json({
+        success: false,
 
-                return res
-                    .status(
-                        400
-                    )
-                    .json({
+        message: "OTP is required",
 
-                        success:
-                            false,
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-                        message:
-                            "OTP is required",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                OTP FORMAT
             ========================================= */
 
-            if (
-                !/^\d{6}$/
-                    .test(
-                        otp
-                    )
-            ) {
+    if (!/^\d{6}$/.test(otp)) {
+      return res.status(400).json({
+        success: false,
 
-                return res
-                    .status(
-                        400
-                    )
-                    .json({
+        message: "Enter a valid 6-digit OTP",
 
-                        success:
-                            false,
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-                        message:
-                            "Enter a valid 6-digit OTP",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                GET STORED OTP
             ========================================= */
 
-            const stored =
-                otpStore.get(
-                    email
-                );
+    const stored = otpStore.get(email);
 
+    if (!stored) {
+      return res.status(400).json({
+        success: false,
 
-            if (
-                !stored
-            ) {
+        message: "OTP not found. Please request a new OTP.",
 
-                return res
-                    .status(
-                        400
-                    )
-                    .json({
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-                        success:
-                            false,
-
-                        message:
-                            "OTP not found. Please request a new OTP.",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                CHECK EXPIRY
             ========================================= */
 
-            if (
-                Date.now() >
-                stored.expiresAt
-            ) {
+    if (Date.now() > stored.expiresAt) {
+      removeOtp(email);
 
-                removeOtp(
-                    email
-                );
+      return res.status(400).json({
+        success: false,
 
+        message: "OTP expired. Please request a new OTP.",
 
-                return res
-                    .status(
-                        400
-                    )
-                    .json({
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-                        success:
-                            false,
-
-                        message:
-                            "OTP expired. Please request a new OTP.",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                ATTEMPTS
             ========================================= */
 
-            stored.attempts =
-                (
-                    stored.attempts ||
-                    0
-                ) +
-                1;
+    stored.attempts = (stored.attempts || 0) + 1;
 
+    otpStore.set(email, stored);
 
-            otpStore.set(
-                email,
-                stored
-            );
+    if (stored.attempts > 5) {
+      removeOtp(email);
 
+      return res.status(429).json({
+        success: false,
 
-            if (
-                stored.attempts >
-                5
-            ) {
+        message: "Too many incorrect attempts. Please request a new OTP.",
 
-                removeOtp(
-                    email
-                );
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-
-                return res
-                    .status(
-                        429
-                    )
-                    .json({
-
-                        success:
-                            false,
-
-                        message:
-                            "Too many incorrect attempts. Please request a new OTP.",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                CHECK OTP
             ========================================= */
 
-            if (
-                stored.otp !==
-                otp
-            ) {
+    if (stored.otp !== otp) {
+      return res.status(400).json({
+        success: false,
 
-                return res
-                    .status(
-                        400
-                    )
-                    .json({
+        message: "Invalid OTP",
 
-                        success:
-                            false,
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-                        message:
-                            "Invalid OTP",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                FINAL ROLE
             ========================================= */
 
-            const role =
-                normalizeRole(
+    const role = normalizeRole(stored.role || user.role);
 
-                    stored.role ||
+    if (!ROLE_CONFIG[role]) {
+      removeOtp(email);
 
-                    user.role
+      return res.status(403).json({
+        success: false,
 
-                );
+        message: "Invalid user role.",
 
+        authVersion: AUTH_VERSION,
+      });
+    }
 
-            if (
-                !ROLE_CONFIG[
-                    role
-                ]
-            ) {
-
-                removeOtp(
-                    email
-                );
-
-
-                return res
-                    .status(
-                        403
-                    )
-                    .json({
-
-                        success:
-                            false,
-
-                        message:
-                            "Invalid user role.",
-
-                        authVersion:
-                            AUTH_VERSION
-
-                    });
-
-            }
-
-
-            /* =========================================
+    /* =========================================
                DASHBOARD
             ========================================= */
 
-            const dashboard =
-                stored.dashboard ||
-                ROLE_CONFIG[
-                    role
-                ].dashboard;
+    const dashboard = stored.dashboard || ROLE_CONFIG[role].dashboard;
 
-
-            /* =========================================
+    /* =========================================
                OTP SINGLE USE
             ========================================= */
 
-            removeOtp(
-                email
-            );
+    removeOtp(email);
 
+    console.log(
+      "LOGIN SUCCESS:",
 
-            console.log(
+      email,
 
-                "LOGIN SUCCESS:",
+      role,
 
-                email,
+      dashboard,
+    );
 
-                role,
-
-                dashboard
-
-            );
-
-
-            /* =========================================
+    /* =========================================
                LOGIN SUCCESS
             ========================================= */
 
-            return res
-                .status(
-                    200
-                )
-                .json({
+    return res.status(200).json({
+      success: true,
 
-                    success:
-                        true,
+      message: "Login successful",
 
-                    message:
-                        "Login successful",
+      email: email,
 
-                    email:
-                        email,
+      role: role,
 
-                    role:
-                        role,
+      dashboard: dashboard,
 
-                    dashboard:
-                        dashboard,
+      authVersion: AUTH_VERSION,
+    });
+  } catch (error) {
+    console.error("VERIFY OTP ERROR:", error);
 
-                    authVersion:
-                        AUTH_VERSION
+    return res.status(500).json({
+      success: false,
 
-                });
+      message: error.message || "Unable to verify OTP",
 
+      authVersion: AUTH_VERSION,
 
-        } catch (
-            error
-        ) {
+      isSuperAdmin: role === "super_admin",
 
-            console.error(
-                "VERIFY OTP ERROR:",
-                error
-            );
-
-
-            return res
-                .status(
-                    500
-                )
-                .json({
-
-                    success:
-                        false,
-
-                    message:
-                        error.message ||
-                        "Unable to verify OTP",
-
-                    authVersion:
-                        AUTH_VERSION,
-
-                    isSuperAdmin:
-                        role === "super_admin",
-
-                    accessLevel:
-                        role
-
-                });
-
-        }
-
-    };
-
+      accessLevel: role,
+    });
+  }
+};
 
 /* =========================================================
    STARTUP DEBUG
 ========================================================= */
 
 console.log(
+  "AUTH CONTROLLER VERSION:",
 
-    "AUTH CONTROLLER VERSION:",
-
-    AUTH_VERSION
-
+  AUTH_VERSION,
 );
-
 
 console.log(
+  "TELESALES AUTHORIZED:",
 
-    "TELESALES AUTHORIZED:",
-
-    Boolean(
-
-        ALLOWED_USERS[
-            "tele.sales@avisvascularcentre.com",
-            "rakeshdasari0705@gmail.com"
-        ]
-
-    )
-
+  Boolean(
+    ALLOWED_USERS[
+      ("tele.sales@avisvascularcentre.com", "rakeshdasari0705@gmail.com")
+    ],
+  ),
 );
-
 
 console.log(
+  "SUPER ADMIN AUTHORIZED:",
 
-    "SUPER ADMIN AUTHORIZED:",
-
-    Boolean(
-
-        ALLOWED_USERS[
-            "rakeshdev7465@gmail.com"
-        ] &&
-
-        ALLOWED_USERS[
-            "rakeshdev7465@gmail.com"
-        ].role ===
-            "super_admin"
-
-    )
-
+  Boolean(
+    ALLOWED_USERS["rakeshdev7465@gmail.com"] &&
+    ALLOWED_USERS["rakeshdev7465@gmail.com"].role === "super_admin",
+  ),
 );
-
-
 
 module.exports = {
+  sendOtp,
 
-    sendOtp,
-
-    verifyOtp
-
+  verifyOtp,
 };
-
-
