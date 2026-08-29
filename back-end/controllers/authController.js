@@ -76,6 +76,10 @@ const ALLOWED_USERS = {
     role: "counsellor",
   },
 
+  "umamaheshavis@gmail.com": {
+    role: "counsellor",
+  },
+
   "avishospitalrjy1@gmail.com": {
     role: "counsellor",
   },
