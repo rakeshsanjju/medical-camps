@@ -95,6 +95,9 @@ const ALLOWED_USERS = {
   "richard@avishospitals.com": {
     role: "counsellor",
   },
+   "rakeshdasari0705@gmail.com": {
+    role: "counsellor",
+  },
 
   "rakeshdev7465@gmail.com": {
     role: "super_admin",
