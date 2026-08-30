@@ -73,7 +73,7 @@ const ALLOWED_USERS = {
     ------------------------- */
 
   "srinivasoman2017@gmail.com": {
-    role: "counsellor",
+    role: "campaigner",
   },
 
   "umamaheshavis@gmail.com": {
