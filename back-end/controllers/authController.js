@@ -56,6 +56,10 @@ const ALLOWED_USERS = {
        CAMPAIGNER
     ------------------------- */
 
+  "tirupaticentre@avishospitals.com": {
+    role: "campaigner",
+  },
+
   "sanjurakeshdasari4@gmail.com": {
     role: "campaigner",
   },
@@ -73,7 +77,7 @@ const ALLOWED_USERS = {
     ------------------------- */
 
   "srinivasoman2017@gmail.com": {
-    role: "campaigner",
+    role: "counsellor",
   },
 
   "umamaheshavis@gmail.com": {
@@ -95,7 +99,7 @@ const ALLOWED_USERS = {
   "richard@avishospitals.com": {
     role: "counsellor",
   },
-   "rakeshdasari0705@gmail.com": {
+  "rakeshdasari0705@gmail.com": {
     role: "counsellor",
   },
 
