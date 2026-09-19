@@ -72,12 +72,16 @@ const ALLOWED_USERS = {
     role: "campaigner",
   },
 
+   "avishospitalsvijayawada1@gmail.com": {
+    role: "campaigner",
+  },
+
   /* -------------------------
        COUNSELLORS
     ------------------------- */
 
   "srinivasoman2017@gmail.com": {
-    role: "campaigner",
+    role: "counsellor",
   },
 
   "umamaheshavis@gmail.com": {
