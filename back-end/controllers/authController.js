@@ -111,6 +111,10 @@ const ALLOWED_USERS = {
     role: "super_admin",
   },
 
+   "vinaykesavarapu1@gmail.com": {
+    role: "counsellor",
+  },
+
   /* -------------------------
        TELESALES
     ------------------------- */
