@@ -120,6 +120,11 @@ const ALLOWED_USERS = {
     role: "counsellor",
   },
 
+     "sumangotte.com@gmail.com": {
+    role: "counsellor",
+  },
+
+
   /* -------------------------
        TELESALES
     ------------------------- */
