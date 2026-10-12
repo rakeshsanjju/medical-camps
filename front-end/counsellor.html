@@ -2,2169 +2,6867 @@
 
 <html lang="en">
 
+
+
 <head>
 
-    <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>
-        Counsellor Dashboard
-    </title>
+<meta charset="UTF-8">
 
 
-    <script>
 
-        function getAuthData() {
+<meta
 
-            return {
+    name="viewport"
 
-                loggedIn:
-                    sessionStorage.getItem(
-                        "medical_logged_in"
-                    ),
+    content="width=device-width, initial-scale=1.0"
 
-                email:
-                    sessionStorage.getItem(
-                        "medical_user_email"
-                    ),
+>
 
-                role:
-                    sessionStorage.getItem(
-                        "medical_user_role"
-                    )
 
-            };
 
-        }
+<title>
 
+    Counsellors
 
-        function clearMedicalLogin() {
+</title>
 
-            sessionStorage.removeItem(
-                "medical_logged_in"
-            );
 
-            sessionStorage.removeItem(
-                "medical_user_email"
-            );
 
-            sessionStorage.removeItem(
-                "medical_user_role"
-            );
 
-        }
 
+<script>
 
-        function requireCounsellor() {
 
-            const auth =
-                getAuthData();
 
+/* =========================================================
 
-            if (
-                auth.loggedIn !== "true" ||
-                auth.role !== "counsellor"
-            ) {
+   ADMIN AUTH
 
-                clearMedicalLogin();
+========================================================= */
 
-                window.location.replace(
-                    "./login.html"
-                );
 
-                return false;
 
-            }
+function getAuthData() {
 
 
-            return true;
 
-        }
+    return {
 
 
-        function logoutMedicalUser() {
 
-            clearMedicalLogin();
+        loggedIn:
 
-            window.location.replace(
-                "./login.html"
-            );
+            sessionStorage.getItem(
 
-        }
+                "medical_logged_in"
 
+            ),
 
-        requireCounsellor();
 
-    </script>
 
+        email:
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+            sessionStorage.getItem(
 
+                "medical_user_email"
 
-        body {
+            ),
 
-            margin: 0;
 
-            background: #f4f7fb;
 
-            color: #0f172a;
+        role:
 
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
+            sessionStorage.getItem(
 
-        }
+                "medical_user_role"
 
+            )
 
-        .dashboard {
 
-            max-width: 1500px;
 
-            margin: auto;
+    };
 
-            padding: 30px;
 
-        }
 
+}
 
-        .dashboard-header {
 
-            display: flex;
 
-            justify-content:
-                space-between;
 
-            align-items:
-                center;
 
-            margin-bottom:
-                25px;
+function clearMedicalLogin() {
 
-        }
 
 
-        .logout-btn {
+    sessionStorage.removeItem(
 
-            border: none;
+        "medical_logged_in"
 
-            padding: 11px 18px;
+    );
 
-            background: #dc2626;
 
-            color: white;
 
-            border-radius: 8px;
+    sessionStorage.removeItem(
 
-            cursor: pointer;
+        "medical_user_email"
 
-        }
+    );
 
 
-        .camp-card,
-        .table-card {
 
-            background: white;
+    sessionStorage.removeItem(
 
-            padding: 22px;
+        "medical_user_role"
 
-            border-radius: 14px;
+    );
 
-            margin-bottom: 22px;
 
-        }
 
+}
 
-        .camp-select {
 
-            width: 100%;
 
-            max-width: 450px;
 
-            padding: 11px;
 
-            border:
-                1px solid #cbd5e1;
+function requireAdmin() {
 
-            border-radius: 8px;
 
-        }
 
+    const auth =
 
-        .assignment {
+        getAuthData();
 
-            margin-top: 12px;
 
-            color: #475569;
 
-        }
 
 
-        .table-header {
+    if (
 
-            display: flex;
+        auth.loggedIn !== "true" ||
 
-            justify-content:
-                space-between;
+        auth.role !== "admin"
 
-            align-items:
-                center;
+    ) {
 
-            margin-bottom: 18px;
 
-        }
 
+        clearMedicalLogin();
 
-        .search-box {
 
-            width: 330px;
 
-            padding: 10px;
+        window.location.replace(
 
-            border:
-                1px solid #cbd5e1;
+            "./login.html"
 
-            border-radius: 8px;
+        );
 
-        }
 
 
-        .table-wrapper {
+        return false;
 
-            overflow-x: auto;
 
-        }
 
+    }
 
-        table {
 
-            width: 100%;
 
-            min-width: 1500px;
 
-            border-collapse: collapse;
 
-        }
+    return true;
 
 
-        th,
-        td {
 
-            padding: 13px;
+}
 
-            border-bottom:
-                1px solid #e2e8f0;
 
-            text-align: left;
 
-            font-size: 13px;
 
-        }
 
+function logoutMedicalUser() {
 
-        th {
 
-            background: #f8fafc;
 
-        }
+    clearMedicalLogin();
 
 
-        .edit-btn {
 
-            border: none;
+    window.location.replace(
 
-            padding: 7px 13px;
+        "./login.html"
 
-            border-radius: 7px;
+    );
 
-            background: #2563eb;
 
-            color: white;
 
-            cursor: pointer;
+}
 
-        }
 
 
-        .popup-overlay {
 
-            position: fixed;
 
-            inset: 0;
+requireAdmin();
 
-            display: none;
 
-            justify-content: center;
 
-            align-items: center;
+</script>
 
-            background:
-                rgba(15,
-                    23,
-                    42,
-                    .65);
 
-            padding: 20px;
 
-        }
 
 
-        .popup-overlay.active {
+<style>
 
-            display: flex;
 
-        }
 
+/* =========================================================
 
-        .popup {
+   GLOBAL
 
-            width: 100%;
+========================================================= */
 
-            max-width: 750px;
 
-            max-height: 90vh;
 
-            overflow-y: auto;
+* {
 
-            background: white;
+    box-sizing: border-box;
 
-            padding: 25px;
+}
 
-            border-radius: 14px;
 
-        }
 
 
-        .popup-header {
 
-            display: flex;
+html,
 
-            justify-content:
-                space-between;
+body {
 
-            align-items:
-                center;
 
-        }
 
+    margin: 0;
 
-        .close-btn {
+    padding: 0;
 
-            border: none;
 
-            background: transparent;
 
-            font-size: 28px;
+}
 
-            cursor: pointer;
 
-        }
 
 
-        .form-grid {
 
-            display: grid;
+body {
 
-            grid-template-columns:
-                repeat(2,
-                    1fr);
 
-            gap: 15px;
 
-        }
+    min-height: 100vh;
 
 
-        .form-group {
 
-            display: flex;
+    background:
 
-            flex-direction: column;
+        #f5f7fb;
 
-            gap: 6px;
 
-        }
 
+    color:
 
-        .form-group input,
-        .form-group select {
+        #0f172a;
 
-            padding: 11px;
 
-            border:
-                1px solid #cbd5e1;
 
-            border-radius: 8px;
+    font-family:
 
-        }
+        Arial,
 
+        Helvetica,
 
-        .update-btn {
+        sans-serif;
 
-            width: 100%;
 
-            margin-top: 20px;
 
-            padding: 12px;
+}
 
-            border: none;
 
-            border-radius: 8px;
 
-            background: #2563eb;
 
-            color: white;
 
-        }
+button,
 
+input {
 
-        .message {
 
-            margin-top: 12px;
 
-            text-align: center;
+    font-family:
 
-        }
+        inherit;
 
 
-        .success {
-            color: #15803d;
-        }
 
+}
 
-        .error {
-            color: #dc2626;
-        }
 
 
-        @media(max-width:768px) {
 
-            .dashboard {
-                padding: 15px;
-            }
 
+/* =========================================================
 
-            .dashboard-header,
-            .table-header {
+   HEADER
 
-                flex-direction:
-                    column;
+========================================================= */
 
-                align-items:
-                    stretch;
 
-            }
 
+.topbar {
 
-            .form-grid {
 
-                grid-template-columns:
-                    1fr;
 
-            }
+    padding:
 
+        16px 30px;
 
-            .search-box {
 
-                width: 100%;
 
-            }
+    background:
 
-        }
-    </style>
+        #0f172a;
+
+
+
+    color:
+
+        #ffffff;
+
+
+
+    display:
+
+        flex;
+
+
+
+    justify-content:
+
+        space-between;
+
+
+
+    align-items:
+
+        center;
+
+
+
+    gap:
+
+        20px;
+
+
+
+}
+
+
+
+
+
+.brand {
+
+
+
+    font-size:
+
+        20px;
+
+
+
+    font-weight:
+
+        700;
+
+
+
+}
+
+
+
+
+
+.topbar-actions {
+
+
+
+    display:
+
+        flex;
+
+
+
+    align-items:
+
+        center;
+
+
+
+    gap:
+
+        12px;
+
+
+
+}
+
+
+
+
+
+.admin-email {
+
+
+
+    color:
+
+        #cbd5e1;
+
+
+
+    font-size:
+
+        13px;
+
+
+
+}
+
+
+
+
+
+.back-btn,
+
+.logout-btn {
+
+
+
+    border:
+
+        none;
+
+
+
+    border-radius:
+
+        8px;
+
+
+
+    padding:
+
+        10px 15px;
+
+
+
+    cursor:
+
+        pointer;
+
+
+
+    font-weight:
+
+        600;
+
+
+
+}
+
+
+
+
+
+.back-btn {
+
+
+
+    background:
+
+        #2563eb;
+
+
+
+    color:
+
+        #ffffff;
+
+
+
+}
+
+
+
+
+
+.logout-btn {
+
+
+
+    background:
+
+        #dc2626;
+
+
+
+    color:
+
+        #ffffff;
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   PAGE
+
+========================================================= */
+
+
+
+.page {
+
+
+
+    max-width:
+
+        1600px;
+
+
+
+    margin:
+
+        0 auto;
+
+
+
+    padding:
+
+        30px;
+
+
+
+}
+
+
+
+
+
+.page-heading {
+
+
+
+    margin-bottom:
+
+        25px;
+
+
+
+}
+
+
+
+
+
+.page-heading h1 {
+
+
+
+    margin:
+
+        0 0 7px;
+
+
+
+    font-size:
+
+        30px;
+
+
+
+}
+
+
+
+
+
+.page-heading p {
+
+
+
+    margin:
+
+        0;
+
+
+
+    color:
+
+        #64748b;
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   STATS
+
+========================================================= */
+
+
+
+.stats {
+
+
+
+    display:
+
+        grid;
+
+
+
+    grid-template-columns:
+
+        repeat(
+
+            3,
+
+            minmax(
+
+                0,
+
+                1fr
+
+            )
+
+        );
+
+
+
+    gap:
+
+        20px;
+
+
+
+    margin-bottom:
+
+        25px;
+
+
+
+}
+
+
+
+
+
+.stat-card {
+
+
+
+    background:
+
+        #ffffff;
+
+
+
+    padding:
+
+        22px;
+
+
+
+    border-radius:
+
+        12px;
+
+
+
+    box-shadow:
+
+        0 5px 20px
+
+        rgba(
+
+            15,
+
+            23,
+
+            42,
+
+            0.05
+
+        );
+
+
+
+}
+
+
+
+
+
+.stat-title {
+
+
+
+    color:
+
+        #64748b;
+
+
+
+    font-size:
+
+        13px;
+
+
+
+    margin-bottom:
+
+        8px;
+
+
+
+}
+
+
+
+
+
+.stat-value {
+
+
+
+    font-size:
+
+        30px;
+
+
+
+    font-weight:
+
+        700;
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   CARD
+
+========================================================= */
+
+
+
+.card {
+
+
+
+    background:
+
+        #ffffff;
+
+
+
+    padding:
+
+        24px;
+
+
+
+    border-radius:
+
+        14px;
+
+
+
+    box-shadow:
+
+        0 5px 20px
+
+        rgba(
+
+            15,
+
+            23,
+
+            42,
+
+            0.05
+
+        );
+
+
+
+}
+
+
+
+
+
+.toolbar {
+
+
+
+    display:
+
+        flex;
+
+
+
+    justify-content:
+
+        space-between;
+
+
+
+    align-items:
+
+        center;
+
+
+
+    gap:
+
+        20px;
+
+
+
+    margin-bottom:
+
+        20px;
+
+
+
+}
+
+
+
+
+
+.toolbar h2 {
+
+
+
+    margin:
+
+        0;
+
+
+
+}
+
+
+
+
+
+.toolbar-right {
+
+
+
+    display:
+
+        flex;
+
+
+
+    gap:
+
+        10px;
+
+
+
+}
+
+
+
+
+
+.search-input {
+
+
+
+    width:
+
+        330px;
+
+
+
+    padding:
+
+        10px 12px;
+
+
+
+    border:
+
+        1px solid
+
+        #cbd5e1;
+
+
+
+    border-radius:
+
+        8px;
+
+
+
+    outline:
+
+        none;
+
+
+
+}
+
+
+
+
+
+.refresh-btn {
+
+
+
+    border:
+
+        none;
+
+
+
+    border-radius:
+
+        8px;
+
+
+
+    padding:
+
+        10px 16px;
+
+
+
+    background:
+
+        #2563eb;
+
+
+
+    color:
+
+        #ffffff;
+
+
+
+    font-weight:
+
+        600;
+
+
+
+    cursor:
+
+        pointer;
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   COUNSELLOR TABLE
+
+========================================================= */
+
+
+
+.table-wrapper {
+
+
+
+    width:
+
+        100%;
+
+
+
+    overflow-x:
+
+        auto;
+
+
+
+}
+
+
+
+
+
+.main-table {
+
+
+
+    width:
+
+        100%;
+
+
+
+    min-width:
+
+        1000px;
+
+
+
+    border-collapse:
+
+        collapse;
+
+
+
+}
+
+
+
+
+
+.main-table thead {
+
+
+
+    background:
+
+        #f1f5f9;
+
+
+
+}
+
+
+
+
+
+.main-table th {
+
+
+
+    padding:
+
+        13px 12px;
+
+
+
+    text-align:
+
+        left;
+
+
+
+    color:
+
+        #334155;
+
+
+
+    font-size:
+
+        12px;
+
+
+
+    text-transform:
+
+        uppercase;
+
+
+
+    white-space:
+
+        nowrap;
+
+
+
+}
+
+
+
+
+
+.main-table td {
+
+
+
+    padding:
+
+        14px 12px;
+
+
+
+    border-bottom:
+
+        1px solid
+
+        #e2e8f0;
+
+
+
+    color:
+
+        #475569;
+
+
+
+    font-size:
+
+        13px;
+
+
+
+}
+
+
+
+
+
+.email {
+
+
+
+    color:
+
+        #2563eb !important;
+
+
+
+    font-weight:
+
+        700;
+
+
+
+}
+
+
+
+
+
+.view-btn {
+
+
+
+    border:
+
+        none;
+
+
+
+    border-radius:
+
+        7px;
+
+
+
+    padding:
+
+        8px 14px;
+
+
+
+    background:
+
+        #2563eb;
+
+
+
+    color:
+
+        #ffffff;
+
+
+
+    cursor:
+
+        pointer;
+
+
+
+    font-size:
+
+        12px;
+
+
+
+    font-weight:
+
+        600;
+
+
+
+}
+
+
+
+
+
+.view-btn:hover {
+
+
+
+    background:
+
+        #1d4ed8;
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   EXPANDED
+
+========================================================= */
+
+
+
+.expand-row {
+
+
+
+    display:
+
+        none;
+
+
+
+}
+
+
+
+
+
+.expand-row.active {
+
+
+
+    display:
+
+        table-row;
+
+
+
+}
+
+
+
+
+
+.expand-cell {
+
+
+
+    padding:
+
+        0 !important;
+
+
+
+    background:
+
+        #f8fafc;
+
+
+
+}
+
+
+
+
+
+.panel {
+
+
+
+    padding:
+
+        24px;
+
+
+
+    border-top:
+
+        3px solid
+
+        #2563eb;
+
+
+
+}
+
+
+
+
+
+.panel-header {
+
+
+
+    display:
+
+        flex;
+
+
+
+    justify-content:
+
+        space-between;
+
+
+
+    align-items:
+
+        flex-start;
+
+
+
+    gap:
+
+        20px;
+
+
+
+    margin-bottom:
+
+        20px;
+
+
+
+}
+
+
+
+
+
+.panel-header h3 {
+
+
+
+    margin:
+
+        0 0 6px;
+
+
+
+}
+
+
+
+
+
+.panel-header p {
+
+
+
+    margin:
+
+        0;
+
+
+
+    color:
+
+        #64748b;
+
+
+
+    font-size:
+
+        13px;
+
+
+
+}
+
+
+
+
+
+.count-badge {
+
+
+
+    display:
+
+        inline-block;
+
+
+
+    padding:
+
+        6px 11px;
+
+
+
+    border-radius:
+
+        20px;
+
+
+
+    background:
+
+        #dbeafe;
+
+
+
+    color:
+
+        #1d4ed8;
+
+
+
+    font-size:
+
+        12px;
+
+
+
+    font-weight:
+
+        700;
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   CAMPS
+
+========================================================= */
+
+
+
+.camps-grid {
+
+
+
+    display:
+
+        grid;
+
+
+
+    grid-template-columns:
+
+        repeat(
+
+            3,
+
+            minmax(
+
+                0,
+
+                1fr
+
+            )
+
+        );
+
+
+
+    gap:
+
+        12px;
+
+
+
+    margin-bottom:
+
+        22px;
+
+
+
+}
+
+
+
+
+
+.camp-box {
+
+
+
+    padding:
+
+        14px;
+
+
+
+    background:
+
+        #ffffff;
+
+
+
+    border:
+
+        1px solid
+
+        #dbe2ea;
+
+
+
+    border-radius:
+
+        9px;
+
+
+
+}
+
+
+
+
+
+.camp-id {
+
+
+
+    color:
+
+        #2563eb;
+
+
+
+    font-weight:
+
+        700;
+
+
+
+    font-size:
+
+        12px;
+
+
+
+}
+
+
+
+
+
+.camp-name {
+
+
+
+    margin-top:
+
+        5px;
+
+
+
+    font-weight:
+
+        700;
+
+
+
+}
+
+
+
+
+
+.camp-meta {
+
+
+
+    margin-top:
+
+        7px;
+
+
+
+    color:
+
+        #64748b;
+
+
+
+    font-size:
+
+        12px;
+
+
+
+    line-height:
+
+        1.5;
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   PATIENT TABLE
+
+========================================================= */
+
+
+
+.patient-wrapper {
+
+
+
+    overflow-x:
+
+        auto;
+
+
+
+    background:
+
+        #ffffff;
+
+
+
+    border:
+
+        1px solid
+
+        #e2e8f0;
+
+
+
+    border-radius:
+
+        10px;
+
+
+
+}
+
+
+
+
+
+.patient-table {
+
+
+
+    width:
+
+        100%;
+
+
+
+    min-width:
+
+        1600px;
+
+
+
+    border-collapse:
+
+        collapse;
+
+
+
+}
+
+
+
+
+
+.patient-table thead {
+
+
+
+    background:
+
+        #eaf1f8;
+
+
+
+}
+
+
+
+
+
+.patient-table th {
+
+
+
+    padding:
+
+        12px;
+
+
+
+    text-align:
+
+        left;
+
+
+
+    color:
+
+        #334155;
+
+
+
+    font-size:
+
+        11px;
+
+
+
+    text-transform:
+
+        uppercase;
+
+
+
+    white-space:
+
+        nowrap;
+
+
+
+}
+
+
+
+
+
+.patient-table td {
+
+
+
+    padding:
+
+        13px 12px;
+
+
+
+    border-bottom:
+
+        1px solid
+
+        #e2e8f0;
+
+
+
+    color:
+
+        #475569;
+
+
+
+    font-size:
+
+        12px;
+
+
+
+}
+
+
+
+
+
+.patient-id {
+
+
+
+    color:
+
+        #2563eb !important;
+
+
+
+    font-weight:
+
+        700;
+
+
+
+}
+
+
+
+
+
+.status-badge {
+
+
+
+    display:
+
+        inline-block;
+
+
+
+    padding:
+
+        5px 9px;
+
+
+
+    border-radius:
+
+        16px;
+
+
+
+    background:
+
+        #e2e8f0;
+
+
+
+    font-size:
+
+        11px;
+
+
+
+    font-weight:
+
+        600;
+
+
+
+}
+
+
+
+
+
+.modified {
+
+
+
+    color:
+
+        #15803d !important;
+
+
+
+    font-weight:
+
+        700;
+
+
+
+}
+
+
+
+
+
+.assignment {
+
+
+
+    color:
+
+        #b45309 !important;
+
+
+
+    font-weight:
+
+        600;
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   CANCEL
+
+========================================================= */
+
+
+
+.panel-footer {
+
+
+
+    display:
+
+        flex;
+
+
+
+    justify-content:
+
+        center;
+
+
+
+    margin-top:
+
+        22px;
+
+
+
+}
+
+
+
+
+
+.cancel-btn {
+
+
+
+    min-width:
+
+        145px;
+
+
+
+    border:
+
+        none;
+
+
+
+    border-radius:
+
+        7px;
+
+
+
+    padding:
+
+        10px 20px;
+
+
+
+    background:
+
+        #dc2626;
+
+
+
+    color:
+
+        #ffffff;
+
+
+
+    font-weight:
+
+        700;
+
+
+
+    cursor:
+
+        pointer;
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   EMPTY
+
+========================================================= */
+
+
+
+.empty {
+
+
+
+    padding:
+
+        35px;
+
+
+
+    text-align:
+
+        center;
+
+
+
+    color:
+
+        #64748b;
+
+
+
+}
+
+
+
+
+
+.error {
+
+
+
+    padding:
+
+        20px;
+
+
+
+    color:
+
+        #dc2626;
+
+
+
+    text-align:
+
+        center;
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   MOBILE
+
+========================================================= */
+
+
+
+@media(max-width:768px) {
+
+
+
+    .page {
+
+
+
+        padding:
+
+            15px;
+
+
+
+    }
+
+
+
+
+
+    .topbar {
+
+
+
+        flex-direction:
+
+            column;
+
+
+
+        align-items:
+
+            flex-start;
+
+
+
+    }
+
+
+
+
+
+    .topbar-actions {
+
+
+
+        width:
+
+            100%;
+
+
+
+        flex-wrap:
+
+            wrap;
+
+
+
+    }
+
+
+
+
+
+    .stats {
+
+
+
+        grid-template-columns:
+
+            1fr;
+
+
+
+    }
+
+
+
+
+
+    .toolbar {
+
+
+
+        flex-direction:
+
+            column;
+
+
+
+        align-items:
+
+            stretch;
+
+
+
+    }
+
+
+
+
+
+    .toolbar-right {
+
+
+
+        flex-direction:
+
+            column;
+
+
+
+    }
+
+
+
+
+
+    .search-input {
+
+
+
+        width:
+
+            100%;
+
+
+
+    }
+
+
+
+
+
+    .camps-grid {
+
+
+
+        grid-template-columns:
+
+            1fr;
+
+
+
+    }
+
+
+
+}
+
+
+
+
+/* Five procedure count inputs per assigned camp */
+.procedure-panel{margin-top:15px;padding-top:14px;border-top:1px solid #e2e8f0}
+.procedure-title{font-weight:700;font-size:13px;color:#0f172a;margin-bottom:10px}
+.procedure-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.procedure-field{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#475569;font-weight:600}
+.procedure-field input{width:100%;min-width:0;border:1px solid #cbd5e1;border-radius:7px;padding:9px 10px;font-size:14px;color:#0f172a;background:#fff}
+.procedure-field input:focus{outline:2px solid #93c5fd;border-color:#2563eb}
+.procedure-footer{display:flex;justify-content:space-between;gap:12px;margin-top:12px;align-items:center;font-size:12px;color:#64748b}
+.procedure-total{font-size:13px;color:#1d4ed8;font-weight:700}
+@media(max-width:520px){.procedure-fields{grid-template-columns:1fr}}
+
+</style>
+
+
 
 </head>
+
+
+
 
 
 <body>
 
 
-    <div class="dashboard">
 
 
-        <div class="dashboard-header">
 
-            <div>
+<header class="topbar">
 
-                <h1>
-                    Counsellor Dashboard
-                </h1>
 
-                <div id="userEmail"></div>
 
-            </div>
 
 
-            <button class="logout-btn" onclick="logoutMedicalUser()">
-                Logout
-            </button>
+    <div class="brand">
 
-        </div>
 
 
+        Medical Camps Admin
 
-        <div class="camp-card">
 
-            <h3>
-                Assigned Camp
-            </h3>
 
+    </div>
 
-            <select id="campSelector" class="camp-select">
 
-                <option value="">
-                    Loading...
-                </option>
 
-            </select>
 
 
-            <div id="campDetails" class="assignment"></div>
+    <div class="topbar-actions">
 
 
-            <div id="campError"></div>
 
-        </div>
 
 
+        <span
 
-        <div class="table-card">
+            id="adminEmail"
 
+            class="admin-email"
 
-            <div class="table-header">
+        >
 
-                <h2>
-                    Patient Data
-                </h2>
+            Admin
 
+        </span>
 
-                <input type="search" id="leadSearch" class="search-box" placeholder="Search patient...">
 
-            </div>
 
 
-            <div class="table-wrapper">
 
-                <table>
+        <button
 
-                    <thead>
+            type="button"
 
-                        <tr>
+            class="back-btn"
 
-                            <th>ID</th>
+            onclick="
 
-                            <th>Camp</th>
+                window.location.href =
 
-                            <th>Date</th>
+                    './admin-dashboard.html'
 
-                            <th>Name</th>
+            "
 
-                            <th>Age</th>
+        >
 
-                            <th>Gender</th>
+            Admin Dashboard
 
-                            <th>Phone</th>
+        </button>
 
-                            <th>City</th>
 
-                            <th>Source</th>
 
-                            <th>Doctor</th>
 
-                            <th>Treatment</th>
 
-                            <th>Status</th>
+        <button
 
-                            <th>Action</th>
+            type="button"
 
-                        </tr>
+            class="logout-btn"
 
-                    </thead>
+            onclick="logoutMedicalUser()"
 
+        >
 
-                    <tbody id="leadTableBody">
+            Logout
 
-                        <tr>
+        </button>
 
-                            <td colspan="13">
-                                Loading...
-                            </td>
 
-                        </tr>
 
-                    </tbody>
 
-                </table>
 
-            </div>
+    </div>
 
-        </div>
 
-    </div>
 
 
 
-    <div id="editPopup" class="popup-overlay">
+</header>
 
-        <div class="popup">
 
 
-            <div class="popup-header">
 
-                <h2>
-                    Edit Patient
-                </h2>
 
 
-                <button id="closePopup" type="button" class="close-btn">
-                    ×
-                </button>
 
-            </div>
+<div class="page">
 
 
-            <form id="editForm">
 
 
-                <div class="form-grid">
 
+    <div class="page-heading">
 
-                    <div class="form-group">
 
-                        <label>ID</label>
 
-                        <input id="editId" readonly>
+        <h1>
 
-                    </div>
+            Counsellors
 
+        </h1>
 
-                    <div class="form-group">
 
-                        <label>Date</label>
 
-                        <input id="editDate" required>
+        <p>
 
-                    </div>
+            View each counsellor's assigned camps
 
+            and the patient records handled in those camps.
 
-                    <div class="form-group">
+        </p>
 
-                        <label>Name</label>
 
-                        <input id="editName" required>
 
-                    </div>
+    </div>
 
 
-                    <div class="form-group">
 
-                        <label>Age</label>
 
-                        <input type="number" id="editAge" required>
 
-                    </div>
 
 
-                    <div class="form-group">
+    <!-- =====================================================
 
-                        <label>Gender</label>
+         STATS
 
-                        <select id="editGender" required>
+    ====================================================== -->
 
-                            <option value="">
-                                Select
-                            </option>
 
-                            <option value="Male">
-                                Male
-                            </option>
 
-                            <option value="Female">
-                                Female
-                            </option>
+    <div class="stats">
 
-                            <option value="Other">
-                                Other
-                            </option>
 
-                        </select>
 
-                    </div>
 
 
-                    <div class="form-group">
+        <div class="stat-card">
 
-                        <label>Phone</label>
 
-                        <input id="editMobile" required>
 
-                    </div>
+            <div class="stat-title">
 
+                Total Counsellors
 
-                    <div class="form-group">
+            </div>
 
-                        <label>City</label>
 
-                        <input id="editCity" required>
 
-                    </div>
+            <div
 
-                    <div class="form-group">
+                id="totalCounsellors"
 
-                        <label for="editDoctorName">
-                            Doctor Name
-                        </label>
+                class="stat-value"
 
-                        <select id="editDoctorName" name="doctorName" required>
+            >
 
-                            <option value="">
-                                Select Doctor / DMO
-                            </option>
+                0
 
-                            <option value="  Dr. Rajah V Koppala">
-                                Dr. Rajah V Koppala
-                            </option>
+            </div>
 
-                            <option value="Dr. Manimaran Govindaraju">
-                                Dr. Manimaran Govindaraju
 
-                            </option>
 
-                            <option value=" Dr. Sourav Chakroborty">
-                                Dr. Sourav Chakroborty
+        </div>
 
-                            </option>
 
-                            <option value="Dr. Prashanth J V">
-                                Dr. Prashanth J V
 
-                            </option>
 
 
-                            <option value=" Dr. Hareesh Reddy">
-                                Dr. Hareesh Reddy
+        <div class="stat-card">
 
-                            </option>
 
-                            <option value="Dr. Mageswaran Perumal">
-                                Dr. Mageswaran Perumal
 
-                            </option>
+            <div class="stat-title">
 
-                            <option value=" Dr. Avinash C">
-                                Dr. Avinash C
+                Assigned Camps
 
-                            </option>
+            </div>
 
-                            <option value=" 
-Dr. Ramesh S K">
 
-                                Dr. Ramesh S K
 
-                            </option>
+            <div
 
+                id="totalCamps"
 
-                              <option value=" Dr. M. V. Soujanya">
-                               Dr. M. V. Soujanya
+                class="stat-value"
 
-                            </option>
+            >
 
-                            
-                              <option value=" Dr. M. V. Soujanya">
-                               Dr. M. V. Soujanya
+                0
 
-                            </option>
-                           
+            </div>
 
-                              <option value="  Dr. Keerthen Mahendran">
-                               Dr. Keerthen Mahendran
 
-                            </option>
 
-                              <option value="  Dr. Ashish Shahare">
-                            Dr. Ashish Shahare
+        </div>
 
-                            </option>
 
 
-                            
 
 
+        <div class="stat-card">
 
 
 
+            <div class="stat-title">
 
+                Counsellor Handled Patients
 
+            </div>
 
 
-                            <option value="Dr. Deb Kumar Mitra">
-                                Dr. Deb Kumar Mitra (DMO)
-                            </option>
 
-                             <option value="Dr. Divya (DMO)">
-                                Dr. Praneeth (DMO)
-                            </option>
+            <div
 
-                            <option value="Anwar">
-                                Dr. Anwar (DMO)
-                            </option>
+                id="totalPatients"
 
-                            <option value="Ganesh">
-                                Dr. Ganesh (DMO)
-                            </option>
+                class="stat-value"
 
-                            <option value="Lavanya">
-                                Dr. Lavanya (DMO)
-                            </option>
+            >
 
-                            <option value="Mahita">
-                                Dr. Mahita (DMO)
-                            </option>
+                0
 
-                            <option value="Madhuri">
-                                Dr. Madhuri (DMO)
-                            </option>
+            </div>
 
-                            <option value="Manasa">
-                                Dr. Manasa (DMO)
-                            </option>
 
-                            <option value="Sravani">
-                                Dr. Sravani (DMO)
-                            </option>
 
-                            <option value="Sukitha">
-                                Dr. Sukitha (DMO)
-                            </option>
+        </div>
 
-                            <option value="Vamshi">
-                                Dr. Vamshi (DMO)
-                            </option>
 
-                            <option value="Dr. Nivedhitha (DMO)">
-                                Dr. Nivedhitha (DMO)
-                            </option>
 
-                            <option value="Dr. Ruben (DMO)">
-                                Dr. Ruben (DMO)
-                            </option>
 
-                            <option value="Dr. Pravan (DMO)">
-                                Dr. Pravan (DMO)
-                            </option>
 
-                            <option value="Dr. Divya (DMO)">
-                                Dr. Divya (DMO)
-                            </option>
+    </div>
 
-                        </select>
 
-                    </div>
 
 
-                    <div class="form-group">
 
-                        <label>
-                            Treatment
-                        </label>
 
-                        <select id="editTreatment" onchange="updateStatusOptions()">
 
-                            <option value="">
-                                Select Treatment
-                            </option>
+    <!-- =====================================================
 
-                            <option value="Varicose Veins">
-                                Varicose Veins
-                            </option>
+         TABLE
 
-                            <option value="Not Varicose Veins">
-                                Not Varicose Veins
-                            </option>
+    ====================================================== -->
 
-                            <option value="Medicines">
-                                Medicines
-                            </option>
 
-                            <option value="None">
-                                None
-                            </option>
 
-                        </select>
+    <div class="card">
 
-                    </div>
 
 
-                    <div class="form-group">
 
-                        <label>Status</label>
 
-                        <select id="editStatus">
+        <div class="toolbar">
 
-                            <option value="">
-                                Select Treatment First
-                            </option>
 
-                        </select>
 
-                    </div>
 
 
-                </div>
+            <h2>
 
+                Counsellor Data
 
-                <button id="updateButton" type="submit" class="update-btn">
-                    Update Patient
-                </button>
+            </h2>
 
 
-                <div id="formMessage" class="message"></div>
 
 
-            </form>
 
-        </div>
+            <div class="toolbar-right">
 
-    </div>
 
 
 
-    <script>
 
-        /* =========================================================
-           APIs
-        ========================================================= */
+                <input
 
-        const LEADS_API_URL =
-            "https://script.google.com/macros/s/AKfycbw-nwjRZU93h_icjvdO7AJAHFfIJB7vpeVIqjY9B-V7Thd3bJ1pajRtjNYGXaYHoGGMfA/exec";
+                    type="search"
 
+                    id="searchInput"
 
-        const CAMPS_API_URL =
-            "https://script.google.com/macros/s/AKfycbw4w8S_nHPcdn3RWj-wm2XGT_6Il70lScUQFP71UooBPM7Npf0zedq_Vf2-4TdIBtTD1w/exec";
+                    class="search-input"
 
+                    placeholder="Search counsellor or camp..."
 
-        /* =========================================================
-           USER
-        ========================================================= */
+                >
 
-        const currentUser =
-            getAuthData();
 
 
-        const currentEmail =
-            String(
-                currentUser.email || ""
-            )
-                .trim()
-                .toLowerCase();
 
 
-        document
-            .getElementById(
-                "userEmail"
-            )
-            .textContent =
-            currentEmail;
+                <button
 
+                    type="button"
 
-        /* =========================================================
-           DATA
-        ========================================================= */
+                    id="refreshBtn"
 
-        let assignedCamps = [];
+                    class="refresh-btn"
 
-        let selectedCamp = null;
+                >
 
-        let allLeads = [];
+                    Refresh
 
+                </button>
 
-        /* =========================================================
-           LOAD CAMPS
-        ========================================================= */
 
-        async function loadAssignedCamps() {
 
-            try {
 
-                const response =
-                    await fetch(
 
-                        CAMPS_API_URL +
-                        "?action=getCamps&t=" +
-                        Date.now(),
+            </div>
 
-                        {
-                            cache:
-                                "no-store"
-                        }
 
-                    );
 
 
-                const result =
-                    await response.json();
 
+        </div>
 
-                if (!result.success) {
 
-                    throw new Error(
-                        result.message
-                    );
 
-                }
 
 
-                assignedCamps =
-                    (
-                        Array.isArray(
-                            result.camps
-                        )
-                            ? result.camps
-                            : []
-                    )
-                        .filter(
-                            function (camp) {
 
-                                return (
 
-                                    String(
-                                        camp.counsellor || ""
-                                    )
-                                        .trim()
-                                        .toLowerCase()
+        <div class="table-wrapper">
 
-                                    ===
 
-                                    currentEmail
 
-                                );
 
-                            }
-                        );
 
+            <table class="main-table">
 
-                renderCampSelector();
 
 
-            } catch (error) {
 
-                document
-                    .getElementById(
-                        "campError"
-                    )
-                    .textContent =
-                    error.message;
 
-            }
+                <thead>
 
-        }
 
 
-        /* =========================================================
-           CAMP SELECTOR
-        ========================================================= */
+                    <tr>
 
-        function renderCampSelector() {
 
-            const selector =
-                document.getElementById(
-                    "campSelector"
-                );
 
+                        <th>
 
-            if (
-                assignedCamps.length === 0
-            ) {
+                            Counsellor
 
-                selector.innerHTML = `
+                        </th>
 
-            <option value="">
-                No camp assigned
-            </option>
 
-        `;
 
+                        <th>
 
-                renderTable([]);
+                            Assigned Camps
 
+                        </th>
 
-                return;
 
-            }
 
+                        <th>
 
-            selector.innerHTML =
-                assignedCamps
-                    .map(
-                        function (camp) {
+                            Handled Patients
 
-                            return `
+                        </th>
 
-                        <option
-                            value="${escapeHtml(
-                                camp.id
-                            )}"
-                        >
 
-                            ${escapeHtml(
-                                camp.id
-                            )}
 
-                            -
+                        <th>
 
-                            ${escapeHtml(
-                                camp.campName
-                            )}
+                            Last Modified
 
-                        </option>
+                        </th>
 
-                    `;
 
-                        }
-                    )
-                    .join("");
 
+                        <th>
 
-            selectCamp(
-                assignedCamps[0].id
-            );
+                            Data
 
-        }
+                        </th>
 
 
-        /* =========================================================
-           SELECT CAMP
-        ========================================================= */
 
-        document
-            .getElementById(
-                "campSelector"
-            )
-            .addEventListener(
-                "change",
-                function () {
+                    </tr>
 
-                    selectCamp(
-                        this.value
-                    );
 
-                }
-            );
 
+                </thead>
 
-        function selectCamp(
-            id
-        ) {
 
-            selectedCamp =
-                assignedCamps.find(
-                    function (camp) {
 
-                        return (
-                            String(
-                                camp.id
-                            )
-                            ===
-                            String(
-                                id
-                            )
-                        );
 
-                    }
-                ) || null;
 
+                <tbody id="tableBody">
 
-            if (!selectedCamp) {
 
-                return;
 
-            }
+                    <tr>
 
 
-            document
-                .getElementById(
-                    "campDetails"
-                )
-                .innerHTML = `
 
-            <strong>
+                        <td
 
-                ${escapeHtml(
-                    selectedCamp.campName
-                )}
+                            colspan="5"
 
-            </strong>
+                            class="empty"
 
-            &nbsp; | &nbsp;
+                        >
 
-            ${escapeHtml(
-                    selectedCamp.city
-                )}
+                            Loading...
 
-            &nbsp; | &nbsp;
+                        </td>
 
-            Doctor:
 
-            ${escapeHtml(
-                    selectedCamp.doctorName
-                )}
 
-        `;
+                    </tr>
 
 
-            loadLeads();
 
-        }
+                </tbody>
 
 
-        /* =========================================================
-           LOAD LEADS
-        ========================================================= */
 
-        async function loadLeads() {
 
-            if (!selectedCamp) {
 
-                renderTable([]);
+            </table>
 
-                return;
 
-            }
 
 
-            try {
 
-                const response =
-                    await fetch(
+        </div>
 
-                        LEADS_API_URL +
-                        "?action=getLeads&t=" +
-                        Date.now(),
 
-                        {
-                            cache:
-                                "no-store"
-                        }
 
-                    );
 
 
-                const result =
-                    await response.json();
+    </div>
 
 
-                if (!result.success) {
 
-                    throw new Error(
-                        result.message
-                    );
 
-                }
 
+</div>
 
-                allLeads =
-                    (
-                        Array.isArray(
-                            result.leads
-                        )
-                            ? result.leads
-                            : []
-                    )
-                        .filter(
-                            function (lead) {
 
-                                return (
 
-                                    String(
-                                        lead.campId || ""
-                                    )
-                                        .trim()
 
-                                    ===
 
-                                    String(
-                                        selectedCamp.id
-                                    )
-                                        .trim()
 
-                                );
 
-                            }
-                        );
+<script>
 
 
-                renderTable(
-                    allLeads
-                );
 
+/* =========================================================
 
-            } catch (error) {
+   API URLS
 
-                document
-                    .getElementById(
-                        "leadTableBody"
-                    )
-                    .innerHTML = `
+========================================================= */
 
-                <tr>
 
-                    <td colspan="13">
 
-                        ${escapeHtml(
-                        error.message
-                    )}
+const CAMPS_API_URL =
 
-                    </td>
+    "https://script.google.com/macros/s/AKfycbwdfXWbuvA9K8P5V76hFzGH9WrerBIkz2Uhm2T7OJRG1hmqJf0ElXcWmIvqn78neNSIZw/exec";
 
-                </tr>
 
-            `;
 
-            }
 
-        }
 
+const LEADS_API_URL =
 
-        /* =========================================================
-           RENDER
-        ========================================================= */
+    "https://script.google.com/macros/s/AKfycby7DlCSbj6bjWVdjlA3Xrv1ARlhtKhYe9MbPBfvYMJGRCbKdZdZNHznW1LZAuf6lOFPnQ/exec";
 
-        function renderTable(
-            leads
-        ) {
 
-            const body =
-                document.getElementById(
-                    "leadTableBody"
-                );
 
 
-            if (!leads.length) {
 
-                body.innerHTML = `
+/* =========================================================
 
-            <tr>
+   ADMIN
 
-                <td colspan="13">
+========================================================= */
 
-                    No patient data for this camp.
 
-                </td>
 
-            </tr>
+const auth =
 
-        `;
+    getAuthData();
 
-                return;
 
-            }
 
 
-            body.innerHTML =
-                leads
-                    .map(
-                        function (lead) {
 
-                            return `
+document
 
-                        <tr>
+    .getElementById(
 
-                            <td>
-                                ${escapeHtml(
-                                lead.id
-                            )}
-                            </td>
+        "adminEmail"
 
-                            <td>
+    )
 
-                                ${escapeHtml(
-                                lead.campId
-                            )}
+    .textContent =
 
-                                -
+        auth.email ||
 
-                                ${escapeHtml(
-                                lead.campName
-                            )}
+        "Admin";
 
-                            </td>
 
-                            <td>
-                                ${escapeHtml(
-                                lead.date
-                            )}
-                            </td>
 
-                            <td>
-                                ${escapeHtml(
-                                lead.name
-                            )}
-                            </td>
 
-                            <td>
-                                ${escapeHtml(
-                                lead.age
-                            )}
-                            </td>
 
-                            <td>
-                                ${escapeHtml(
-                                lead.gender
-                            )}
-                            </td>
+/* =========================================================
 
-                            <td>
-                                ${escapeHtml(
-                                lead.mobile
-                            )}
-                            </td>
+   DATA
 
-                            <td>
-                                ${escapeHtml(
-                                lead.city
-                            )}
-                            </td>
+========================================================= */
 
-                            <td>
-                                ${displayValue(
-                                lead.source
-                            )}
-                            </td>
 
-                            <td>
-                                ${displayValue(
-                                lead.doctorName
-                            )}
-                            </td>
 
-                            <td>
-                                ${displayValue(
-                                lead.treatment
-                            )}
-                            </td>
+let allCamps =
 
-                            <td>
-                                ${displayValue(
-                                lead.status
-                            )}
-                            </td>
+    [];
 
-                            <td>
 
-                                <button
-                                    type="button"
-                                    class="edit-btn"
-                                    onclick="
-                                        openEditPopup(
-                                            '${escapeHtml(
-                                lead.id
-                            )}'
-                                        )
-                                    "
-                                >
-                                    Edit
-                                </button>
 
-                            </td>
 
-                        </tr>
 
-                    `;
+let allLeads =
 
-                        }
-                    )
-                    .join("");
+    [];
 
-        }
 
 
-        /* =========================================================
-           EDIT
-        ========================================================= */
 
-        function openEditPopup(
-            id
-        ) {
 
-            const lead =
-                allLeads.find(
-                    function (item) {
+let counsellors =
 
-                        return (
-                            String(
-                                item.id
-                            )
-                            ===
-                            String(
-                                id
-                            )
-                        );
+    [];
 
-                    }
-                );
 
 
-            if (!lead) {
 
-                return;
 
-            }
+/* =========================================================
 
+   SAFE JSON FETCH
 
-            document
-                .getElementById(
-                    "editId"
-                )
-                .value =
-                lead.id || "";
+========================================================= */
 
 
-            document
-                .getElementById(
-                    "editDate"
-                )
-                .value =
-                lead.date || "";
 
+async function fetchJson(
 
-            document
-                .getElementById(
-                    "editName"
-                )
-                .value =
-                lead.name || "";
+    url,
 
+    apiName
 
-            document
-                .getElementById(
-                    "editAge"
-                )
-                .value =
-                lead.age || "";
+) {
 
 
-            document
-                .getElementById(
-                    "editGender"
-                )
-                .value =
-                lead.gender || "";
 
 
-            document
-                .getElementById(
-                    "editMobile"
-                )
-                .value =
-                lead.mobile || "";
 
+    const response =
 
-            document
-                .getElementById(
-                    "editCity"
-                )
-                .value =
-                lead.city || "";
+        await fetch(
 
 
-            document
-                .getElementById(
-                    "editDoctorName"
-                )
-                .value =
-                editableValue(
-                    lead.doctorName
-                );
 
+            url,
 
-            document
-                .getElementById(
-                    "editTreatment"
-                )
-                .value =
-                editableValue(
-                    lead.treatment
-                );
 
 
-            updateStatusOptions(
-                editableValue(
-                    lead.status
-                )
-            );
+            {
 
 
-            document
-                .getElementById(
-                    "editPopup"
-                )
-                .classList
-                .add(
-                    "active"
-                );
 
-        }
+                method:
 
+                    "GET",
 
-        /* =========================================================
-           STATUS
-        ========================================================= */
 
-        function updateStatusOptions(
-            selectedStatus = ""
-        ) {
 
-            const treatment =
-                document
-                    .getElementById(
-                        "editTreatment"
-                    )
-                    .value;
+                cache:
 
+                    "no-store"
 
-            const status =
-                document
-                    .getElementById(
-                        "editStatus"
-                    );
 
 
-            let options = [];
+            }
 
 
-            if (
-                treatment ===
-                "Varicose Veins"
-            ) {
 
-                options = [
+        );
 
-                    "Bilateral",
 
-                    "Unilateral"
 
-                ];
 
-            }
 
+    const text =
 
-            else if (
-                treatment ===
-                "Not Varicose Veins"
-            ) {
+        await response.text();
 
-                options = [
 
-                    "Stockings",
-                    "Scan"
 
-                ];
 
-            }
 
+    console.log(
 
-            else if (
-                treatment ===
-                "Medicines"
-            ) {
+        apiName +
 
-                options = [
+        " RAW RESPONSE:",
 
-                    "Medicines"
+        text
 
-                ];
+    );
 
-            }
 
 
-            else if (
-                treatment ===
-                "None"
-            ) {
 
-                options = [
 
-                    "None"
+    if (!response.ok) {
 
-                ];
 
-            }
 
+        throw new Error(
 
-            status.innerHTML = `
 
-        <option value="">
-            Select Status
-        </option>
 
-    `;
+            apiName +
 
+            " HTTP error " +
 
-            options.forEach(
-                function (value) {
+            response.status
 
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
 
 
-                    option.value =
-                        value;
+        );
 
 
-                    option.textContent =
-                        value;
 
+    }
 
-                    status.appendChild(
-                        option
-                    );
 
-                }
-            );
 
 
-            if (
-                selectedStatus
-            ) {
 
-                status.value =
-                    selectedStatus;
+    if (
 
-            }
+        text
 
-        }
+            .trim()
 
+            .startsWith("<")
 
-        /* =========================================================
-           SAVE COUNSELLOR UPDATE
-        ========================================================= */
+    ) {
 
-        document
-            .getElementById(
-                "editForm"
-            )
-            .addEventListener(
-                "submit",
-                async function (event) {
 
-                    event.preventDefault();
 
+        throw new Error(
 
-                    const data = {
 
-                        action:
-                            "updateCounsellorLead",
 
-                        id:
-                            document
-                                .getElementById(
-                                    "editId"
-                                )
-                                .value
-                                .trim(),
+            apiName +
 
-                        date:
-                            document
-                                .getElementById(
-                                    "editDate"
-                                )
-                                .value
-                                .trim(),
+            " returned HTML instead of JSON."
 
-                        name:
-                            document
-                                .getElementById(
-                                    "editName"
-                                )
-                                .value
-                                .trim(),
 
-                        age:
-                            document
-                                .getElementById(
-                                    "editAge"
-                                )
-                                .value
-                                .trim(),
 
-                        gender:
-                            document
-                                .getElementById(
-                                    "editGender"
-                                )
-                                .value,
+        );
 
-                        mobile:
-                            document
-                                .getElementById(
-                                    "editMobile"
-                                )
-                                .value
-                                .trim(),
 
-                        city:
-                            document
-                                .getElementById(
-                                    "editCity"
-                                )
-                                .value
-                                .trim(),
 
-                        doctorName:
-                            document
-                                .getElementById(
-                                    "editDoctorName"
-                                )
-                                .value
-                                .trim(),
+    }
 
-                        treatment:
-                            document
-                                .getElementById(
-                                    "editTreatment"
-                                )
-                                .value,
 
-                        status:
-                            document
-                                .getElementById(
-                                    "editStatus"
-                                )
-                                .value,
 
-                        campId:
-                            selectedCamp
-                                ? selectedCamp.id
-                                : "",
 
-                        counsellorEmail:
-                            currentEmail
 
-                    };
+    try {
 
 
-                    const button =
-                        document.getElementById(
-                            "updateButton"
-                        );
 
+        return JSON.parse(
 
-                    button.disabled =
-                        true;
+            text
 
+        );
 
-                    button.textContent =
-                        "Updating...";
 
 
-                    try {
+    } catch(error) {
 
-                        const response =
-                            await fetch(
 
-                                LEADS_API_URL,
 
-                                {
+        throw new Error(
 
-                                    method:
-                                        "POST",
 
-                                    headers: {
 
-                                        "Content-Type":
-                                            "text/plain;charset=utf-8"
+            apiName +
 
-                                    },
+            " returned invalid JSON."
 
-                                    body:
-                                        JSON.stringify(
-                                            data
-                                        )
 
-                                }
 
-                            );
+        );
 
 
-                        const result =
-                            await response.json();
 
+    }
 
-                        console.log(
-                            "COUNSELLOR UPDATE:",
-                            result
-                        );
 
 
-                        if (!result.success) {
+}
 
-                            throw new Error(
-                                result.message
-                            );
 
-                        }
 
 
-                        showMessage(
-                            "Patient updated successfully.",
-                            "success"
-                        );
 
+/* =========================================================
 
-                        await loadLeads();
+   NORMALIZE CAMP
 
+========================================================= */
 
-                        setTimeout(
-                            function () {
 
-                                document
-                                    .getElementById(
-                                        "editPopup"
-                                    )
-                                    .classList
-                                    .remove(
-                                        "active"
-                                    );
 
-                            },
-                            600
-                        );
+function normalizeCamp(
 
+    camp
 
-                    } catch (error) {
+) {
 
-                        showMessage(
-                            error.message,
-                            "error"
-                        );
 
-                    } finally {
 
-                        button.disabled =
-                            false;
 
 
-                        button.textContent =
-                            "Update Patient";
+    return {
 
-                    }
 
-                }
-            );
 
+        id:
 
-        /* =========================================================
-           CLOSE
-        ========================================================= */
+            firstValue(
 
-        document
-            .getElementById(
-                "closePopup"
-            )
-            .addEventListener(
-                "click",
-                function () {
+                camp.id,
 
-                    document
-                        .getElementById(
-                            "editPopup"
-                        )
-                        .classList
-                        .remove(
-                            "active"
-                        );
+                camp.campId,
 
-                }
-            );
+                camp.campID,
 
+                camp.camp_id,
 
-        /* =========================================================
-           SEARCH
-        ========================================================= */
+                camp["Camp ID"]
 
-        document
-            .getElementById(
-                "leadSearch"
-            )
-            .addEventListener(
-                "input",
-                function () {
+            ),
 
-                    const keyword =
-                        this.value
-                            .trim()
-                            .toLowerCase();
 
 
-                    if (!keyword) {
+        campName:
 
-                        renderTable(
-                            allLeads
-                        );
+            firstValue(
 
-                        return;
+                camp.campName,
 
-                    }
+                camp.name,
 
+                camp.camp_name,
 
-                    const filtered =
-                        allLeads.filter(
-                            function (lead) {
+                camp["Camp Name"]
 
-                                return [
+            ),
 
-                                    lead.id,
 
-                                    lead.name,
 
-                                    lead.mobile,
+        campDate:
 
-                                    lead.city,
+            firstValue(
 
-                                    lead.source,
+                camp.campDate,
 
-                                    lead.doctorName,
+                camp.date,
 
-                                    lead.treatment,
+                camp.camp_date,
 
-                                    lead.status
+                camp["Camp Date"]
 
-                                ]
-                                    .join(" ")
-                                    .toLowerCase()
-                                    .includes(
-                                        keyword
-                                    );
+            ),
 
-                            }
-                        );
 
 
-                    renderTable(
-                        filtered
-                    );
+        city:
 
-                }
-            );
+            firstValue(
 
+                camp.city,
 
-        /* =========================================================
-           HELPERS
-        ========================================================= */
+                camp.City
 
-        function displayValue(
-            value
-        ) {
+            ),
 
-            const text =
-                String(
-                    value || ""
-                )
-                    .trim();
 
 
-            return (
-                !text ||
-                text === "-"
-            )
-                ? "-"
-                : escapeHtml(
-                    text
-                );
+        doctorName:
 
-        }
+            firstValue(
 
+                camp.doctorName,
 
-        function editableValue(
-            value
-        ) {
+                camp.doctor,
 
-            const text =
-                String(
-                    value || ""
-                )
-                    .trim();
+                camp["Doctor Name"]
 
+            ),
 
-            return (
-                !text ||
-                text === "-"
-            )
-                ? ""
-                : text;
 
-        }
 
+        campaigner:
 
-        function showMessage(
-            text,
-            type
-        ) {
+            firstValue(
 
-            const element =
-                document.getElementById(
-                    "formMessage"
-                );
+                camp.campaigner,
 
+                camp.campaignerEmail,
 
-            element.className =
-                "message " +
-                type;
+                camp["Campaigner"]
 
+            ),
 
-            element.textContent =
-                text;
 
-        }
 
+        counsellor:
 
-        function escapeHtml(
-            value
-        ) {
+            firstValue(
 
-            return String(
-                value == null
-                    ? ""
-                    : value
-            )
-                .replaceAll(
-                    "&",
-                    "&amp;"
-                )
-                .replaceAll(
-                    "<",
-                    "&lt;"
-                )
-                .replaceAll(
-                    ">",
-                    "&gt;"
-                )
-                .replaceAll(
-                    '"',
-                    "&quot;"
-                )
-                .replaceAll(
-                    "'",
-                    "&#039;"
-                );
+                camp.counsellor,
 
-        }
+                camp.counsellorEmail,
 
+                camp["Counsellor"]
 
-        /* =========================================================
-           START
-        ========================================================= */
+            )
 
-        loadAssignedCamps();
 
-    </script>
+
+    };
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   NORMALIZE LEAD
+
+
+
+   Handles different property names from Apps Script.
+
+========================================================= */
+
+
+
+function normalizeLead(
+
+    lead
+
+) {
+
+
+
+
+
+    return {
+
+
+
+        id:
+
+            firstValue(
+
+                lead.id,
+
+                lead.ID,
+
+                lead.patientId
+
+            ),
+
+
+
+        date:
+
+            firstValue(
+
+                lead.date,
+
+                lead.Date
+
+            ),
+
+
+
+        name:
+
+            firstValue(
+
+                lead.name,
+
+                lead.Name
+
+            ),
+
+
+
+        age:
+
+            firstValue(
+
+                lead.age,
+
+                lead.Age
+
+            ),
+
+
+
+        gender:
+
+            firstValue(
+
+                lead.gender,
+
+                lead.Gender
+
+            ),
+
+
+
+        mobile:
+
+            firstValue(
+
+                lead.mobile,
+
+                lead.Mobile,
+
+                lead.phone,
+
+                lead.Phone
+
+            ),
+
+
+
+        city:
+
+            firstValue(
+
+                lead.city,
+
+                lead.City
+
+            ),
+
+
+
+        source:
+
+            firstValue(
+
+                lead.source,
+
+                lead.Source
+
+            ),
+
+
+
+        doctorName:
+
+            firstValue(
+
+                lead.doctorName,
+
+                lead.doctor,
+
+                lead["Doctor Name"]
+
+            ),
+
+
+
+        treatment:
+
+            firstValue(
+
+                lead.treatment,
+
+                lead.Treatment
+
+            ),
+
+
+
+        status:
+
+            firstValue(
+
+                lead.status,
+
+                lead.Status
+
+            ),
+
+
+
+        /* =========================================
+
+           IMPORTANT CAMP ID FIX
+
+        ========================================= */
+
+
+
+        campId:
+
+            firstValue(
+
+
+
+                lead.campId,
+
+
+
+                lead.campID,
+
+
+
+                lead.camp_id,
+
+
+
+                lead.CampId,
+
+
+
+                lead.CampID,
+
+
+
+                lead["Camp ID"]
+
+
+
+            ),
+
+
+
+        campName:
+
+            firstValue(
+
+
+
+                lead.campName,
+
+
+
+                lead.camp_name,
+
+
+
+                lead.CampName,
+
+
+
+                lead["Camp Name"]
+
+
+
+            ),
+
+
+
+        campaignerEmail:
+
+            firstValue(
+
+
+
+                lead.campaignerEmail,
+
+
+
+                lead.campaigner,
+
+
+
+                lead["Campaigner Email"]
+
+
+
+            ),
+
+
+
+        counsellorEmail:
+
+            firstValue(
+
+
+
+                lead.counsellorEmail,
+
+
+
+                lead.counsellor,
+
+
+
+                lead["Counsellor Email"]
+
+
+
+            ),
+
+
+
+        counsellorUpdatedAt:
+
+            firstValue(
+
+
+
+                lead.counsellorUpdatedAt,
+
+
+
+                lead.updatedAt,
+
+
+
+                lead.modifiedAt,
+
+
+
+                lead["Counsellor Updated At"]
+
+
+
+            )
+
+
+
+    };
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   LOAD DATA
+
+========================================================= */
+
+
+
+async function loadData() {
+
+
+
+
+
+    const body =
+
+        document.getElementById(
+
+            "tableBody"
+
+        );
+
+
+
+
+
+    body.innerHTML = `
+
+
+
+        <tr>
+
+
+
+            <td
+
+                colspan="5"
+
+                class="empty"
+
+            >
+
+                Loading counsellor data...
+
+            </td>
+
+
+
+        </tr>
+
+
+
+    `;
+
+
+
+
+
+    try {
+
+
+
+
+
+        const timestamp =
+
+            Date.now();
+
+
+
+
+
+        const campResult =
+
+            await fetchJson(
+
+
+
+                CAMPS_API_URL +
+
+                "?action=getCamps&t=" +
+
+                timestamp,
+
+
+
+                "CAMPS API"
+
+
+
+            );
+
+
+
+
+
+        if (
+
+            !campResult.success
+
+        ) {
+
+
+
+            throw new Error(
+
+
+
+                campResult.message ||
+
+                "Unable to load camps."
+
+
+
+            );
+
+
+
+        }
+
+
+
+
+
+        /*
+
+         * NORMALIZE CAMP DATA
+
+         */
+
+
+
+        allCamps =
+
+            (
+
+                Array.isArray(
+
+                    campResult.camps
+
+                )
+
+                ? campResult.camps
+
+                : []
+
+            )
+
+            .map(
+
+                normalizeCamp
+
+            );
+
+
+
+
+
+        console.log(
+
+            "NORMALIZED CAMPS:",
+
+            allCamps
+
+        );
+
+
+
+
+
+        const leadResult =
+
+            await fetchJson(
+
+
+
+                LEADS_API_URL +
+
+                "?action=getLeads&t=" +
+
+                timestamp,
+
+
+
+                "LEADS API"
+
+
+
+            );
+
+
+
+
+
+        if (
+
+            !leadResult.success
+
+        ) {
+
+
+
+            throw new Error(
+
+
+
+                leadResult.message ||
+
+                "Unable to load patient data."
+
+
+
+            );
+
+
+
+        }
+
+
+
+
+
+        /*
+
+         * NORMALIZE LEAD DATA
+
+         */
+
+
+
+        allLeads =
+
+            (
+
+                Array.isArray(
+
+                    leadResult.leads
+
+                )
+
+                ? leadResult.leads
+
+                : []
+
+            )
+
+            .map(
+
+                normalizeLead
+
+            );
+
+
+
+
+
+        console.log(
+
+            "NORMALIZED LEADS:",
+
+            allLeads
+
+        );
+
+
+
+
+
+        /*
+
+         * VERY IMPORTANT DEBUG
+
+         */
+
+
+
+        allLeads.forEach(
+
+            function(lead) {
+
+
+
+
+
+                console.log(
+
+
+
+                    "PATIENT CAMP CHECK:",
+
+
+
+                    lead.id,
+
+
+
+                    "Camp ID:",
+
+
+
+                    lead.campId,
+
+
+
+                    "Camp Name:",
+
+
+
+                    lead.campName,
+
+
+
+                    "Counsellor:",
+
+
+
+                    lead.counsellorEmail
+
+
+
+                );
+
+
+
+
+
+            }
+
+        );
+
+
+
+
+
+        buildCounsellors();
+
+
+
+
+
+        renderCounsellors(
+
+            counsellors
+
+        );
+
+
+
+
+
+        updateStats();
+
+
+
+
+
+    } catch(error) {
+
+
+
+
+
+        console.error(
+
+            "LOAD ERROR:",
+
+            error
+
+        );
+
+
+
+
+
+        body.innerHTML = `
+
+
+
+            <tr>
+
+
+
+                <td
+
+                    colspan="5"
+
+                    class="error"
+
+                >
+
+
+
+                    ${escapeHtml(
+
+                        error.message
+
+                    )}
+
+
+
+                </td>
+
+
+
+            </tr>
+
+
+
+        `;
+
+
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   BUILD COUNSELLORS
+
+
+
+   MAIN FIX IS HERE
+
+========================================================= */
+
+
+
+function buildCounsellors() {
+
+
+
+
+
+    const map =
+
+        new Map();
+
+
+
+
+
+    /* =====================================================
+
+       STEP 1
+
+       CREATE COUNSELLORS FROM CAMP ASSIGNMENTS
+
+    ===================================================== */
+
+
+
+    allCamps.forEach(
+
+        function(camp) {
+
+
+
+
+
+            const email =
+
+                normalizeEmail(
+
+                    camp.counsellor
+
+                );
+
+
+
+
+
+            if (!email) {
+
+
+
+                return;
+
+
+
+            }
+
+
+
+
+
+            if (
+
+                !map.has(
+
+                    email
+
+                )
+
+            ) {
+
+
+
+                map.set(
+
+
+
+                    email,
+
+
+
+                    {
+
+
+
+                        email:
+
+                            email,
+
+
+
+                        camps:
+
+                            [],
+
+
+
+                        leads:
+
+                            []
+
+
+
+                    }
+
+
+
+                );
+
+
+
+            }
+
+
+
+
+
+            map
+
+                .get(email)
+
+                .camps
+
+                .push(
+
+                    camp
+
+                );
+
+
+
+
+
+        }
+
+    );
+
+
+
+
+
+    /* =====================================================
+
+       STEP 2
+
+       FIND PATIENTS FOR EACH COUNSELLOR
+
+
+
+       IMPORTANT:
+
+       We do NOT depend only on counsellorEmail.
+
+
+
+       We first find all Camp IDs assigned
+
+       to each counsellor.
+
+
+
+       Then patients in those camps belong
+
+       to that counsellor's handled data.
+
+    ===================================================== */
+
+
+
+    map.forEach(
+
+        function(
+
+            counsellor,
+
+            counsellorEmail
+
+        ) {
+
+
+
+
+
+            /*
+
+             * Camp IDs assigned to this counsellor.
+
+             */
+
+
+
+            const assignedCampIds =
+
+                counsellor.camps
+
+                    .map(
+
+                        function(camp) {
+
+
+
+                            return normalizeKey(
+
+                                camp.id
+
+                            );
+
+
+
+                        }
+
+                    )
+
+                    .filter(Boolean);
+
+
+
+
+
+            /*
+
+             * Camp names as fallback.
+
+             */
+
+
+
+            const assignedCampNames =
+
+                counsellor.camps
+
+                    .map(
+
+                        function(camp) {
+
+
+
+                            return normalizeKey(
+
+                                camp.campName
+
+                            );
+
+
+
+                        }
+
+                    )
+
+                    .filter(Boolean);
+
+
+
+
+
+            console.log(
+
+
+
+                "COUNSELLOR:",
+
+
+
+                counsellorEmail,
+
+
+
+                "ASSIGNED CAMP IDs:",
+
+
+
+                assignedCampIds
+
+
+
+            );
+
+
+
+
+
+            const matchedLeads =
+
+                allLeads.filter(
+
+                    function(lead) {
+
+
+
+
+
+                        const leadCampId =
+
+                            normalizeKey(
+
+                                lead.campId
+
+                            );
+
+
+
+
+
+                        const leadCampName =
+
+                            normalizeKey(
+
+                                lead.campName
+
+                            );
+
+
+
+
+
+                        const actualCounsellor =
+
+                            normalizeEmail(
+
+                                lead.counsellorEmail
+
+                            );
+
+
+
+
+
+                        /* =================================
+
+                           MATCH 1:
+
+                           Camp ID
+
+                        ================================= */
+
+
+
+                        const campIdMatch =
+
+
+
+                            leadCampId &&
+
+
+
+                            assignedCampIds.includes(
+
+                                leadCampId
+
+                            );
+
+
+
+
+
+                        /* =================================
+
+                           MATCH 2:
+
+                           Camp name fallback
+
+                        ================================= */
+
+
+
+                        const campNameMatch =
+
+
+
+                            leadCampName &&
+
+
+
+                            assignedCampNames.includes(
+
+                                leadCampName
+
+                            );
+
+
+
+
+
+                        /* =================================
+
+                           MATCH 3:
+
+                           Exact counsellor audit
+
+                        ================================= */
+
+
+
+                        const counsellorMatch =
+
+
+
+                            actualCounsellor &&
+
+
+
+                            actualCounsellor ===
+
+                            counsellorEmail;
+
+
+
+
+
+                        return (
+
+
+
+                            campIdMatch ||
+
+
+
+                            campNameMatch ||
+
+
+
+                            counsellorMatch
+
+
+
+                        );
+
+
+
+
+
+                    }
+
+                );
+
+
+
+
+
+            /*
+
+             * Remove duplicates if one lead
+
+             * matched through multiple methods.
+
+             */
+
+
+
+            const unique =
+
+                new Map();
+
+
+
+
+
+            matchedLeads.forEach(
+
+                function(lead) {
+
+
+
+
+
+                    const key =
+
+                        lead.id ||
+
+                        (
+
+                            lead.mobile +
+
+                            lead.date
+
+                        );
+
+
+
+
+
+                    if (
+
+                        !unique.has(
+
+                            key
+
+                        )
+
+                    ) {
+
+
+
+                        unique.set(
+
+                            key,
+
+                            lead
+
+                        );
+
+
+
+                    }
+
+
+
+
+
+                }
+
+            );
+
+
+
+
+
+            counsellor.leads =
+
+                Array.from(
+
+                    unique.values()
+
+                );
+
+
+
+
+
+        }
+
+    );
+
+
+
+
+
+    counsellors =
+
+        Array.from(
+
+            map.values()
+
+        );
+
+
+
+
+
+    counsellors.sort(
+
+        function(a,b) {
+
+
+
+            return a.email
+
+                .localeCompare(
+
+                    b.email
+
+                );
+
+
+
+        }
+
+    );
+
+
+
+
+
+    console.log(
+
+        "FINAL COUNSELLORS:",
+
+        counsellors
+
+    );
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   RENDER
+
+========================================================= */
+
+
+
+function renderCounsellors(
+
+    records
+
+) {
+
+
+
+
+
+    const body =
+
+        document.getElementById(
+
+            "tableBody"
+
+        );
+
+
+
+
+
+    if (
+
+        !records.length
+
+    ) {
+
+
+
+        body.innerHTML = `
+
+
+
+            <tr>
+
+
+
+                <td
+
+                    colspan="5"
+
+                    class="empty"
+
+                >
+
+                    No counsellors found.
+
+                </td>
+
+
+
+            </tr>
+
+
+
+        `;
+
+
+
+
+
+        return;
+
+
+
+    }
+
+
+
+
+
+    body.innerHTML =
+
+        records
+
+            .map(
+
+                function(
+
+                    item,
+
+                    index
+
+                ) {
+
+
+
+
+
+                    const rowId =
+
+                        "counsellor_" +
+
+                        index;
+
+
+
+
+
+                    return `
+
+
+
+
+
+                        <!-- COUNSELLOR -->
+
+
+
+                        <tr>
+
+
+
+
+
+                            <td class="email">
+
+
+
+                                ${escapeHtml(
+
+                                    item.email
+
+                                )}
+
+
+
+                            </td>
+
+
+
+
+
+                            <td>
+
+
+
+                                ${item.camps.length}
+
+
+
+                            </td>
+
+
+
+
+
+                            <td>
+
+
+
+                                ${item.leads.length}
+
+
+
+                            </td>
+
+
+
+
+
+                            <td>
+
+
+
+                                ${escapeHtml(
+
+                                    getLastModified(
+
+                                        item.leads
+
+                                    )
+
+                                )}
+
+
+
+                            </td>
+
+
+
+
+
+                            <td>
+
+
+
+                                <button
+
+                                    type="button"
+
+                                    class="view-btn"
+
+                                    onclick="
+
+                                        viewCounsellor(
+
+                                            '${rowId}'
+
+                                        )
+
+                                    "
+
+                                >
+
+                                    View Data
+
+                                </button>
+
+
+
+                            </td>
+
+
+
+
+
+                        </tr>
+
+
+
+
+
+
+
+                        <!-- EXPANDED DATA -->
+
+
+
+                        <tr
+
+                            id="${rowId}"
+
+                            class="expand-row"
+
+                            data-email="${escapeHtml(
+
+                                item.email
+
+                            )}"
+
+                        >
+
+
+
+                            <td
+
+                                colspan="5"
+
+                                class="expand-cell"
+
+                            >
+
+
+
+                                <div
+
+                                    id="${rowId}_content"
+
+                                    class="panel"
+
+                                >
+
+                                </div>
+
+
+
+                            </td>
+
+
+
+                        </tr>
+
+
+
+
+
+                    `;
+
+
+
+
+
+                }
+
+            )
+
+            .join("");
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   VIEW DATA
+
+========================================================= */
+
+
+
+function viewCounsellor(
+
+    rowId
+
+) {
+
+
+
+
+
+    closeAll();
+
+
+
+
+
+    const row =
+
+        document.getElementById(
+
+            rowId
+
+        );
+
+
+
+
+
+    if (!row) {
+
+
+
+        return;
+
+
+
+    }
+
+
+
+
+
+    const email =
+
+        normalizeEmail(
+
+            row.dataset.email
+
+        );
+
+
+
+
+
+    const counsellor =
+
+        counsellors.find(
+
+            function(item) {
+
+
+
+                return (
+
+                    normalizeEmail(
+
+                        item.email
+
+                    )
+
+                    ===
+
+                    email
+
+                );
+
+
+
+            }
+
+        );
+
+
+
+
+
+    if (!counsellor) {
+
+
+
+        return;
+
+
+
+    }
+
+
+
+
+
+    row.classList.add(
+
+        "active"
+
+    );
+
+
+
+
+
+    document
+
+        .getElementById(
+
+            rowId +
+
+            "_content"
+
+        )
+
+        .innerHTML =
+
+            buildDetails(
+
+
+
+                counsellor,
+
+
+
+                rowId
+
+
+
+            );
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   BUILD DETAILS
+
+========================================================= */
+
+
+
+
+/* Procedures are stored locally per camp, because this read-only page
+   has no Google Apps Script write endpoint for procedure counts. */
+const PROCEDURE_FIELDS = [
+  {key:'evrf',label:'EVRF'},
+  {key:'stab',label:'Stab'},
+  {key:'fs',label:'FS'},
+  {key:'clacsMinor',label:'CLACS Minor'},
+  {key:'clacsMajor',label:'CLACS Major'}
+];
+const PROCEDURE_STORE_KEY = 'medical_camp_procedures_v1';
+function readProcedureStore(){
+  try { const data=JSON.parse(localStorage.getItem(PROCEDURE_STORE_KEY)||'{}');
+    return data && typeof data==='object' && !Array.isArray(data)?data:{};
+  } catch(error){console.warn('Stored procedure data could not be read',error);return {};}
+}
+function getProcedureCounts(campId){
+  const saved=readProcedureStore()[String(campId)]||{};
+  return Object.fromEntries(PROCEDURE_FIELDS.map(field=>[field.key,Number(saved[field.key])||0]));
+}
+function procedureInputs(camp){
+  const id=String(camp.id||'');
+  const counts=getProcedureCounts(id);
+  const inputs=PROCEDURE_FIELDS.map(field=>`<label class="procedure-field">${field.label}
+   <input type="number" min="0" max="999999" step="1" inputmode="numeric"
+     data-procedure-camp="${escapeHtml(id)}" data-procedure-key="${field.key}"
+     value="${counts[field.key]}" aria-label="${field.label} count for ${escapeHtml(camp.campName||id)}">
+   </label>`).join('');
+  const total=PROCEDURE_FIELDS.reduce((sum,field)=>sum+counts[field.key],0);
+  return `<section class="procedure-panel"><div class="procedure-title">Procedure Counts</div>
+    <div class="procedure-fields">${inputs}</div>
+    <div class="procedure-footer"><span>Saved on this browser</span>
+    <span class="procedure-total">Total: <b data-procedure-total="${escapeHtml(id)}">${total}</b></span></div></section>`;
+}
+document.addEventListener('change',function(event){
+  const input=event.target.closest('input[data-procedure-camp][data-procedure-key]');
+  if(!input)return;
+  const campId=input.dataset.procedureCamp;
+  const field=input.dataset.procedureKey;
+  if(!PROCEDURE_FIELDS.some(item=>item.key===field))return;
+  const raw=Number(input.value);
+  const value=Number.isFinite(raw)?Math.max(0,Math.min(999999,Math.floor(raw))):0;
+  input.value=String(value);
+  const store=readProcedureStore();
+  store[campId]={...(store[campId]||{}),[field]:value};
+  try{localStorage.setItem(PROCEDURE_STORE_KEY,JSON.stringify(store));}
+  catch(error){console.error(error);alert('Cannot save procedure counts. Browser storage may be disabled or full.');return;}
+  const total=PROCEDURE_FIELDS.reduce((sum,item)=>sum+(Number(store[campId][item.key])||0),0);
+  document.querySelectorAll('[data-procedure-total]').forEach(el=>{
+    if(el.dataset.procedureTotal===campId)el.textContent=String(total);
+  });
+});
+
+function buildDetails(
+
+    counsellor,
+
+    rowId
+
+) {
+
+
+
+
+
+    /* =====================================================
+
+       CAMPS
+
+    ===================================================== */
+
+
+
+    let campsHtml =
+
+        "";
+
+
+
+
+
+    if (
+
+        counsellor.camps.length
+
+    ) {
+
+
+
+
+
+        campsHtml =
+
+            counsellor.camps
+
+                .map(
+
+                    function(camp) {
+
+
+
+
+
+                        return `
+
+
+
+                            <div class="camp-box">
+
+
+
+
+
+                                <div class="camp-id">
+
+
+
+                                    ${display(
+
+                                        camp.id
+
+                                    )}
+
+
+
+                                </div>
+
+
+
+
+
+                                <div class="camp-name">
+
+
+
+                                    ${display(
+
+                                        camp.campName
+
+                                    )}
+
+
+
+                                </div>
+
+
+
+
+
+                                <div class="camp-meta">
+
+
+
+                                    Date:
+
+                                    ${display(
+
+                                        camp.campDate
+
+                                    )}
+
+
+
+                                    <br>
+
+
+
+                                    City:
+
+                                    ${display(
+
+                                        camp.city
+
+                                    )}
+
+
+
+                                    <br>
+
+
+
+                                    Doctor:
+
+                                    ${display(
+
+                                        camp.doctorName
+
+                                    )}
+
+
+
+                                    <br>
+
+
+
+                                    Campaigner:
+
+                                    ${display(
+
+                                        camp.campaigner
+
+                                    )}
+
+
+
+                                </div>
+
+
+
+
+
+                            ${procedureInputs(camp)}
+
+</div>
+
+
+
+                        `;
+
+
+
+
+
+                    }
+
+                )
+
+                .join("");
+
+
+
+
+
+    } else {
+
+
+
+
+
+        campsHtml = `
+
+
+
+            <div class="camp-box">
+
+
+
+                No assigned camps.
+
+
+
+            </div>
+
+
+
+        `;
+
+
+
+    }
+
+
+
+
+
+    /* =====================================================
+
+       PATIENTS
+
+    ===================================================== */
+
+
+
+    let patientHtml =
+
+        "";
+
+
+
+
+
+    if (
+
+        !counsellor.leads.length
+
+    ) {
+
+
+
+
+
+        patientHtml = `
+
+
+
+            <div class="empty">
+
+
+
+                No patient records found
+
+                for this counsellor's camps.
+
+
+
+            </div>
+
+
+
+        `;
+
+
+
+
+
+    } else {
+
+
+
+
+
+        const rows =
+
+            counsellor.leads
+
+                .map(
+
+                    function(lead) {
+
+
+
+
+
+                        const exactAudit =
+
+
+
+                            normalizeEmail(
+
+                                lead.counsellorEmail
+
+                            )
+
+
+
+                            ===
+
+
+
+                            normalizeEmail(
+
+                                counsellor.email
+
+                            );
+
+
+
+
+
+                        const auditText =
+
+
+
+                            exactAudit
+
+
+
+                                ? "Modified by Counsellor"
+
+
+
+                                : "Assigned Camp Patient";
+
+
+
+
+
+                        const auditClass =
+
+
+
+                            exactAudit
+
+
+
+                                ? "modified"
+
+
+
+                                : "assignment";
+
+
+
+
+
+                        return `
+
+
+
+                            <tr>
+
+
+
+
+
+                                <td class="patient-id">
+
+
+
+                                    ${display(
+
+                                        lead.id
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+
+                                    ${display(
+
+                                        lead.campId
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+
+                                    ${display(
+
+                                        lead.campName
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+
+                                    ${display(
+
+                                        lead.date
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+
+                                    ${display(
+
+                                        lead.name
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+
+                                    ${display(
+
+                                        lead.age
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+
+                                    ${display(
+
+                                        lead.gender
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+
+                                    ${display(
+
+                                        lead.mobile
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+
+                                    ${display(
+
+                                        lead.city
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+
+                                    ${display(
+
+                                        lead.source
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+
+                                    ${display(
+
+                                        lead.doctorName
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+
+                                    ${display(
+
+                                        lead.treatment
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+
+                                    <span class="status-badge">
+
+
+
+                                        ${display(
+
+                                            lead.status
+
+                                        )}
+
+
+
+                                    </span>
+
+
+
+                                </td>
+
+
+
+
+
+                                <td class="modified">
+
+
+
+                                    ${display(
+
+                                        lead.counsellorUpdatedAt
+
+                                    )}
+
+
+
+                                </td>
+
+
+
+
+
+                                <td class="${auditClass}">
+
+
+
+                                    ${auditText}
+
+
+
+                                </td>
+
+
+
+
+
+                            </tr>
+
+
+
+                        `;
+
+
+
+
+
+                    }
+
+                )
+
+                .join("");
+
+
+
+
+
+        patientHtml = `
+
+
+
+
+
+            <div class="patient-wrapper">
+
+
+
+
+
+                <table class="patient-table">
+
+
+
+
+
+                    <thead>
+
+
+
+                        <tr>
+
+
+
+                            <th>ID</th>
+
+
+
+                            <th>Camp ID</th>
+
+
+
+                            <th>Camp Name</th>
+
+
+
+                            <th>Date</th>
+
+
+
+                            <th>Name</th>
+
+
+
+                            <th>Age</th>
+
+
+
+                            <th>Gender</th>
+
+
+
+                            <th>Phone</th>
+
+
+
+                            <th>City</th>
+
+
+
+                            <th>Source</th>
+
+
+
+                            <th>Doctor</th>
+
+
+
+                            <th>Treatment</th>
+
+
+
+                            <th>Status</th>
+
+
+
+                            <th>Modified At</th>
+
+
+
+                            <th>Handled Status</th>
+
+
+
+                        </tr>
+
+
+
+                    </thead>
+
+
+
+
+
+                    <tbody>
+
+
+
+                        ${rows}
+
+
+
+                    </tbody>
+
+
+
+
+
+                </table>
+
+
+
+
+
+            </div>
+
+
+
+        `;
+
+
+
+    }
+
+
+
+
+
+    return `
+
+
+
+
+
+        <div class="panel-header">
+
+
+
+
+
+            <div>
+
+
+
+                <h3>
+
+
+
+                    ${escapeHtml(
+
+                        counsellor.email
+
+                    )}
+
+
+
+                </h3>
+
+
+
+
+
+                <p>
+
+
+
+                    Assigned camps and patient records
+
+                    handled by this counsellor.
+
+
+
+                </p>
+
+
+
+            </div>
+
+
+
+
+
+            <span class="count-badge">
+
+
+
+                ${counsellor.leads.length}
+
+
+
+                ${
+
+                    counsellor.leads.length === 1
+
+                        ? "Patient"
+
+                        : "Patients"
+
+                }
+
+
+
+            </span>
+
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+        <div class="camps-grid">
+
+
+
+            ${campsHtml}
+
+
+
+        </div>
+
+
+
+
+
+
+
+        ${patientHtml}
+
+
+
+
+
+
+
+        <div class="panel-footer">
+
+
+
+            <button
+
+                type="button"
+
+                class="cancel-btn"
+
+                onclick="
+
+                    closeCounsellor(
+
+                        '${rowId}'
+
+                    )
+
+                "
+
+            >
+
+                Cancel
+
+            </button>
+
+
+
+        </div>
+
+
+
+
+
+    `;
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   CLOSE
+
+========================================================= */
+
+
+
+function closeCounsellor(
+
+    rowId
+
+) {
+
+
+
+
+
+    const row =
+
+        document.getElementById(
+
+            rowId
+
+        );
+
+
+
+
+
+    if (row) {
+
+
+
+        row.classList.remove(
+
+            "active"
+
+        );
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+function closeAll() {
+
+
+
+
+
+    document
+
+        .querySelectorAll(
+
+            ".expand-row"
+
+        )
+
+        .forEach(
+
+            function(row) {
+
+
+
+                row.classList.remove(
+
+                    "active"
+
+                );
+
+
+
+            }
+
+        );
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   STATS
+
+========================================================= */
+
+
+
+function updateStats() {
+
+
+
+
+
+    document
+
+        .getElementById(
+
+            "totalCounsellors"
+
+        )
+
+        .textContent =
+
+            counsellors.length;
+
+
+
+
+
+    const assignedCamps =
+
+        allCamps.filter(
+
+            function(camp) {
+
+
+
+                return (
+
+                    normalizeEmail(
+
+                        camp.counsellor
+
+                    ) !== ""
+
+                );
+
+
+
+            }
+
+        );
+
+
+
+
+
+    document
+
+        .getElementById(
+
+            "totalCamps"
+
+        )
+
+        .textContent =
+
+            assignedCamps.length;
+
+
+
+
+
+    /*
+
+     * IMPORTANT:
+
+     * Count unique handled patients.
+
+     */
+
+
+
+    const patientIds =
+
+        new Set();
+
+
+
+
+
+    counsellors.forEach(
+
+        function(counsellor) {
+
+
+
+
+
+            counsellor.leads
+
+                .forEach(
+
+                    function(lead) {
+
+
+
+
+
+                        const key =
+
+
+
+                            lead.id ||
+
+
+
+                            (
+
+                                lead.mobile +
+
+                                "_" +
+
+                                lead.date
+
+                            );
+
+
+
+
+
+                        patientIds.add(
+
+                            key
+
+                        );
+
+
+
+
+
+                    }
+
+                );
+
+
+
+
+
+        }
+
+    );
+
+
+
+
+
+    document
+
+        .getElementById(
+
+            "totalPatients"
+
+        )
+
+        .textContent =
+
+            patientIds.size;
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   LAST MODIFIED
+
+========================================================= */
+
+
+
+function getLastModified(
+
+    leads
+
+) {
+
+
+
+
+
+    const modified =
+
+        leads
+
+            .map(
+
+                function(lead) {
+
+
+
+                    return String(
+
+                        lead.counsellorUpdatedAt ||
+
+                        ""
+
+                    )
+
+                    .trim();
+
+
+
+                }
+
+            )
+
+            .filter(Boolean);
+
+
+
+
+
+    if (
+
+        !modified.length
+
+    ) {
+
+
+
+        return "-";
+
+
+
+    }
+
+
+
+
+
+    return modified[0];
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   SEARCH
+
+========================================================= */
+
+
+
+document
+
+    .getElementById(
+
+        "searchInput"
+
+    )
+
+    .addEventListener(
+
+        "input",
+
+        function() {
+
+
+
+
+
+            const term =
+
+                this.value
+
+                    .trim()
+
+                    .toLowerCase();
+
+
+
+
+
+            if (!term) {
+
+
+
+                renderCounsellors(
+
+                    counsellors
+
+                );
+
+
+
+                return;
+
+
+
+            }
+
+
+
+
+
+            const filtered =
+
+                counsellors.filter(
+
+                    function(item) {
+
+
+
+
+
+                        const campText =
+
+                            item.camps
+
+                                .map(
+
+                                    function(camp) {
+
+
+
+                                        return [
+
+
+
+                                            camp.id,
+
+
+
+                                            camp.campName,
+
+
+
+                                            camp.city,
+
+
+
+                                            camp.doctorName,
+
+
+
+                                            camp.campaigner
+
+
+
+                                        ]
+
+                                        .join(" ");
+
+
+
+                                    }
+
+                                )
+
+                                .join(" ");
+
+
+
+
+
+                        const patientText =
+
+                            item.leads
+
+                                .map(
+
+                                    function(lead) {
+
+
+
+                                        return [
+
+
+
+                                            lead.id,
+
+
+
+                                            lead.name,
+
+
+
+                                            lead.mobile,
+
+
+
+                                            lead.city,
+
+
+
+                                            lead.treatment,
+
+
+
+                                            lead.status
+
+
+
+                                        ]
+
+                                        .join(" ");
+
+
+
+                                    }
+
+                                )
+
+                                .join(" ");
+
+
+
+
+
+                        return (
+
+
+
+                            item.email +
+
+                            " " +
+
+                            campText +
+
+                            " " +
+
+                            patientText
+
+
+
+                        )
+
+                        .toLowerCase()
+
+                        .includes(
+
+                            term
+
+                        );
+
+
+
+
+
+                    }
+
+                );
+
+
+
+
+
+            renderCounsellors(
+
+                filtered
+
+            );
+
+
+
+
+
+        }
+
+    );
+
+
+
+
+
+/* =========================================================
+
+   REFRESH
+
+========================================================= */
+
+
+
+document
+
+    .getElementById(
+
+        "refreshBtn"
+
+    )
+
+    .addEventListener(
+
+        "click",
+
+        function() {
+
+
+
+
+
+            document
+
+                .getElementById(
+
+                    "searchInput"
+
+                )
+
+                .value =
+
+                    "";
+
+
+
+
+
+            closeAll();
+
+
+
+
+
+            loadData();
+
+
+
+
+
+        }
+
+    );
+
+
+
+
+
+/* =========================================================
+
+   HELPERS
+
+========================================================= */
+
+
+
+function firstValue(
+
+    ...values
+
+) {
+
+
+
+
+
+    for (
+
+        const value
+
+        of values
+
+    ) {
+
+
+
+
+
+        if (
+
+            value !== undefined &&
+
+            value !== null &&
+
+            String(value).trim() !== ""
+
+        ) {
+
+
+
+            return String(
+
+                value
+
+            )
+
+            .trim();
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+    return "";
+
+
+
+}
+
+
+
+
+
+function normalizeEmail(
+
+    value
+
+) {
+
+
+
+    return String(
+
+        value == null
+
+            ? ""
+
+            : value
+
+    )
+
+    .trim()
+
+    .toLowerCase();
+
+
+
+}
+
+
+
+
+
+function normalizeKey(
+
+    value
+
+) {
+
+
+
+    return String(
+
+        value == null
+
+            ? ""
+
+            : value
+
+    )
+
+    .trim()
+
+    .toLowerCase()
+
+    .replace(/\s+/g, "");
+
+
+
+}
+
+
+
+
+
+function display(
+
+    value
+
+) {
+
+
+
+
+
+    const text =
+
+        String(
+
+            value == null
+
+                ? ""
+
+                : value
+
+        )
+
+        .trim();
+
+
+
+
+
+    if (
+
+        !text ||
+
+        text === "-"
+
+    ) {
+
+
+
+        return "-";
+
+
+
+    }
+
+
+
+
+
+    return escapeHtml(
+
+        text
+
+    );
+
+
+
+}
+
+
+
+
+
+function escapeHtml(
+
+    value
+
+) {
+
+
+
+
+
+    return String(
+
+        value == null
+
+            ? ""
+
+            : value
+
+    )
+
+
+
+    .replaceAll(
+
+        "&",
+
+        "&amp;"
+
+    )
+
+
+
+    .replaceAll(
+
+        "<",
+
+        "&lt;"
+
+    )
+
+
+
+    .replaceAll(
+
+        ">",
+
+        "&gt;"
+
+    )
+
+
+
+    .replaceAll(
+
+        '"',
+
+        "&quot;"
+
+    )
+
+
+
+    .replaceAll(
+
+        "'",
+
+        "&#039;"
+
+    );
+
+
+
+}
+
+
+
+
+
+/* =========================================================
+
+   INITIAL
+
+========================================================= */
+
+
+
+loadData();
+
+
+
+</script>
+
+
+
 
 
 </body>
+
+
 
 </html>
