@@ -85,9 +85,6 @@ const ALLOWED_USERS = {
   },
 
   
-  "praveen@avishospitals.com": {
-    role: "campaigner",
-  },
 
   "umamaheshavis@gmail.com": {
     role: "counsellor",
