@@ -1,0 +1,1730 @@
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>B2B Dashboard | Medical Camps — Offline PDF Fix</title>
+
+    <style>
+
+:root{--bg:#f3f6fb;--surface:#fff;--ink:#132036;--muted:#64748b;--blue:#2563eb;--line:#e3e9f2;--shadow:0 3px 18px rgba(15,23,42,.045)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:14px}button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}
+.topbar{background:#111b31;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px clamp(18px,3vw,46px);flex-wrap:wrap}.brand{font-size:19px;font-weight:750;letter-spacing:-.3px}.nav{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.nav button{border:1px solid rgba(255,255,255,.08);border-radius:9px;color:white;background:#2563eb;padding:10px 14px;font-weight:650;white-space:nowrap}.nav button:hover,.primary:hover{background:#1d4ed8}.nav .logout{background:#dc2626}.nav .logout:hover{background:#b91c1c}.admin{color:#cbd5e1;font-size:12px;margin-right:9px}
+.page{width:min(100%,1680px);margin:0 auto;padding:clamp(18px,2.6vw,38px)}.heading{margin:0 0 24px}.heading h1{font-size:clamp(25px,2.4vw,34px);letter-spacing:-.6px;margin:0 0 8px}.heading p{margin:0;color:var(--muted);line-height:1.55}
+.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;margin:0 0 22px;align-items:stretch}.metric,.panel{min-width:0;background:#fff;border:1px solid #ebeff5;border-radius:15px;box-shadow:var(--shadow)}.metric{padding:20px 21px;display:flex;flex-direction:column;justify-content:center;min-height:126px}.metric label{display:block;font-size:12px;line-height:1.4;color:var(--muted);margin:0 0 11px}.metric strong{font-size:clamp(22px,2vw,30px);font-weight:780;letter-spacing:-.7px;overflow-wrap:anywhere;line-height:1.15}.metric:nth-child(3) strong{color:#15803d}.metric:nth-child(5) strong{color:#1d4ed8}
+.panel{padding:23px}.section{margin-top:18px}.section h2,.toolbar h2{font-size:19px;letter-spacing:-.2px;margin:0 0 16px}.status-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:11px}.status-card{min-width:0;border:1px solid var(--line);border-radius:10px;padding:15px;background:#fbfcff}.status-card span{display:block;color:var(--muted);font-size:12px;line-height:1.4;margin-bottom:9px;overflow-wrap:anywhere}.status-card strong{font-size:24px;font-weight:750}.subtle{color:var(--muted);font-size:11px;line-height:1.5;margin-top:5px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}.toolbar h2{margin:0}.filters{display:flex;align-items:center;flex-wrap:wrap;gap:9px}.filters input,.filters select{border:1px solid #d3ddea;background:#fff;border-radius:9px;padding:11px 12px;min-height:42px;color:var(--ink)}.filters input{min-width:270px}.filters input:focus,.filters select:focus{outline:2px solid #bfdbfe;border-color:#2563eb}.primary,.secondary{display:inline-flex;align-items:center;justify-content:center;border-radius:9px;padding:11px 14px;min-height:41px;font-weight:700;white-space:nowrap;border:0}.primary{background:#2563eb;color:#fff}.secondary{background:#edf4ff;color:#1d4ed8}.secondary:hover{background:#dbeafe}
+.chart-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:18px 0 0}.chart-panel{min-width:0}.chart-panel h2{margin:0 0 7px}.chart-caption{font-size:12px;color:var(--muted);margin:0 0 19px;line-height:1.5}.barchart{display:flex;flex-direction:column;gap:14px}.bar-row{display:grid;grid-template-columns:minmax(110px,150px) minmax(0,1fr) 105px;align-items:center;gap:12px;min-width:0}.bar-label{font-size:12px;font-weight:650;overflow-wrap:anywhere}.bar-track{height:21px;background:#eff3f8;border-radius:6px;overflow:hidden}.bar-fill{height:100%;border-radius:6px;transition:width .2s}.bar-value{font-size:12px;font-weight:750;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.chart-legend{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 17px;font-size:11px}.legend-item{display:inline-flex;align-items:center;gap:6px}.legend-dot{display:inline-block;width:11px;height:11px;border-radius:3px}.camp-chart-list{display:flex;flex-direction:column;gap:13px;max-height:480px;overflow-y:auto}.camp-chart-row{display:grid;grid-template-columns:minmax(130px,230px) minmax(0,1fr) 60px;align-items:center;gap:12px}.camp-chart-label{font-size:12px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.stacked-track{height:23px;display:flex;overflow:hidden;border-radius:5px;background:#eff3f8}.stacked-segment{height:100%;min-width:0}.chart-zero{padding:22px;text-align:center;color:var(--muted);font-size:13px}
+.scroller{overflow-x:auto;width:100%;border:1px solid var(--line);border-radius:11px}.camp-table{border-collapse:collapse;width:100%;min-width:1500px}.camp-table th{font-size:11px;text-align:left;padding:13px 11px;background:#f0f5fc;white-space:nowrap;color:#334155}.camp-table td{padding:13px 11px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top}.camp-table tbody tr:hover:not(.detail-row){background:#f8fbff}.camp-table tbody tr:last-child td{border-bottom:0}.camp-table td:last-child{min-width:206px}.camp-table td:last-child button{margin:0 5px 6px 0;font-size:11px;padding:9px 11px;min-height:34px}.number{text-align:right;font-variant-numeric:tabular-nums}.id{font-weight:750;color:#1d4ed8}.done{color:#15803d;font-weight:750}.empty{text-align:center;color:var(--muted);padding:24px}.error{color:#b91c1c}.loading{color:#1d4ed8}.detail-row{display:none;background:#f8fafc}.detail-row.open{display:table-row}.detail-box{padding:18px;border-left:3px solid var(--blue)}.detail-box h3{font-size:15px;margin:0 0 14px}.detail-table{width:100%;min-width:680px;border-collapse:collapse;background:white}.detail-table th,.detail-table td{padding:11px;border-bottom:1px solid var(--line);font-size:12px;text-align:left}.detail-table th{background:#f0f5fc}.pill{display:inline-block;background:#dbeafe;color:#1e40af;border-radius:20px;padding:6px 11px;font-size:11px;font-weight:750}.notice{font-size:12px;color:var(--muted);line-height:1.65;margin-top:13px}.warn{color:#b45309}
+@media(max-width:1250px){.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.status-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:900px){.chart-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.status-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.topbar{align-items:flex-start}}@media(max-width:600px){.page{padding:15px}.topbar{padding:15px}.brand{font-size:17px}.nav{width:100%}.nav button{font-size:12px;padding:8px 10px}.admin{width:100%}.metric{padding:16px;min-height:106px}.metrics{gap:10px}.metric strong{font-size:23px}.metric:nth-child(5){grid-column:span 2}.panel{padding:17px}.status-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.bar-row{grid-template-columns:100px minmax(0,1fr) 78px;gap:7px}.bar-value{font-size:11px}.camp-chart-row{grid-template-columns:95px minmax(0,1fr) 32px;gap:7px}.filters{width:100%}.filters input{width:100%;min-width:0}.filters select{flex:1;min-width:0}}
+/* Offscreen PDF content: fixed page width prevents dashboard layout rules bleeding into reports */
+.pdf-report{width:1000px!important;max-width:none!important;padding:26px;background:#fff;color:#132036;font:12px/1.45 Arial,Helvetica,sans-serif}.pdf-report .pdf-header{border-bottom:3px solid #2563eb;padding-bottom:13px;margin-bottom:15px}.pdf-report h1{font-size:23px;margin:0 0 6px}.pdf-report h2{font-size:16px;margin:20px 0 10px}.pdf-report .pdf-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:6px 18px;margin:14px 0}.pdf-report .pdf-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.pdf-report .pdf-stat{border:1px solid #e2e8f0;border-radius:5px;padding:10px;break-inside:avoid}.pdf-report .pdf-stat b{display:block;font-size:17px;margin-top:5px}.pdf-report table{width:100%;table-layout:fixed;border-collapse:collapse;margin:8px 0}.pdf-report th,.pdf-report td{border:1px solid #dde5ef;padding:6px;vertical-align:top;overflow-wrap:anywhere;font-size:10px}.pdf-report th{background:#e9f1fb;text-align:left}.pdf-report .pdf-barrow{display:flex;align-items:center;gap:8px;margin:7px 0;break-inside:avoid}.pdf-report .pdf-barname{width:155px;font-size:11px}.pdf-report .pdf-bartrack{flex:1;background:#eff3f8;height:13px;border-radius:3px;overflow:hidden}.pdf-report .pdf-barfill{height:100%}.pdf-report .pdf-barnum{width:100px;text-align:right;font-size:11px}.pdf-report tr{break-inside:avoid;page-break-inside:avoid}.pdf-report .pdf-note{color:#64748b;font-size:10px;margin-top:12px}
+
+</style>
+
+  </head>
+
+  <body>
+
+    <header class="topbar">
+
+      <div class="brand">Medical Camps Admin · B2B Dashboard</div>
+
+      <nav class="nav">
+
+        <span id="adminEmail" class="admin">Admin</span
+
+        ><button onclick="location.href = './op-data.html'">OP Data</button
+
+        ><button onclick="location.href = './updated-ip-data.html'">
+
+          IP Data</button
+
+        ><button onclick="location.href = './admin-dashboard.html'">
+
+          Admin Dashboard</button
+
+        ><button class="logout" onclick="logout()">Logout</button>
+
+      </nav>
+
+    </header>
+
+    <main class="page">
+
+      <div class="heading">
+
+        <h1>B2B Dashboard</h1>
+
+        <p>
+
+          Camp-wise surgery status overview. Payment-mode and collection totals
+
+          include only patients marked <b>Surgery Done</b>.
+
+        </p>
+
+      </div>
+
+      <div class="metrics">
+
+        <div class="metric">
+
+          <label>Total Camps</label><strong id="totalCamps">—</strong>
+
+        </div>
+
+        <div class="metric">
+
+          <label>Total Patients</label><strong id="totalPatients">—</strong>
+
+        </div>
+
+        <div class="metric">
+
+          <label>Surgery Done</label><strong id="totalDone">—</strong>
+
+        </div>
+
+        <div class="metric">
+
+          <label>Surgery Done Rate</label><strong id="doneRate">—</strong>
+
+        </div>
+
+        <div class="metric">
+
+          <label>Amount Paid · Surgery Done</label
+
+          ><strong id="totalRevenue">—</strong>
+
+        </div>
+
+      </div>
+
+      <section class="panel section">
+
+        <h2>Surgery Status Overview</h2>
+
+        <div id="statusGrid" class="status-grid"></div>
+
+      </section>
+
+      <section class="panel section">
+
+        <div class="toolbar">
+
+          <h2>Payment Mode Overview · Surgery Done Only</h2>
+
+          <span class="pill" id="paymentSubtitle">—</span>
+
+        </div>
+
+        <div id="paymentGrid" class="status-grid"></div>
+
+      </section>
+
+      <div class="chart-grid">
+
+        <section class="panel chart-panel">
+
+          <h2>Surgery Status — Bar Graph</h2>
+
+          <div class="chart-caption">
+
+            Patient counts for each surgery status
+
+          </div>
+
+          <div
+
+            id="surgeryStatusChart"
+
+            class="barchart"
+
+            role="img"
+
+            aria-label="Bar graph of patients by surgery status"
+
+          ></div>
+
+        </section>
+
+        <section class="panel chart-panel">
+
+          <h2>Payment Modes — Bar Graph</h2>
+
+          <div class="chart-caption">
+
+            Amount collected, Surgery Done patients only
+
+          </div>
+
+          <div
+
+            id="paymentChart"
+
+            class="barchart"
+
+            role="img"
+
+            aria-label="Bar graph of amount collected by payment mode"
+
+          ></div>
+
+        </section>
+
+      </div>
+
+      <section class="panel section">
+
+        <h2>Camp-wise Surgery Status — Stacked Bar Graph</h2>
+
+        <p class="chart-caption">
+
+          Each bar represents patients in one camp, split by surgery status.
+
+          Totals and charts follow the selected camp filters.
+
+        </p>
+
+        <div id="campChartLegend" class="chart-legend"></div>
+
+        <div
+
+          id="campStatusChart"
+
+          class="camp-chart-list"
+
+          role="img"
+
+          aria-label="Stacked bar graph of patient surgery statuses by camp"
+
+        ></div>
+
+      </section>
+
+      <section class="panel section">
+
+        <div class="toolbar">
+
+          <h2>Camp-wise Overview</h2>
+
+          <div class="filters">
+
+            <input
+
+              type="search"
+
+              id="searchInput"
+
+              placeholder="Search camp ID, name, city, doctor"
+
+            /><select id="statusFilter">
+
+              <option value="">All surgery statuses</option>
+
+              <option>Surgery Done</option>
+
+              <option>SurgerySuggested</option>
+
+              <option>Positive</option>
+
+              <option>Pending</option>
+
+              <option>Lost</option>
+
+              <option>Stockings Medication</option>
+
+              <option value="Unspecified">Unspecified</option></select
+
+            ><button id="refreshBtn" class="primary">Refresh</button
+
+            ><button id="csvBtn" class="secondary">Export CSV</button>
+
+          </div>
+
+        </div>
+
+        <div class="scroller">
+
+          <table class="camp-table">
+
+            <thead>
+
+              <tr>
+
+                <th>Camp ID</th>
+
+                <th>Camp Details</th>
+
+                <th class="number">Patients</th>
+
+                <th class="number">Surgery Done</th>
+
+                <th class="number">SurgerySuggested</th>
+
+                <th class="number">Positive</th>
+
+                <th class="number">Pending</th>
+
+                <th class="number">Lost</th>
+
+                <th class="number">Stockings Medication</th>
+
+                <th class="number">Unspecified</th>
+
+                <th>Payment Modes · Done</th>
+
+                <th class="number">Amount Paid · Done</th>
+
+                <th>Details</th>
+
+              </tr>
+
+            </thead>
+
+            <tbody id="tableBody">
+
+              <tr>
+
+                <td colspan="13" class="empty">Loading...</td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <div id="loadNote" class="notice"></div>
+
+      </section>
+
+    </main>
+
+    <script>
+
+      "use strict";
+
+      // Same sources as the existing OP/IP pages. The IP API must implement getAllIpDetails.
+
+      const LEADS_API_URL =
+
+        "https\://script.google.com/macros/s/AKfycbwaY7WhanDFXtLn4PkSym_BmT_oGnea4-Ckm30wyJDkO6odi4f2HP-4YB07aPQEGd3t0Q/exec";
+
+      const CAMPS_API_URL =
+
+        "https\://script.google.com/macros/s/AKfycbw4w8S_nHPcdn3RWj-wm2XGT_6Il70lScUQFP71UooBPM7Npf0zedq_Vf2-4TdIBtTD1w/exec";
+
+      // Replace with the secure, deployed IP Apps Script endpoint that supports getAllIpDetails.
+
+      const IP_API_URL =
+
+        "https\://script.google.com/macros/s/AKfycbw-nwjRZU93h_icjvdO7AJAHFfIJB7vpeVIqjY9B-V7Thd3bJ1pajRtjNYGXaYHoGGMfA/exec";
+
+      const STATUSES = [
+
+        "Surgery Done",
+
+        "SurgerySuggested",
+
+        "Positive",
+
+        "Pending",
+
+        "Lost",
+
+        "Stockings Medication",
+
+        "Unspecified",
+
+      ];
+
+      const PAYMENT_MODES = [
+
+        "Cash",
+
+        "UPI",
+
+        "Card",
+
+        "Bank Transfer",
+
+        "Insurance",
+
+        "Other",
+
+        "Unspecified",
+
+      ];
+
+      const str = (v) => String(v ?? "").trim();
+
+      const safe = (v) =>
+
+        str(v).replace(
+
+          /[&<>"']/g,
+
+          (x) =>
+
+            ({
+
+              "&": "&amp;",
+
+              "<": "&lt;",
+
+              ">": "&gt;",
+
+              '"': "&quot;",
+
+              "'": "&#39;",
+
+            })[x],
+
+        );
+
+      const fmtCount = (v) => Number(v).toLocaleString("en-IN");
+
+      const fmtMoney = (v) =>
+
+        "₹" +
+
+        Number(v).toLocaleString("en-IN", {
+
+          maximumFractionDigits: 2,
+
+          minimumFractionDigits: 0,
+
+        });
+
+      const readRows = (r) =>
+
+        Array.isArray(r.records)
+
+          ? r.records
+
+          : Array.isArray(r.leads)
+
+            ? r.leads
+
+            : Array.isArray(r.data)
+
+              ? r.data
+
+              : [];
+
+      const idOf = (l) => str(l.id || l.leadId);
+
+      let camps = [],
+
+        visible = [],
+
+        loadingId = 0,
+
+        ipDataAvailable = false;
+
+      function logout() {
+
+        [
+
+          "medical_logged_in",
+
+          "medical_user_email",
+
+          "medical_user_role",
+
+        ].forEach((x) => sessionStorage.removeItem(x));
+
+        location.replace("./login.html");
+
+      }
+
+      const auth = {
+
+        loggedIn: sessionStorage.getItem("medical_logged_in"),
+
+        role: sessionStorage.getItem("medical_user_role"),
+
+        email: sessionStorage.getItem("medical_user_email"),
+
+      };
+
+      if (auth.loggedIn !== "true" || auth.role !== "admin") {
+
+        location.replace("./login.html");
+
+      } else {
+
+        document.getElementById("adminEmail").textContent =
+
+          auth.email || "Admin";
+
+        loadData();
+
+      }
+
+      async function fetchJson(url) {
+
+        const r = await fetch(url, { cache: "no-store" });
+
+        const t = await r.text();
+
+        if (!r.ok) throw Error("HTTP " + r.status);
+
+        if (t.trim().startsWith("<"))
+
+          throw Error("API returned HTML instead of JSON");
+
+        try {
+
+          return JSON.parse(t);
+
+        } catch {
+
+          throw Error("API returned invalid JSON");
+
+        }
+
+      }
+
+      function normalizeStatus(v) {
+
+        const s = str(v)
+
+          .toLowerCase()
+
+          .replace(/[\s_-]/g, "");
+
+        const map = {
+
+          surgerydone: "Surgery Done",
+
+          completed: "Surgery Done",
+
+          surgerysuggested: "SurgerySuggested",
+
+          positive: "Positive",
+
+          pending: "Pending",
+
+          lost: "Lost",
+
+          stockingsmedication: "Stockings Medication",
+
+        };
+
+        return map[s] || "Unspecified";
+
+      }
+
+      function normalizePayment(v) {
+
+        const s = str(v)
+
+          .toLowerCase()
+
+          .replace(/[\s_-]/g, "");
+
+        const map = {
+
+          cash: "Cash",
+
+          upi: "UPI",
+
+          card: "Card",
+
+          creditcard: "Card",
+
+          debitcard: "Card",
+
+          banktransfer: "Bank Transfer",
+
+          neft: "Bank Transfer",
+
+          imps: "Bank Transfer",
+
+          insurance: "Insurance",
+
+          other: "Other",
+
+        };
+
+        return map[s] || "Unspecified";
+
+      }
+
+      function amount(l) {
+
+        const n = Number(str(l.amountPaid).replace(/[,₹]/g, ""));
+
+        return Number.isFinite(n) && n >= 0 ? n : 0;
+
+      }
+
+      function summarize(c) {
+
+        const statuses = Object.fromEntries(STATUSES.map((s) => [s, 0]));
+
+        const payments = Object.fromEntries(
+
+          PAYMENT_MODES.map((s) => [s, { count: 0, amount: 0 }]),
+
+        );
+
+        let revenue = 0;
+
+        for (const l of c.leads) {
+
+          const status = normalizeStatus(l.surgeryStatus);
+
+          statuses[status]++;
+
+          if (status === "Surgery Done") {
+
+            const mode = normalizePayment(l.modeOfPayment);
+
+            const a = amount(l);
+
+            payments[mode].count++;
+
+            payments[mode].amount += a;
+
+            revenue += a;
+
+          }
+
+        }
+
+        return {
+
+          statuses,
+
+          payments,
+
+          revenue,
+
+          total: c.leads.length,
+
+          done: statuses["Surgery Done"],
+
+        };
+
+      }
+
+      async function loadData() {
+
+        const run = ++loadingId;
+
+        document.getElementById("tableBody").innerHTML =
+
+          '<tr><td colspan="13" class="empty loading">Loading B2B dashboard...</td></tr>';
+
+        document.getElementById("loadNote").textContent = "";
+
+        document.getElementById("refreshBtn").disabled = true;
+
+        try {
+
+          const result = await fetchJson(
+
+            CAMPS_API_URL + "?action=getCamps&t=" + Date.now(),
+
+          );
+
+          if (!result.success)
+
+            throw Error(result.message || "Unable to load camps");
+
+          const raw = Array.isArray(result.camps) ? result.camps : [];
+
+          const working = raw.map((c, i) => ({
+
+            ...c,
+
+            _index: i,
+
+            leads: [],
+
+            error: "",
+
+          })); // Limit concurrent calls to reduce Apps Script throttling on large camp lists.
+
+          let pointer = 0;
+
+          async function worker() {
+
+            while (pointer < working.length) {
+
+              const c = working[pointer++];
+
+              if (!str(c.id)) continue;
+
+              try {
+
+                const p = new URLSearchParams({
+
+                  action: "getCounsellorLeads",
+
+                  campIds: str(c.id),
+
+                  counsellorEmail: str(c.counsellor).toLowerCase(),
+
+                  t: String(Date.now()),
+
+                });
+
+                const r = await fetchJson(LEADS_API_URL + "?" + p);
+
+                if (!r.success) throw Error(r.message || "Patient data failed");
+
+                const uniq = new Map();
+
+                readRows(r).forEach((l, i) => {
+
+                  const key = idOf(l)
+
+                    ? "id:" + idOf(l)
+
+                    : "fallback:" + str(c.id) + ":" + i + ":" + str(l.mobile);
+
+                  if (!uniq.has(key))
+
+                    uniq.set(key, {
+
+                      ...l,
+
+                      campId: str(l.campId) || str(c.id),
+
+                      campName: str(l.campName) || str(c.campName),
+
+                    });
+
+                });
+
+                c.leads = [...uniq.values()];
+
+              } catch (e) {
+
+                c.error = e.message;
+
+              }
+
+            }
+
+          }
+
+          await Promise.all(
+
+            Array.from({ length: Math.min(6, working.length) }, worker),
+
+          );
+
+          if (run !== loadingId) return;
+
+          ipDataAvailable = false;
+
+          let ipProblem = "";
+
+          try {
+
+            const ip = await fetchJson(
+
+              IP_API_URL + "?action=getAllIpDetails&t=" + Date.now(),
+
+            );
+
+            if (!ip.success)
+
+              throw Error(ip.message || "getAllIpDetails failed");
+
+            const saved = new Map();
+
+            readRows(ip).forEach((r) => {
+
+              if (idOf(r)) saved.set(idOf(r), r);
+
+            });
+
+            for (const c of working)
+
+              for (const l of c.leads) {
+
+                const match = saved.get(idOf(l));
+
+                if (match) {
+
+                  for (const f of [
+
+                    "surgeryStatus",
+
+                    "surgeryDate",
+
+                    "surgeryLocation",
+
+                    "surgeryDoctor",
+
+                    "modeOfPayment",
+
+                    "amountPaid",
+
+                    "ipUpdatedAt",
+
+                  ])
+
+                    if (match[f] !== undefined && match[f] !== null)
+
+                      l[f] = match[f];
+
+                }
+
+              }
+
+            ipDataAvailable = true;
+
+          } catch (e) {
+
+            ipProblem = e.message;
+
+            console.error("IP details unavailable:", e);
+
+          }
+
+          camps = working;
+
+          applyFilters();
+
+          const failed = working.filter((c) => c.error).length;
+
+          const notes = [];
+
+          if (failed)
+
+            notes.push(
+
+              "Warning: " +
+
+                failed +
+
+                " camp(s) failed to load; their totals may be incomplete.",
+
+            );
+
+          if (!ipDataAvailable)
+
+            notes.push(
+
+              "IP saved details could not be loaded (" +
+
+                ipProblem +
+
+                "). Surgery/payment totals may be missing or outdated. Check the deployed getAllIpDetails endpoint and permissions.",
+
+            );
+
+          else
+
+            notes.push(
+
+              "Data comes from OP camp leads, enriched with saved IP surgery/payment fields. No OP-to-IP conversion is required.",
+
+            );
+
+          document.getElementById("loadNote").textContent = notes.join(" ");
+
+        } catch (e) {
+
+          console.error(e);
+
+          document.getElementById("tableBody").innerHTML =
+
+            '<tr><td colspan="13" class="empty error">' +
+
+            safe(e.message) +
+
+            "</td></tr>";
+
+          document.getElementById("loadNote").textContent =
+
+            "Dashboard could not be loaded.";
+
+        } finally {
+
+          if (run === loadingId)
+
+            document.getElementById("refreshBtn").disabled = false;
+
+        }
+
+      }
+
+      function totalsOf(groups) {
+
+        const all = {
+
+          statuses: Object.fromEntries(STATUSES.map((s) => [s, 0])),
+
+          payments: Object.fromEntries(
+
+            PAYMENT_MODES.map((s) => [s, { count: 0, amount: 0 }]),
+
+          ),
+
+          revenue: 0,
+
+          total: 0,
+
+          done: 0,
+
+        };
+
+        for (const c of groups) {
+
+          const x = summarize(c);
+
+          all.total += x.total;
+
+          all.done += x.done;
+
+          all.revenue += x.revenue;
+
+          for (const s of STATUSES) all.statuses[s] += x.statuses[s];
+
+          for (const p of PAYMENT_MODES) {
+
+            all.payments[p].count += x.payments[p].count;
+
+            all.payments[p].amount += x.payments[p].amount;
+
+          }
+
+        }
+
+        return all;
+
+      }
+
+      function renderSummary() {
+
+        const t = totalsOf(visible);
+
+        document.getElementById("totalCamps").textContent = fmtCount(
+
+          visible.length,
+
+        );
+
+        document.getElementById("totalPatients").textContent = fmtCount(
+
+          t.total,
+
+        );
+
+        document.getElementById("totalDone").textContent = fmtCount(t.done);
+
+        document.getElementById("doneRate").textContent = t.total
+
+          ? ((100 * t.done) / t.total).toFixed(1) + "%"
+
+          : "0%";
+
+        document.getElementById("totalRevenue").textContent = fmtMoney(
+
+          t.revenue,
+
+        );
+
+        document.getElementById("statusGrid").innerHTML = STATUSES.map(
+
+          (s) =>
+
+            '<div class="status-card"><span>' +
+
+            safe(s) +
+
+            "</span><strong>" +
+
+            fmtCount(t.statuses[s]) +
+
+            "</strong></div>",
+
+        ).join("");
+
+        document.getElementById("paymentSubtitle").textContent =
+
+          fmtCount(t.done) + " surgeries done";
+
+        document.getElementById("paymentGrid").innerHTML = PAYMENT_MODES.map(
+
+          (p) =>
+
+            '<div class="status-card"><span>' +
+
+            safe(p) +
+
+            "</span><strong>" +
+
+            fmtCount(t.payments[p].count) +
+
+            '</strong><div class="subtle">' +
+
+            fmtMoney(t.payments[p].amount) +
+
+            "</div></div>",
+
+        ).join("");
+
+      }
+
+      const STATUS_COLORS = [
+
+        "#16a34a",
+
+        "#2563eb",
+
+        "#0d9488",
+
+        "#eab308",
+
+        "#dc2626",
+
+        "#8b5cf6",
+
+        "#94a3b8",
+
+      ];
+
+      const PAYMENT_COLORS = [
+
+        "#2563eb",
+
+        "#0d9488",
+
+        "#8b5cf6",
+
+        "#f59e0b",
+
+        "#16a34a",
+
+        "#64748b",
+
+        "#94a3b8",
+
+      ];
+
+      function renderBarChart(elementId, labels, values, colors, formatter) {
+
+        const target = document.getElementById(elementId);
+
+        const max = Math.max(0, ...values);
+
+        if (!max) {
+
+          target.innerHTML =
+
+            '<div class="chart-zero">No recorded data to chart</div>';
+
+          return;
+
+        }
+
+        target.innerHTML = labels
+
+          .map((label, i) => {
+
+            const width = (100 * values[i]) / max;
+
+            return `<div class="bar-row"><span class="bar-label">${safe(label)}</span><div class="bar-track" title="${safe(label)}: ${safe(formatter(values[i]))}"><div class="bar-fill" style="width:${width.toFixed(3)}%;background:${colors[i]}"></div></div><span class="bar-value">${safe(formatter(values[i]))}</span></div>`;
+
+          })
+
+          .join("");
+
+      }
+
+      function renderCampBarChart() {
+
+        document.getElementById("campChartLegend").innerHTML = STATUSES.map(
+
+          (st, i) =>
+
+            `<span class="legend-item"><span class="legend-dot" style="background:${STATUS_COLORS[i]}"></span>${safe(st)}</span>`,
+
+        ).join("");
+
+        const target = document.getElementById("campStatusChart");
+
+        const groups = visible.map((c) => ({ camp: c, summary: summarize(c) }));
+
+        const max = Math.max(0, ...groups.map((g) => g.summary.total));
+
+        if (!max) {
+
+          target.innerHTML =
+
+            '<div class="chart-zero">No camp patient data to chart</div>';
+
+          return;
+
+        }
+
+        target.innerHTML = groups
+
+          .map(({ camp, summary }) => {
+
+            const segments = STATUSES.map((st, i) => {
+
+              const value = summary.statuses[st];
+
+              return value
+
+                ? `<div class="stacked-segment" title="${safe(st)}: ${value}" style="width:${((100 * value) / max).toFixed(3)}%;background:${STATUS_COLORS[i]}"></div>`
+
+                : "";
+
+            }).join("");
+
+            const name =
+
+              str(camp.campName) || str(camp.id) || "Unassigned Camp";
+
+            return `<div class="camp-chart-row"><span class="camp-chart-label" title="${safe(name)} (${safe(camp.id)})">${safe(name)}</span><div class="stacked-track">${segments}</div><strong class="bar-value">${summary.total}</strong></div>`;
+
+          })
+
+          .join("");
+
+      }
+
+      function renderCharts() {
+
+        const totals = totalsOf(visible);
+
+        renderBarChart(
+
+          "surgeryStatusChart",
+
+          STATUSES,
+
+          STATUSES.map((s) => totals.statuses[s]),
+
+          STATUS_COLORS,
+
+          fmtCount,
+
+        );
+
+        renderBarChart(
+
+          "paymentChart",
+
+          PAYMENT_MODES,
+
+          PAYMENT_MODES.map((p) => totals.payments[p].amount),
+
+          PAYMENT_COLORS,
+
+          fmtMoney,
+
+        );
+
+        renderCampBarChart();
+
+      }
+
+      function applyFilters() {
+
+        const q = str(
+
+            document.getElementById("searchInput").value,
+
+          ).toLowerCase(),
+
+          s = document.getElementById("statusFilter").value;
+
+        visible = camps.filter(
+
+          (c) =>
+
+            (!q ||
+
+              [c.id, c.campName, c.city, c.doctorName, c.campDate]
+
+                .join(" ")
+
+                .toLowerCase()
+
+                .includes(q)) &&
+
+            (!s || c.leads.some((l) => normalizeStatus(l.surgeryStatus) === s)),
+
+        );
+
+        renderSummary();
+
+        renderCharts();
+
+        renderTable();
+
+      }
+
+      function paymentText(s) {
+
+        return (
+
+          PAYMENT_MODES.filter((p) => s.payments[p].count)
+
+            .map((p) => safe(p) + ": " + s.payments[p].count)
+
+            .join("<br>") || "—"
+
+        );
+
+      }
+
+      function renderTable() {
+
+        const tbody = document.getElementById("tableBody");
+
+        if (!visible.length) {
+
+          tbody.innerHTML =
+
+            '<tr><td colspan="13" class="empty">No matching camps</td></tr>';
+
+          return;
+
+        }
+
+        tbody.innerHTML = visible
+
+          .map((c, i) => {
+
+            const s = summarize(c);
+
+            return `<tr><td class="id">${safe(c.id) || "—"}</td><td><b>${safe(c.campName) || "—"}</b><div class="subtle">${safe(c.campDate)} · ${safe(c.city)}</div><div class="subtle">Doctor: ${safe(c.doctorName) || "—"}</div>${c.error ? '<div class="error subtle">Load failed: ' + safe(c.error) + "</div>" : ""}</td><td class="number">${s.total}</td>${STATUSES.map((x) => `<td class="number ${x === "Surgery Done" ? "done" : ""}">${s.statuses[x]}</td>`).join("")}<td>${paymentText(s)}</td><td class="number done">${fmtMoney(s.revenue)}</td><td><button class="secondary" data-index="${i}" onclick="toggleDetails(this)">View Details</button> <button class="primary" data-index="${i}" onclick="downloadCampPDF(this)">Download PDF</button></td></tr><tr id="detail-${i}" class="detail-row"><td colspan="13"><div id="content-${i}" class="detail-box"></div></td></tr>`;
+
+          })
+
+          .join("");
+
+      }
+
+      function toggleDetails(btn) {
+
+        const i = Number(btn.dataset.index),
+
+          row = document.getElementById("detail-" + i),
+
+          open = !row.classList.contains("open");
+
+        document
+
+          .querySelectorAll(".detail-row")
+
+          .forEach((r) => r.classList.remove("open"));
+
+        if (!open) return;
+
+        row.classList.add("open");
+
+        const c = visible[i];
+
+        if (!c) return;
+
+        const s = summarize(c);
+
+        const done = c.leads.filter(
+
+          (l) => normalizeStatus(l.surgeryStatus) === "Surgery Done",
+
+        );
+
+        const counts = STATUSES.map(
+
+          (x) =>
+
+            '<div class="status-card"><span>' +
+
+            safe(x) +
+
+            "</span><strong>" +
+
+            s.statuses[x] +
+
+            "</strong></div>",
+
+        ).join("");
+
+        const paymentRows =
+
+          PAYMENT_MODES.filter((p) => s.payments[p].count)
+
+            .map(
+
+              (p) =>
+
+                `<tr><td>${safe(p)}</td><td>${s.payments[p].count}</td><td>${fmtMoney(s.payments[p].amount)}</td></tr>`,
+
+            )
+
+            .join("") ||
+
+          '<tr><td colspan="3" class="empty">No Surgery Done patients yet</td></tr>';
+
+        document.getElementById("content-" + i).innerHTML =
+
+          `<h3>${safe(c.campName)} · ${safe(c.id)}</h3><div class="status-grid">${counts}</div><div class="barchart" style="margin-top:18px">${STATUSES.map((st, j) => `<div class="bar-row"><span class="bar-label">${safe(st)}</span><div class="bar-track"><div class="bar-fill" style="width:${s.total ? ((100 * s.statuses[st]) / s.total).toFixed(2) : 0}%;background:${STATUS_COLORS[j]}"></div></div><strong class="bar-value">${s.statuses[st]}</strong></div>`).join("")}</div><h3 style="margin-top:20px">Payment mode breakdown (Surgery Done only)</h3><div class="scroller"><table class="detail-table"><thead><tr><th>Payment Mode</th><th>Patients</th><th>Amount Paid</th></tr></thead><tbody>${paymentRows}</tbody><tfoot><tr><th>Total</th><th>${done.length}</th><th>${fmtMoney(s.revenue)}</th></tr></tfoot></table></div><p class="notice">Totals reflect saved Amount Paid, not billed or expected surgery revenue. Missing/invalid amounts count as ₹0; missing payment modes are Unspecified.</p>`;
+
+      }
+
+      function csvCell(x) {
+
+        let s = str(x);
+
+        if (/^[=+@\-**\t**\r]/.test(s)) s = "'" + s;
+
+        return '"' + s.replace(/"/g, '""') + '"';
+
+      }
+
+      function exportCSV() {
+
+        const rows = [
+
+          [
+
+            "Camp ID",
+
+            "Camp Name",
+
+            "Camp Date",
+
+            "City",
+
+            "Doctor",
+
+            "Total Patients",
+
+            ...STATUSES,
+
+            ...PAYMENT_MODES.map((x) => "Payment " + x + " Count"),
+
+            ...PAYMENT_MODES.map((x) => "Payment " + x + " Amount"),
+
+            "Surgery Done Amount Paid",
+
+          ],
+
+        ];
+
+        visible.forEach((c) => {
+
+          const s = summarize(c);
+
+          rows.push([
+
+            c.id,
+
+            c.campName,
+
+            c.campDate,
+
+            c.city,
+
+            c.doctorName,
+
+            s.total,
+
+            ...STATUSES.map((x) => s.statuses[x]),
+
+            ...PAYMENT_MODES.map((x) => s.payments[x].count),
+
+            ...PAYMENT_MODES.map((x) => s.payments[x].amount),
+
+            s.revenue,
+
+          ]);
+
+        });
+
+        const csv =
+
+          "\ufeff" + rows.map((r) => r.map(csvCell).join(",")).join("\r\n");
+
+        const u = URL.createObjectURL(
+
+          new Blob([csv], { type: "text/csv;charset=utf-8" }),
+
+        );
+
+        const a = document.createElement("a");
+
+        a.href = u;
+
+        a.download = "b2b-camp-overview.csv";
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+        setTimeout(() => URL.revokeObjectURL(u), 500);
+
+      }
+
+      // Export ONE camp, including its patient records, statuses, payments and 10 follow-ups.
+
+      // PDF generation runs in the browser. The download never modifies Google Sheets.
+
+      const pickValue = (record, names) => {
+
+        for (const name of names) {
+
+          const value = record[name];
+
+          if (value !== undefined && value !== null && str(value) !== "")
+
+            return str(value);
+
+        }
+
+        return "—";
+
+      };
+
+      const pdfNumber = (x) => Number(x || 0).toLocaleString("en-IN");
+
+      const pdfMoney = (x) =>
+
+        "INR " +
+
+        Number(x || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+
+      function pdfBarRows(labels, values, colors, money = false) {
+
+        const max = Math.max(1, ...values);
+
+        return labels
+
+          .map(
+
+            (name, i) =>
+
+              `<div class="pdf-barrow"><div class="pdf-barname">${safe(name)}</div><div class="pdf-bartrack"><div class="pdf-barfill" style="background:${colors[i]};width:${((100 * values[i]) / max).toFixed(2)}%"></div></div><b class="pdf-barnum">${money ? pdfMoney(values[i]) : pdfNumber(values[i])}</b></div>`,
+
+          )
+
+          .join("");
+
+      }
+
+      function followupCells(lead) {
+
+        const found = [];
+
+        for (let n = 1; n <= 10; n++) {
+
+          const v = pickValue(lead, [
+
+            `followUp${n}`,
+
+            `followup${n}`,
+
+            `followUp${n}Remarks`,
+
+            `followup${n}Remarks`,
+
+            `remarks${n}`,
+
+            `remark${n}`,
+
+            `followUpRemark${n}`,
+
+            `followUp${n}Remark`,
+
+          ]);
+
+          if (v !== "—") found.push(`<b>${n}:</b> ${safe(v)}`);
+
+        }
+
+        return found.join('<div style="height:4px"></div>') || "—";
+
+      }
+
+      function makeCampReport(c) {
+
+        const s = summarize(c);
+
+        const generated = new Date().toLocaleString("en-IN");
+
+        const paymentRows = PAYMENT_MODES.map(
+
+          (p) =>
+
+            `<tr><td>${safe(p)}</td><td>${s.payments[p].count}</td><td>${pdfMoney(s.payments[p].amount)}</td></tr>`,
+
+        ).join("");
+
+        const patientRows = c.leads
+
+          .map((lead, i) => {
+
+            const status = normalizeStatus(lead.surgeryStatus);
+
+            const done = status === "Surgery Done";
+
+            const pay = done ? normalizePayment(lead.modeOfPayment) : "—";
+
+            return `<tr><td>${i + 1}</td><td>${safe(pickValue(lead, ["patientName", "name", "fullName", "leadName"]))}<div style="color:#64748b">ID: ${safe(idOf(lead) || "—")}</div></td><td>${safe(pickValue(lead, ["mobile", "phone", "phoneNumber", "contactNumber"]))}</td><td>${safe(status)}</td><td>${safe(pickValue(lead, ["surgeryDate"]))}</td><td>${safe(pay)}</td><td>${done ? pdfMoney(amount(lead)) : "—"}</td><td>${safe(pickValue(lead, ["remarks", "remark", "ipRemarks", "latestRemarks", "followupRemarks"]))}</td><td>${followupCells(lead)}</td></tr>`;
+
+          })
+
+          .join("");
+
+        return `<div class="pdf-report">
+
+    <div class="pdf-header"><h1>Medical Camp — Individual Report</h1><div>Camp ID: <b>${safe(c.id)}</b> | Generated: ${safe(generated)}</div></div>
+
+    <div class="pdf-meta"><div><b>Camp:</b> ${safe(c.campName || "—")}</div><div><b>Date:</b> ${safe(c.campDate || "—")}</div><div><b>City:</b> ${safe(c.city || "—")}</div><div><b>Doctor:</b> ${safe(c.doctorName || "—")}</div><div><b>Counsellor:</b> ${safe(c.counsellor || "—")}</div><div><b>IP Data:</b> ${ipDataAvailable ? "Loaded" : "Unavailable"}</div></div>
+
+    <div class="pdf-stats"><div class="pdf-stat">Total Patients<b>${s.total}</b></div><div class="pdf-stat">Surgery Done<b>${s.done}</b></div><div class="pdf-stat">Done Rate<b>${s.total ? ((100 * s.done) / s.total).toFixed(1) : "0.0"}%</b></div><div class="pdf-stat">Amount Paid (Done)<b>${pdfMoney(s.revenue)}</b></div></div>
+
+    <h2>Surgery Status Breakdown</h2>${pdfBarRows(
+
+      STATUSES,
+
+      STATUSES.map((st) => s.statuses[st]),
+
+      STATUS_COLORS,
+
+    )}
+
+    <h2>Payment Modes — Surgery Done Only</h2><table><thead><tr><th>Payment Mode</th><th>Patients</th><th>Amount Paid</th></tr></thead><tbody>${paymentRows}</tbody><tfoot><tr><th>Total</th><th>${s.done}</th><th>${pdfMoney(s.revenue)}</th></tr></tfoot></table>
+
+    <h2>Payment Collection by Mode</h2>${pdfBarRows(
+
+      PAYMENT_MODES,
+
+      PAYMENT_MODES.map((p) => s.payments[p].amount),
+
+      PAYMENT_COLORS,
+
+      true,
+
+    )}
+
+    <h2>Complete Patient List (${s.total})</h2>
+
+    <table><colgroup><col style="width:4%"><col style="width:15%"><col style="width:12%"><col style="width:13%"><col style="width:10%"><col style="width:9%"><col style="width:10%"><col style="width:12%"><col style="width:15%"></colgroup><thead><tr><th>#</th><th>Patient</th><th>Mobile</th><th>Surgery Status</th><th>Surgery Date</th><th>Payment Mode</th><th>Amount Paid</th><th>Remarks</th><th>Follow-ups (1–10)</th></tr></thead><tbody>${patientRows || '<tr><td colspan="9">No patients found for this camp.</td></tr>'}</tbody></table>
+
+    <p class="pdf-note">Amounts represent recorded Amount Paid for Surgery Done patients only; unrecorded amounts count as zero. All patients in this camp are included regardless of the surgery-status filter. This report contains confidential patient details; share only with authorized personnel.</p>
+
+  </div>`;
+
+      }
+
+      // Self-contained PDF generator. No CDN, pop-up, print dialog or server required.
+      // Builds a real, multipage PDF as a Blob and downloads it directly.
+      function createCampPDF(c) {
+        const WIDTH=842, HEIGHT=595, MARGIN=36, BOTTOM=42;
+        const pages=[];
+        let page, y;
+        const rgb=(hex)=>{ const h=hex.replace('#',''); return [0,2,4].map(i=>(parseInt(h.slice(i,i+2),16)/255).toFixed(3)).join(' '); };
+        const textPlain=v=>String(v??'').normalize('NFKD')
+          .replace(/[\u0300-\u036f]/g,'').replace(/[\u2010-\u2015]/g,'-')
+          .replace(/[\u2018\u2019]/g,"'").replace(/[\u201c\u201d]/g,'"')
+          .replace(/[\u20b9]/g,'INR ').replace(/[\u00a0]/g,' ')
+          .replace(/[^\x20-\x7e]/g,'?');
+        const esc=v=>textPlain(v).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+        const num=(n)=>Number(n||0).toLocaleString('en-IN');
+        const money=n=>'INR '+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
+        function nextPage(){
+          page=[];pages.push(page);y=HEIGHT-MARGIN;
+          page.push(`${rgb('#e2e8f0')} RG 0.6 w ${MARGIN} 29 m ${WIDTH-MARGIN} 29 l S`);
+        }
+        function txt(value,x,yy,size=9,bold=false,color='#17243c'){
+          page.push(`BT /${bold?'F2':'F1'} ${size} Tf ${rgb(color)} rg 1 0 0 1 ${x.toFixed(2)} ${yy.toFixed(2)} Tm (${esc(value)}) Tj ET`);
+        }
+        function rect(x,yy,w,h,fill){page.push(`${rgb(fill)} rg ${x.toFixed(2)} ${yy.toFixed(2)} ${Math.max(0,w).toFixed(2)} ${h.toFixed(2)} re f`);}
+        function line(x1,y1,x2,y2,color='#e2e8f0'){
+          page.push(`${rgb(color)} RG 0.6 w ${x1.toFixed(2)} ${y1.toFixed(2)} m ${x2.toFixed(2)} ${y2.toFixed(2)} l S`);
+        }
+        function ensure(h){if(y-h < BOTTOM)nextPage();}
+        // Approximate wrapping against Helvetica's average character width; hard-break long values.
+        function wrap(value,width,size=9){
+          const limit=Math.max(8,Math.floor(width/(size*0.52)));
+          const out=[];
+          for(const paragraph of textPlain(value).split(/\r?\n/)){
+            let buffer='';
+            for(const word of paragraph.split(/\s+/)){
+              if(!word)continue;
+              if(buffer && (buffer.length+1+word.length)>limit){out.push(buffer);buffer='';}
+              if(word.length>limit){
+                if(buffer){out.push(buffer);buffer='';}
+                for(let i=0;i<word.length;i+=limit){
+                  const chunk=word.slice(i,i+limit);
+                  if(chunk.length===limit)out.push(chunk);else buffer=chunk;
+                }
+              }else{buffer+=(buffer?' ':'')+word;}
+            }
+            out.push(buffer||' ');
+          }
+          return out;
+        }
+        function section(title){ensure(29);y-=12;txt(title,MARGIN,y,13,true);y-=13;line(MARGIN,y,WIDTH-MARGIN,y);y-=9;}
+        function info(label,value,x,width){
+          const ls=wrap(label+': '+String(value||'-'),width-5,9);
+          ensure(ls.length*12+3);
+          ls.forEach(t=>{txt(t,x,y,9);y-=12;});
+        }
+        function bar(label,value,max,color,formatter){
+          ensure(18);const labelW=160,barX=MARGIN+labelW,barW=WIDTH-MARGIN-barX-105;
+          txt(label,MARGIN,y,8.5);rect(barX,y-1,barW,10,'#eff3f8');
+          if(max>0 && value>0)rect(barX,y-1,barW*value/max,10,color);
+          txt(formatter(value),barX+barW+12,y,8.5,true);y-=19;
+        }
+        nextPage();
+        rect(0,HEIGHT-89,WIDTH,89,'#11213a');
+        txt('MEDICAL CAMP - INDIVIDUAL REPORT',MARGIN,HEIGHT-53,18,true,'#ffffff');
+        txt('Camp ID: '+(c.id||'-')+'    Generated: '+new Date().toLocaleString('en-IN'),MARGIN,HEIGHT-72,9,false,'#dbeafe');
+        y=HEIGHT-108;
+        // Compact metadata in two independent columns.
+        const top=y;
+        info('Camp',c.campName,MARGIN,360);info('City',c.city,MARGIN,360);info('Doctor',c.doctorName,MARGIN,360);
+        const leftY=y;y=top;
+        info('Date',c.campDate,440,340);info('Counsellor',c.counsellor,440,340);
+        info('IP data',ipDataAvailable?'Loaded':'Unavailable',440,340);
+        y=Math.min(y,leftY)-8;
+        const s=summarize(c);
+        section('Overview');
+        const cols=[['Patients',num(s.total)],['Surgery Done',num(s.done)],['Done Rate',s.total?(100*s.done/s.total).toFixed(1)+'%':'0%'],['Amount Paid',money(s.revenue)]];
+        const cw=(WIDTH-2*MARGIN-24)/4;
+        ensure(63);
+        cols.forEach(([k,v],i)=>{const xx=MARGIN+i*(cw+8);rect(xx,y-47,cw,50,'#eff5fc');txt(k,xx+8,y-13,9);txt(v,xx+8,y-34,v.length>17?10:13,true,'#174ea6');});
+        y-=65;
+        section('Surgery Status');
+        const statusMax=Math.max(1,...STATUSES.map(st=>s.statuses[st]));
+        STATUSES.forEach((st,i)=>bar(st,s.statuses[st],statusMax,STATUS_COLORS[i],num));
+        section('Payment Modes - Surgery Done Only');
+        const payMax=Math.max(1,...PAYMENT_MODES.map(pm=>s.payments[pm].amount));
+        PAYMENT_MODES.forEach((pm,i)=>bar(pm+' ('+s.payments[pm].count+')',s.payments[pm].amount,payMax,PAYMENT_COLORS[i],money));
+        section('Complete Patient Details ('+s.total+')');
+        if(!c.leads.length){txt('No patient records in this camp.',MARGIN,y);y-=17;}
+        c.leads.forEach((lead,i)=>{
+          const status=normalizeStatus(lead.surgeryStatus);
+          const done=status==='Surgery Done';
+          const name=pickValue(lead,['patientName','name','fullName','leadName']);
+          const phone=pickValue(lead,['mobile','phone','phoneNumber','contactNumber']);
+          const remarks=pickValue(lead,['remarks','remark','ipRemarks','latestRemarks','followupRemarks']);
+          const details=[
+            'Phone: '+phone+'   Lead ID: '+(idOf(lead)||'-'),
+            'Surgery Status: '+status+'   Surgery Date: '+pickValue(lead,['surgeryDate']),
+            'Payment Mode: '+(done?normalizePayment(lead.modeOfPayment):'-')+'   Amount Paid: '+(done?money(amount(lead)):'-'),
+            'Remarks: '+remarks
+          ];
+          for(let n=1;n<=10;n++){
+            const f=pickValue(lead,[`followUp${n}`,`followup${n}`,`followUp${n}Remarks`,`followup${n}Remarks`,`remarks${n}`,`remark${n}`,`followUpRemark${n}`,`followUp${n}Remark`]);
+            if(f!=='—')details.push('Follow-up '+n+': '+f);
+          }
+          const detailLines=details.flatMap(d=>wrap(d,WIDTH-2*MARGIN-24,8.5));
+          const lines=[...wrap((i+1)+'. '+name,WIDTH-2*MARGIN-18,10),...detailLines];
+          const height=lines.length*12+17;
+          // Individual patient records can continue to a following page without clipping.
+          if(y < BOTTOM+36)nextPage();
+          const titleLines=wrap((i+1)+'. '+name,WIDTH-2*MARGIN-18,10);
+          let first=true;
+          for(const t of titleLines){ensure(14);if(first){rect(MARGIN-5,y-5,WIDTH-2*MARGIN+10,17,'#eaf1fc');first=false;}txt(t,MARGIN+3,y,10,true);y-=14;}
+          for(const t of detailLines){ensure(12);txt(t,MARGIN+8,y,8.5,false,'#394963');y-=12;}
+          ensure(8);y-=6;line(MARGIN,y,WIDTH-MARGIN,y);y-=8;
+        });
+        ensure(35);
+        y-=7;wrap('Confidential patient data. Amounts are recorded payments for Surgery Done only. Missing payments count as zero.',WIDTH-2*MARGIN,8).forEach(t=>{ensure(12);txt(t,MARGIN,y,8,false,'#64748b');y-=11;});
+        // Footer with page numbers.
+        pages.forEach((commands,i)=>{
+          const old=page;page=commands;
+          txt('Medical Camps | Confidential',MARGIN,17,8,false,'#64748b');
+          txt(`Page ${i+1} of ${pages.length}`,WIDTH-104,17,8,false,'#64748b');
+          page=old;
+        });
+        // Serialize a standards-compliant PDF with correct byte offsets and fonts.
+        const objects=[null];
+        const add=obj=>{objects.push(obj);return objects.length-1;};
+        const root=add('');const pagesId=add('');
+        const font=add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+        const bold=add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+        const kids=[];
+        for(const instructions of pages){
+          const content=instructions.join('\n')+'\n';
+          const bytes=new TextEncoder().encode(content);
+          const streamId=add(`<< /Length ${bytes.length} >>\nstream\n${content}endstream`);
+          const pageId=add(`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 ${WIDTH} ${HEIGHT}] /Resources << /Font << /F1 ${font} 0 R /F2 ${bold} 0 R >> >> /Contents ${streamId} 0 R >>`);
+          kids.push(`${pageId} 0 R`);
+        }
+        objects[pagesId]=`<< /Type /Pages /Kids [${kids.join(' ')}] /Count ${kids.length} >>`;
+        objects[root]=`<< /Type /Catalog /Pages ${pagesId} 0 R >>`;
+        const enc=new TextEncoder();
+        const chunks=['%PDF-1.4\n%PDFVIEW\n'];
+        const offsets=[0];let position=enc.encode(chunks[0]).length;
+        for(let i=1;i<objects.length;i++){
+          offsets.push(position);
+          const chunk=`${i} 0 obj\n${objects[i]}\nendobj\n`;
+          chunks.push(chunk);position+=enc.encode(chunk).length;
+        }
+        const startXref=position;
+        chunks.push(`xref\n0 ${objects.length}\n0000000000 65535 f \n`);
+        for(let i=1;i<offsets.length;i++)chunks.push(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
+        chunks.push(`trailer\n<< /Size ${objects.length} /Root ${root} 0 R >>\nstartxref\n${startXref}\n%%EOF`);
+        return new Blob(chunks,{type:'application/pdf'});
+      }
+
+      function downloadCampPDF(button) {
+        const index=Number(button.dataset.index);
+        const camp=visible[index];
+        if(!camp){alert('Camp record not found. Refresh the dashboard.');return;}
+        if(camp.error){alert('This camp has a patient-data loading error. Refresh and retry.');return;}
+        if(!ipDataAvailable && !confirm('IP details are unavailable. The PDF may be incomplete. Download anyway?'))return;
+        const old=button.textContent;
+        button.disabled=true;button.textContent='Preparing PDF...';
+        try{
+          const blob=createCampPDF(camp);
+          const url=URL.createObjectURL(blob);
+          const anchor=document.createElement('a');
+          const name=str(camp.id||camp.campName||'Camp').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,65);
+          anchor.href=url;anchor.download=`Camp_${name}_Report.pdf`;
+          document.body.appendChild(anchor);anchor.click();anchor.remove();
+          setTimeout(()=>URL.revokeObjectURL(url),60000);
+        }catch(err){console.error('PDF generation error:',err);alert('PDF generation failed: '+err.message);}
+        finally{button.disabled=false;button.textContent=old;}
+      }
+
+      document
+
+        .getElementById("searchInput")
+
+        .addEventListener("input", applyFilters);
+
+      document
+
+        .getElementById("statusFilter")
+
+        .addEventListener("change", applyFilters);
+
+      document.getElementById("refreshBtn").addEventListener("click", loadData);
+
+      document.getElementById("csvBtn").addEventListener("click", exportCSV);
+
+    </script>
+
+  </body>
+
+</html>

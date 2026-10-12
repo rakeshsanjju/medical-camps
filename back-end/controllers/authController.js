@@ -130,9 +130,7 @@ const ALLOWED_USERS = {
     role: "telesales",
   },
 
-  "rakeshdasari0705@gmail.com": {
-    role: "telesales",
-  },
+ 
 };
 
 /* =========================================================
@@ -750,7 +748,7 @@ console.log(
 
   Boolean(
     ALLOWED_USERS[
-      ("tele.sales@avisvascularcentre.com", "rakeshdasari0705@gmail.com")
+      ("tele.sales@avisvascularcentre.com")
     ],
   ),
 );
