@@ -264,7 +264,7 @@
 
             width: 100%;
 
-            min-width: 1500px;
+            min-width: 1850px;
 
             border-collapse: collapse;
 
@@ -309,6 +309,7 @@
         }
 
         .popup-overlay {
+                z-index: 1000;
 
             position: fixed;
 
@@ -498,9 +499,10 @@
 
         }
 
-    
         .procedure-header { grid-column: 1 / -1; font-weight: 700; color: #1e40af; margin-top: 12px; padding-top: 16px; border-top: 1px solid #e2e8f0; }
+
         .procedure-header span { font-weight: 400; color: #64748b; font-size: 13px; }
+
         .form-group select { width: 100%; min-width: 0; background: #fff; }
 
     </style>
@@ -603,7 +605,12 @@
 
                             <th>Status</th>
 
-                            <th>Action</th>
+                            <th>Procedure 1</th>
+<th>Procedure 2</th>
+<th>Procedure 3</th>
+<th>Procedure 4</th>
+<th>Procedure 5</th>
+<th>Action</th>
 
                         </tr>
 
@@ -613,7 +620,7 @@
 
                         <tr>
 
-                            <td colspan="13">
+                            <td colspan="18">
 
                                 Loading...
 
@@ -982,69 +989,128 @@ Dr. Ramesh S K">
                     </div>
 
                     <!-- Five optional procedure selections -->
+
                     <div class="procedure-header">Procedure Selection <span>(up to 5)</span></div>
+
                     <div class="form-group">
+
                         <label for="editProcedure1">Procedure 1</label>
+
                         <select id="editProcedure1" name="procedure1">
+
                             <option value="">Select Procedure</option>
+
 <option value="EVRF">EVRF</option>
+
 <option value="FS">FS</option>
+
 <option value="Stab">Stab</option>
+
 <option value="CLACS Minor">CLACS Minor</option>
+
 <option value="CLACS Major">CLACS Major</option>
+
 <option value="None">None</option>
+
                         </select>
+
                     </div>
+
                     <div class="form-group">
+
                         <label for="editProcedure2">Procedure 2</label>
+
                         <select id="editProcedure2" name="procedure2">
+
                             <option value="">Select Procedure</option>
+
 <option value="EVRF">EVRF</option>
+
 <option value="FS">FS</option>
+
 <option value="Stab">Stab</option>
+
 <option value="CLACS Minor">CLACS Minor</option>
+
 <option value="CLACS Major">CLACS Major</option>
+
 <option value="None">None</option>
+
                         </select>
+
                     </div>
+
                     <div class="form-group">
+
                         <label for="editProcedure3">Procedure 3</label>
+
                         <select id="editProcedure3" name="procedure3">
+
                             <option value="">Select Procedure</option>
+
 <option value="EVRF">EVRF</option>
+
 <option value="FS">FS</option>
+
 <option value="Stab">Stab</option>
+
 <option value="CLACS Minor">CLACS Minor</option>
+
 <option value="CLACS Major">CLACS Major</option>
+
 <option value="None">None</option>
 
                         </select>
+
                     </div>
+
                     <div class="form-group">
+
                         <label for="editProcedure4">Procedure 4</label>
+
                         <select id="editProcedure4" name="procedure4">
+
                             <option value="">Select Procedure</option>
+
 <option value="EVRF">EVRF</option>
+
 <option value="FS">FS</option>
+
 <option value="Stab">Stab</option>
+
 <option value="CLACS Minor">CLACS Minor</option>
+
 <option value="CLACS Major">CLACS Major</option>
+
 <option value="None">None</option>
+
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="editProcedure5">Procedure 5</label>
-                        <select id="editProcedure5" name="procedure5">
-                            <option value="">Select Procedure</option>
-<option value="EVRF">EVRF</option>
-<option value="FS">FS</option>
-<option value="Stab">Stab</option>
-<option value="CLACS Minor">CLACS Minor</option>
-<option value="CLACS Major">CLACS Major</option>
-<option value="None">None</option>
-                        </select>
+
                     </div>
 
+                    <div class="form-group">
+
+                        <label for="editProcedure5">Procedure 5</label>
+
+                        <select id="editProcedure5" name="procedure5">
+
+                            <option value="">Select Procedure</option>
+
+<option value="EVRF">EVRF</option>
+
+<option value="FS">FS</option>
+
+<option value="Stab">Stab</option>
+
+<option value="CLACS Minor">CLACS Minor</option>
+
+<option value="CLACS Major">CLACS Major</option>
+
+<option value="None">None</option>
+
+                        </select>
+
+                    </div>
 
                 </div>
 
@@ -1552,7 +1618,7 @@ Dr. Ramesh S K">
 
                 <tr>
 
-                    <td colspan="13">
+                    <td colspan="18">
 
                         ${escapeHtml(
 
@@ -1596,7 +1662,7 @@ Dr. Ramesh S K">
 
             <tr>
 
-                <td colspan="13">
+                <td colspan="18">
 
                     No patient data for this camp.
 
@@ -1744,11 +1810,18 @@ Dr. Ramesh S K">
 
                                 ${displayValue(
 
-                                lead.status
+                                lead.procedure1, lead.procedure2, lead.procedure3, lead.procedure4, lead.procedure5,
+                                      lead.status
 
                             )}
 
                             </td>
+<td>${displayValue(lead.procedure1)}</td>
+<td>${displayValue(lead.procedure2)}</td>
+<td>${displayValue(lead.procedure3)}</td>
+<td>${displayValue(lead.procedure4)}</td>
+<td>${displayValue(lead.procedure5)}</td>
+
 
                             <td>
 
@@ -1965,16 +2038,24 @@ Dr. Ramesh S K">
             );
 
             for (let i = 1; i <= 5; i++) {
-                const key = `procedure${i}`;
-                const input = document.getElementById(`editProcedure${i}`);
-                const saved = editableValue(lead[key]);
-                // Include legacy values if a saved record contains a new procedure value.
-                if (saved && !Array.from(input.options).some(o => o.value === saved)) {
-                    input.add(new Option(saved, saved));
-                }
-                input.value = saved;
-            }
 
+                const key = `procedure${i}`;
+
+                const input = document.getElementById(`editProcedure${i}`);
+
+                const saved = editableValue(lead[key]);
+
+                // Include legacy values if a saved record contains a new procedure value.
+
+                if (saved && !Array.from(input.options).some(o => o.value === saved)) {
+
+                    input.add(new Option(saved, saved));
+
+                }
+
+                input.value = saved;
+
+            }
 
             document
 
@@ -2323,11 +2404,17 @@ Dr. Ramesh S K">
                                 : "",
 
                         counsellorEmail: currentEmail,
+
                         procedure1: document.getElementById("editProcedure1").value,
+
                         procedure2: document.getElementById("editProcedure2").value,
+
                         procedure3: document.getElementById("editProcedure3").value,
+
                         procedure4: document.getElementById("editProcedure4").value,
+
                         procedure5: document.getElementById("editProcedure5").value
+
                     };
 
                     const button =
@@ -2402,15 +2489,26 @@ Dr. Ramesh S K">
 
                         }
 
-                        showMessage(
+                        
 
-                            "Patient updated successfully.",
 
-                            "success"
+                          // Refresh from the source of truth and verify that the five fields were persisted.
+                          await loadLeads();
+                          const updated = allLeads.find(item => String(item.id) === String(data.id));
+                          const persisted = updated && [1, 2, 3, 4, 5].every(i =>
+                              String(updated[`procedure${i}`] ?? '').trim() === String(data[`procedure${i}`] ?? '').trim()
+                          );
+                          if (!persisted) {
+                              // Display the just-submitted values, but clearly mark them as unverified.
+                              if (updated) {
+                                  for (let i = 1; i <= 5; i++) updated[`procedure${i}`] = data[`procedure${i}`];
+                                  renderTable(allLeads);
+                              }
+                              showMessage('Patient update accepted, but procedure fields were not confirmed in the reloaded data. Update the Google Apps Script updateCounsellorLead and getLeads handlers to store/return procedure1–procedure5.', 'error');
+                          } else {
+                              showMessage('Patient and procedure details saved successfully.', 'success');
+                          }
 
-                        );
-
-                        await loadLeads();
 
                         setTimeout(
 
