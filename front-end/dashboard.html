@@ -736,7 +736,8 @@ th {
 .table-header .search-box { margin-left: auto; }
 .refresh-patients {background:#2563eb;color:#fff; padding:10px 16px;white-space:nowrap;}
 .refresh-patients:disabled {opacity:.55;cursor:wait;}
-.last-sync {font-size:12px;color:#64748b;white-space:nowrap;}
+.last-sync {font-size:12px;color:#64748b;white-space:normal;max-width:380px;}
+.sync-error{color:#b91c1c;font-weight:600;}
 .table-wrapper th {white-space:nowrap;}
 .table-wrapper td {vertical-align:middle;white-space:nowrap;}
 @media(max-width:768px){.table-header .search-box{margin-left:0}.last-sync{white-space:normal}}
@@ -1610,138 +1611,45 @@ function selectCamp(
 let leadsRequestId = 0;
 async function loadLeads() {
     const requestId = ++leadsRequestId;
-    const requestedCampId = selectedCamp ? String(selectedCamp.id) : "";
+    const campId = selectedCamp ? String(selectedCamp.id).trim() : "";
     const refreshButton = document.getElementById("refreshPatients");
-    if (refreshButton) refreshButton.disabled = true;
-
-    if (!selectedCamp) {
-
+    const lastSync = document.getElementById("lastSync");
+    if (!campId) {
+        allLeads = [];
         renderTable([]);
-
         return;
-
     }
-
+    if (refreshButton) refreshButton.disabled = true;
+    if (lastSync) lastSync.textContent = "Syncing…";
     try {
+        const response = await fetch(LEADS_API_URL +
+            "?action=getLeads&t=" + Date.now(), {cache: "no-store"});
+        if (!response.ok) throw new Error("Leads API HTTP " + response.status);
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message || "Unable to load patients");
+        if (requestId !== leadsRequestId || !selectedCamp ||
+            String(selectedCamp.id).trim() !== campId) return;
 
-        const response =
+        const serverLeads = Array.isArray(result.leads) ? result.leads :
+            (Array.isArray(result.records) ? result.records : []);
+        allLeads = serverLeads.filter(lead => String(lead.campId || "").trim() === campId);
+        renderTable(getFilteredLeads());
 
-            await fetch(
-
-                LEADS_API_URL +
-
-                "?action=getLeads&t=" +
-
-                Date.now(),
-
-                {
-
-                    cache:
-
-                        "no-store"
-
-                }
-
-            );
-
-        const result =
-
-            await response.json();
-
-        if (!result.success) {
-
-            throw new Error(
-
-                result.message
-
-            );
-
+        // If the server hasn't been deployed with the five new fields, flag it visibly.
+        const hasProcedureFields = !serverLeads.length || serverLeads.some(lead =>
+            [1,2,3,4,5].some(i => Object.prototype.hasOwnProperty.call(lead, "procedure" + i)));
+        if (lastSync) {
+            lastSync.textContent = hasProcedureFields
+                ? "Updated " + new Date().toLocaleTimeString("en-IN")
+                : "API version missing Procedure 1–5. Redeploy the updated Leads Apps Script.";
+            lastSync.classList.toggle("sync-error", !hasProcedureFields);
         }
-
-        const serverLeads =
-
-            Array.isArray(
-
-                result.leads
-
-            )
-
-            ? result.leads
-
-            : [];
-
-        /*
-
-         * CRITICAL:
-
-         * Show only selected Camp ID.
-
-         */
-
-        allLeads =
-
-            serverLeads.filter(
-
-                function(lead) {
-
-                    return (
-
-                        String(
-
-                            lead.campId || ""
-
-                        )
-
-                        .trim()
-
-                        ===
-
-                        String(
-
-                            selectedCamp.id
-
-                        )
-
-                    );
-
-                }
-
-            );
-
-        renderTable(
-
-            allLeads
-
-        );
-
     } catch(error) {
-
-        tableBody.innerHTML = `
-
-            <tr>
-
-                <td colspan="17">
-
-                    ${escapeHtml(
-
-                        error.message
-
-                    )}
-
-                </td>
-
-            </tr>
-
-        `;
-
-    }
-
-    finally {
-        if (requestId === leadsRequestId) {
-            if (refreshButton) refreshButton.disabled = false;
-            const stamp = document.getElementById("lastSync");
-            if (stamp) stamp.textContent = "Last checked: " + new Date().toLocaleTimeString("en-IN");
-        }
+        if (requestId !== leadsRequestId) return;
+        tableBody.innerHTML = `<tr><td colspan="17" class="error">${escapeHtml(error.message)}</td></tr>`;
+        if (lastSync) {lastSync.textContent = "Sync failed";lastSync.classList.add("sync-error");}
+    } finally {
+        if (requestId === leadsRequestId && refreshButton) refreshButton.disabled = false;
     }
 }
 
@@ -2482,9 +2390,6 @@ document.getElementById("refreshPatients").addEventListener("click", loadLeads);
 // Reload when the campaigner returns from the counsellor tab.
 document.addEventListener("visibilitychange", () => {
     if (!document.hidden && selectedCamp) loadLeads();
-});
-window.addEventListener("focus", () => {
-    if (selectedCamp && document.visibilityState === "visible") loadLeads();
 });
 
 loadAssignedCamps();
