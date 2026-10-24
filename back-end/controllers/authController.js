@@ -84,6 +84,10 @@ const ALLOWED_USERS = {
     role: "campaigner",
   },
 
+       "sumangotte.com@gmail.com": {
+    role: "campaigner",
+  },
+
   
 
   "umamaheshavis@gmail.com": {
@@ -117,9 +121,7 @@ const ALLOWED_USERS = {
     role: "counsellor",
   },
 
-     "sumangotte.com@gmail.com": {
-    role: "counsellor",
-  },
+
 
 
   /* -------------------------
