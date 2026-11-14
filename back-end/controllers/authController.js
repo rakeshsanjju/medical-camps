@@ -85,7 +85,7 @@ const ALLOWED_USERS = {
   },
 
        "sumangotte.com@gmail.com": {
-    role: "counsellor",
+    role: "campaigner",
   },
 
   
